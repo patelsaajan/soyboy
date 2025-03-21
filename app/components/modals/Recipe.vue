@@ -5,8 +5,8 @@
         :overlay='true'
         :dismissible="false"
         :close="{
-            color: 'primary',
-            variant: 'subtle',
+            color: 'secondary',
+            variant: 'solid',
             class: 'rounded-full',
             onClick: () => emit('close', false)
         }"
@@ -34,16 +34,14 @@
         </template>
 
         <template #footer>
-            <UButton label="Full Recipe"  icon="uil:diary" color="error" variant="soft" />
-            <UButton label="Story"  icon="i-lucide-rocket" color="primary" variant="soft" />
+            <UButton label="Full Recipe"  icon="uil:diary" color="secondary" />
+            <UButton label="Story"  icon="i-lucide-rocket" color="secondary" />
         </template>
     </UModal>    
 </template>
 
 <script setup lang="ts">
 import type IRecipes from '~~/types/recipes';
-
-console.log('hello world')
 
 const props = defineProps({
     recipe: {

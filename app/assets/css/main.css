@@ -1,9 +1,9 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-@theme {
-    --color-primary : #b82601;
-    --color-secondary : #813772;
+@theme { 
+    --ui-primary : #b82601;
+    --ui-secondary : #813772;
     --color-neutral : #062f4f;
     --text-heading : 3rem;
 }
