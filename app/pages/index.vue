@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container mx-auto">
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 h-full py-8">
             <PartsRecipeCard 
                 v-for="n in 12" 

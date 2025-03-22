@@ -1,6 +1,6 @@
 
 <template>
-  <div class="container">
+  <div class="container mx-auto">
     <ContentRenderer v-if="about" :value="about" />
     <div v-else>page not found</div>   
   </div>
