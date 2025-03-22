@@ -24,8 +24,6 @@ const todaysRecipe : IRecipes = {
         servings: 4,
 };
 
-const appConfig = useAppConfig()
-
 </script>
 
 <style lang="scss" scoped>
