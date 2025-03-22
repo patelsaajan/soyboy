@@ -6,5 +6,9 @@ export default defineContentConfig({
       type: "page",
       source: "**/*.md",
     }),
+    recipes: defineCollection({
+      type: "page",
+      source: "recipes/**/*.md",
+    }),
   },
 });
