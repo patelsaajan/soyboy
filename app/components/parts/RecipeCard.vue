@@ -1,12 +1,8 @@
 <template>
     <div class="max-w-[400px]">
         <UCard
-                class="bg-neutral"
-                :ui="{ 
-                    header: 'p-0',
-                    
-                }"
                 variant="soft"
+                class="bg-neutral"
                 @click="openRecipeModal"
             >
             <template #header>
