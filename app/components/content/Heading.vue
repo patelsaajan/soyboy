@@ -1,14 +1,21 @@
 <template>
-    <component :is="'h' + headingNum" class="font-bold text-main">
+    <span 
+    class="font-bold text-primary"
+    :class="textSize"
+    >
         <slot />
-    </component>
+    </span>
 </template>
 
 <script lang="ts" setup>
 
 const props = defineProps<{
-    headingNum: number;
+    size: string;
 }>();
+
+const textSize = computed(() => {
+    return `text-${props.size}`;
+});
 
 </script>
 

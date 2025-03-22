@@ -5,7 +5,7 @@ title: About me - Saajan Patel
 ::imgSingle{imgSrc="/imgs/about.jpg" alt="this is a image alt"}
 ::
 
-::heading{headingNum=2}
+::heading{size="2xl"}
 Welcome!
 ::
 
