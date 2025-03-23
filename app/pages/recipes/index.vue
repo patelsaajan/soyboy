@@ -1,19 +1,19 @@
 <template>
-    <div class="h-screen">
-        <nav>
-            <ul v-if="recipes">
-                <li v-for="(item, index) in recipes" :key="index">
-                <NuxtLink :to="item.path">{{ item.title }}</NuxtLink>
-                </li>
-            </ul>
-        </nav>
+    <div class="container mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 h-full py-8">
+            <PartsRecipeCard 
+                v-for="(recipe, index) in recipes" 
+                :key="index" 
+                :recipe="recipe"
+            />
+        </div>
     </div>
-  </template>
+</template>
 
 <script lang="ts" setup>
 
 const { data: recipes } = await useAsyncData('navigation', async () => {
-    const data = await queryCollectionNavigation('recipes');
+    const data = await queryCollectionNavigation('recipes', ['uri', 'time', 'cuisine', 'serves', 'imgSrc']);
     return data[0]?.children;
 })
 
