@@ -2,13 +2,11 @@
 title: Vietnamese Tomato Tofu
 date: 2025-03-07
 author: Saajan Patel
-category: Recipes
-tags:
-  - Tofu
-  - Vietnamese
-  - Tomato
-  -
 uri: vietnamese-tomato-tofu
+time: 25
+serves: 4
+cuisine: Vietnamese
+imgSrc: "viet-tomato-tofu.png"
 ---
 
 # Silk Avo Artichoke

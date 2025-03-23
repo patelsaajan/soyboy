@@ -1,4 +1,4 @@
-import { defineContentConfig, defineCollection } from "@nuxt/content";
+import { defineContentConfig, defineCollection, z } from "@nuxt/content";
 
 export default defineContentConfig({
   collections: {
@@ -9,6 +9,13 @@ export default defineContentConfig({
     recipes: defineCollection({
       type: "page",
       source: "recipes/**/*.md",
+      schema: z.object({
+        cuisine: z.string().optional(),
+        uri: z.string().optional(),
+        time: z.number().optional(),
+        serves: z.number().optional(),
+        imgSrc: z.string().optional(),
+      }),
     }),
   },
 });

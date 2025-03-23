@@ -2,13 +2,11 @@
 title: Korean Satay Sauce
 date: 2023-10-05
 author: Saajan Patel
-category: Recipes
-tags:
-  - Korean
-  - Satay
-  - Tofu
-  - Peanut
 uri: korean-satay-sauce
+time: 25
+serves: 4
+cuisine: Korean
+imgSrc: korean-satay.jpg
 ---
 
 # Korean Satay Recipe
