@@ -23,7 +23,7 @@ const items = ref([
             label: 'Home',
             icon: 'i-lucide-home',
             to: '/',
-            active: route.currentRoute.value.path === '/',
+            active: computed(() => route.currentRoute.value.path === '/'),
         },
         {
             label: 'About Me',

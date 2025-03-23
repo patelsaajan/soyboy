@@ -17,28 +17,6 @@ const { data: recipes } = await useAsyncData('navigation', async () => {
     return data[0]?.children;
 })
 
-const items = ref([
-    [
-        {
-            label: 'Home',
-            icon: 'i-lucide-home',
-            to: '/',
-            active: true
-        },
-        {
-            label: 'About Me',
-            icon: 'i-lucide-user',
-            to: '/about'
-        },
-        {
-            label: 'Recipes',
-            icon: 'uil:diary',
-            to: '/',
-            active: false
-        }
-    ],
-])
-
 </script>
 
 <style lang="scss" scoped>
