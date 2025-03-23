@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex justify-center my-10">
+    <div class="w-full flex justify-center py-10">
         <NuxtImg
             :src="imgSrc"
             :alt="alt"
