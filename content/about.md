@@ -6,11 +6,11 @@ title: About me - Saajan Patel
 ::
 
 ::heading{size="2xl"}
-Welcome!
+Hi, I'm Saajan,
 ::
 
 ::para
-I’m **Saajan**, and I created this space to share my love for cooking and to store all the recipes I’ve picked up along the way. Like many, I often forget to write down my creations, so this website is where I can keep them all in one place—and share them with others. Plus, friends and family are always asking for my recipes, so I thought, “Why not make them easy to find?”
+I created this space to share my love for cooking and to store all the recipes I’ve picked up along the way. Like many, I often forget to write down my creations, so this website is where I can keep them all in one place—and share them with others. Plus, friends and family are always asking for my recipes, so I thought, “Why not make them easy to find?”
 ::
 
 ::para
