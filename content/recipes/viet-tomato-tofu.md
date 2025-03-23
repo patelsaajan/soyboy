@@ -12,13 +12,6 @@ imgSrc: viet-tomato-tofu.jpg
 uri: vietnamese-tomato-tofu
 ---
 
-::heading{size=2xl}
-Vietnamese Tomato Tofu
-::
-
-::imgSingle{imgSrc="/imgs/recipes/viet-tomato-tofu.jpg" alt="Korean Satay Sauce" rounded=true}
-::
-
 ## Introduction
 
 Welcome to the Silk Avo Artichoke documentation. This document provides an overview of the project and its components.

@@ -10,28 +10,25 @@ description: "Korean Satay Sauce blends the spicy, smoky flavour of gochujang wi
 
 imgSrc: korean-satay.jpg
 uri: korean-satay-sauce
+
+ingredients:
+  - quantity: "400g"
+    item: "firm tofu"
+  - quantity: "2tbsp"
+    item: "light soya sauce"
+  - quantity: "2tbsp"
+    item: "lemon/rice vinegar"
+  - quantity: "1/2 bulb"
+    item: "garlic"
+  - quantity: "3-4"
+    item: "finger chilis"
+  - quantity: "3 tbps"
+    item: "peanut butter"
+  - quantity: "1tbps"
+    item: "gochujang"
+  - quantity: "3tps"
+    item: "vegetable oil"
 ---
-
-::heading{size=2xl}
-Korean Satay Recipe
-::
-
-::imgSingle{imgSrc="/imgs/recipes/korean-satay.jpg" alt="Korean Satay Sauce" rounded=true}
-::
-
-## Ingredients
-
-- 500g chicken breast, cut into strips
-- 2 tablespoons soy sauce
-- 2 tablespoons sesame oil
-- 1 tablespoon honey
-- 2 cloves garlic, minced
-- 1 teaspoon ginger, grated
-- 1 tablespoon gochujang (Korean chili paste)
-- 1 tablespoon rice vinegar
-- 1 tablespoon sesame seeds
-- 1 green onion, chopped
-- Wooden skewers, soaked in water
 
 ## Instructions
 

@@ -16,6 +16,14 @@ export default defineContentConfig({
         serves: z.number().optional(),
         cuisine: z.string().optional(),
         description: z.string().optional(),
+        ingredients: z
+          .array(
+            z.object({
+              quantity: z.string().optional(),
+              item: z.string(),
+            })
+          )
+          .optional(),
       }),
     }),
   },
