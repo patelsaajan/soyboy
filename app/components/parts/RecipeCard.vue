@@ -6,7 +6,7 @@
             >
             <template #header>
                 <NuxtImg
-                    src="/imgs/about.jpg"
+                    :src="`/imgs/${ recipe.imgSrc }`"
                     :alt="recipe.title"
                     class="rounded-t-lg"
                 />

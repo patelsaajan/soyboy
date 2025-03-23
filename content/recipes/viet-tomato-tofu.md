@@ -6,7 +6,7 @@ uri: vietnamese-tomato-tofu
 time: 25
 serves: 4
 cuisine: Vietnamese
-imgSrc: "viet-tomato-tofu.png"
+imgSrc: "viet-tomato-tofu.jpg"
 ---
 
 # Silk Avo Artichoke
