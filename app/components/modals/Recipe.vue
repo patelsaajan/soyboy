@@ -24,7 +24,7 @@
                         alt="Recipe of the day"
                         width="250px"
                         height="250px"
-                            :imgAttrs="{'class': 'rounded-lg'}"
+                        :imgAttrs="{'class': 'rounded-lg'}"
                     />
                 </div> 
                 <span
@@ -36,7 +36,13 @@
         </template>
 
         <template #footer>
-            <!-- <UButton label="Full Recipe"  icon="uil:diary" color="secondary" /> -->
+            <UButton
+                label="Full Recipe" 
+                icon="uil:diary"
+                color="secondary"
+                :onclick="() => emit('close', false)"
+                :to="recipe.path"
+            />
             <!-- <UButton label="Story"  icon="i-lucide-rocket" color="secondary" /> -->
         </template>
     </UModal>    
