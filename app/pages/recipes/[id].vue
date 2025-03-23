@@ -37,7 +37,9 @@ onMounted(() => {
   }
 })
 
-
+definePageMeta({
+  layout: 'neutral'
+})
 
 </script>
 
