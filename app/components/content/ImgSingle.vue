@@ -5,7 +5,7 @@
             :alt="alt"
             width="400"
             height="400"
-            class="rounded-full"
+            class="rounded-xl"
         />
     </div>
 </template>

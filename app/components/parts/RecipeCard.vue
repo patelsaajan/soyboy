@@ -9,7 +9,7 @@
                 <NuxtImg
                     :src="`/imgs/recipes/${ recipe.imgSrc }`"
                     :alt="recipe.title"
-                    class="rounded-t-lg"
+                    class="rounded-xl"
                 />
             </template>
                 <div

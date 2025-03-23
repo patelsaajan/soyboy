@@ -12,9 +12,12 @@ imgSrc: korean-satay.jpg
 uri: korean-satay-sauce
 ---
 
-# Korean Satay Recipe
+::heading{size=2xl}
+Korean Satay Recipe
+::
 
-### gl for your exam
+::imgSingle{imgSrc="/imgs/recipes/korean-satay.jpg" alt="Korean Satay Sauce" rounded=true}
+::
 
 ## Ingredients
 
