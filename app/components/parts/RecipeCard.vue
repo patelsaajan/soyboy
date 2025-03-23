@@ -3,12 +3,11 @@
         <UCard
                 variant="soft"
                 class="bg-neutral"
-                @click="openRecipeModal"
             >
             <template #header>
                 <NuxtImg
-                    :src="recipe.image"
-                    :alt="recipe.name"
+                    src="/imgs/about.jpg"
+                    :alt="recipe.title"
                     class="rounded-t-lg"
                 />
             </template>
@@ -16,10 +15,10 @@
                     class="flex flex-col"
                 >
                     <span class="text-sub-heading text-main">{{ recipe.cuisine }}</span>
-                    <span class="text-sub-heading font-bold">{{ recipe.name }}</span>
+                    <span class="text-sub-heading font-bold">{{ recipe.title }}</span>
                     <div class="flex flex-row gap-6">
-                        <span class="flex flex-row items-center gap-x-2"> <Icon name="material-symbols:timer-outline-rounded" size="1.5rem"/>  {{ recipe.preparationTime }} minutes</span>
-                        <span class="flex flex-row items-center gap-x-2 "><Icon name="ic:round-people" size="1.5rem"/>  {{ recipe.servings }} servings</span>
+                        <span class="flex flex-row items-center gap-x-2"> <Icon name="material-symbols:timer-outline-rounded" size="1.5rem"/>  {{ recipe.time }} minutes</span>
+                        <span class="flex flex-row items-center gap-x-2 "><Icon name="ic:round-people" size="1.5rem"/>  {{ recipe.serves }} servings</span>
                     </div>
                 </div>
 
@@ -28,25 +27,23 @@
 </template>
 
 <script lang="ts" setup>
-import type IRecipes from '~~/types/recipes';
-import { ModalsRecipe } from '#components';
 
 const overlay = useOverlay()
 
-
 const props = defineProps<{
-    recipe: IRecipes; 
+    recipe: any; 
 }>();
+console.log('recipe', props.recipe)
 
-const modal = overlay.create(ModalsRecipe, {
-   props: {
-    recipe: props.recipe,
-   }
-});
+// const modal = overlay.create(ModalsRecipe, {
+//    props: {
+//     recipe: props.recipe,
+//    }
+// });
 
-function openRecipeModal() {
-    modal.open()
-}
+// function openRecipeModal() {
+//     modal.open()
+// }
 
 </script>
 
