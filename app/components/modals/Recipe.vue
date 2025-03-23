@@ -2,8 +2,6 @@
     <UModal
         :title="recipe.title"
         close-icon="i-lucide-arrow-right"
-        :overlay='true'
-        :dismissible="false"
         :close="{
             color: 'secondary',
             variant: 'solid',
@@ -13,6 +11,7 @@
         :ui="{ 
             footer: 'justify-end',
             content: 'bg-neutral text-white',
+            overlay: 'bg-neutral/80'
         }"
     >
         <template #body>
