@@ -1,12 +1,15 @@
 ---
 title: Korean Satay Sauce
 date: 2023-10-05
-author: Saajan Patel
-uri: korean-satay-sauce
+cuisine: Korean
+
 time: 15 minutes
 serves: 4
-cuisine: Korean
+
+description: "Korean Satay Sauce blends the spicy, smoky flavour of gochujang with creamy peanut butter for a rich, savoury kick. Perfect for grilled skewers or stir-fries, it balances sweetness and heat with a touch of lime for a bold, flavourful twist."
+
 imgSrc: korean-satay.jpg
+uri: korean-satay-sauce
 ---
 
 # Korean Satay Recipe

@@ -3,10 +3,11 @@
         <UCard
                 variant="soft"
                 class="bg-neutral"
+                @click="modal.open()"
             >
             <template #header>
                 <NuxtImg
-                    :src="`/imgs/${ recipe.imgSrc }`"
+                    :src="`/imgs/recipes/${ recipe.imgSrc }`"
                     :alt="recipe.title"
                     class="rounded-t-lg"
                 />
@@ -37,23 +38,22 @@
 </template>
 
 <script lang="ts" setup>
+import { ModalsRecipe } from '#components';
 
 const overlay = useOverlay()
 
 const props = defineProps<{
     recipe: any; 
 }>();
-console.log('recipe', props.recipe)
 
-// const modal = overlay.create(ModalsRecipe, {
-//    props: {
-//     recipe: props.recipe,
-//    }
-// });
+const modal = overlay.create(ModalsRecipe, {
+   props: {
+    recipe: props.recipe,
+   }
+});
 
-// function openRecipeModal() {
-//     modal.open()
-// }
+
+
 
 </script>
 
