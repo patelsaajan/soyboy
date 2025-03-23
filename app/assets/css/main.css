@@ -2,10 +2,10 @@
 @import "@nuxt/ui";
 
 @theme { 
-    --ui-primary     : #b82601;
-    --color-primary  : #b82601;
-    --ui-secondary   : #813772;
-    --color-secondary: #813772;
-    --color-neutral  : #062f4f;
+    --ui-primary     : #d89b43;
+    --color-primary  : #d89b43;
+    --ui-secondary   : #457b7f;
+    --color-secondary: #457b7f;
+    --color-neutral  : #031726;
     --text-heading   : 3rem;
 }

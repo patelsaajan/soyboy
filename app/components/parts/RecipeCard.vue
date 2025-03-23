@@ -2,7 +2,7 @@
     <div class="max-w-[400px] mx-auto">
         <UCard
                 variant="soft"
-                class="bg-neutral"
+                class="bg-neutral border-1 "
                 @click="modal.open()"
             >
             <template #header>
