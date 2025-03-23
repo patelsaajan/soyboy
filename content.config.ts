@@ -12,7 +12,7 @@ export default defineContentConfig({
       schema: z.object({
         cuisine: z.string().optional(),
         uri: z.string().optional(),
-        time: z.number().optional(),
+        time: z.string().optional(),
         serves: z.number().optional(),
         imgSrc: z.string().optional(),
       }),

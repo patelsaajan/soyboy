@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-[400px]">
+    <div class="max-w-[400px] mx-auto">
         <UCard
                 variant="soft"
                 class="bg-neutral"
@@ -14,11 +14,21 @@
                 <div
                     class="flex flex-col"
                 >
-                    <span class="text-sub-heading text-main">{{ recipe.cuisine }}</span>
+                    <span class="text-sub-heading text-primary text-2xl font-bold">{{ recipe.cuisine }}</span>
                     <span class="text-sub-heading font-bold">{{ recipe.title }}</span>
-                    <div class="flex flex-row gap-6">
-                        <span class="flex flex-row items-center gap-x-2"> <Icon name="material-symbols:timer-outline-rounded" size="1.5rem"/>  {{ recipe.time }} minutes</span>
-                        <span class="flex flex-row items-center gap-x-2 "><Icon name="ic:round-people" size="1.5rem"/>  {{ recipe.serves }} servings</span>
+                    <div class="flex flex-row justify-between mt-4">
+                        <UBadge
+                            trailing-icon="material-symbols:timer-outline-rounded" 
+                            class="bg-base p-0" 
+                            :label="recipe.time"
+                            size="xl"
+                        />
+                        <UBadge
+                            trailing-icon="ic:round-people"
+                            class="bg-main p-0"
+                            :label="recipe.serves"
+                            size="xl"
+                        />
                     </div>
                 </div>
 

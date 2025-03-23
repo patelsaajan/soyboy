@@ -3,7 +3,7 @@ title: Vietnamese Tomato Tofu
 date: 2025-03-07
 author: Saajan Patel
 uri: vietnamese-tomato-tofu
-time: 25
+time: 25 minutes
 serves: 4
 cuisine: Vietnamese
 imgSrc: "viet-tomato-tofu.jpg"

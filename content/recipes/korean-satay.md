@@ -3,7 +3,7 @@ title: Korean Satay Sauce
 date: 2023-10-05
 author: Saajan Patel
 uri: korean-satay-sauce
-time: 25
+time: 15 minutes
 serves: 4
 cuisine: Korean
 imgSrc: korean-satay.jpg
