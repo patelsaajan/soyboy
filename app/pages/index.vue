@@ -18,7 +18,7 @@
                 <UButton
                     color="primary"
                     variant="soft"
-                    to="/recipes"
+                    to="/about"
                     icon="i-lucide-user"
                     label="About me"
                 />
