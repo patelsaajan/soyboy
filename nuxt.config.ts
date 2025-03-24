@@ -5,8 +5,13 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
 
+  content: {
+    preview: {
+      api: "https://api.nuxt.studio",
+    },
+  },
+
   modules: [
-    "@nuxt/studio",
     "@nuxt/content",
     "@nuxt/eslint",
     "@nuxt/image",
