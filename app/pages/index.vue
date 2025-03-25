@@ -13,7 +13,7 @@
                     variant="soft"
                     to="/recipes"
                     label="Recipes"
-                    icon="i-lucide-home"
+                    icon="uil:diary"
                 />
                 <UButton
                     color="primary"
