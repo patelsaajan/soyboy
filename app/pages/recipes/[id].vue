@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto min-h-screen pt-8">
+    <div class="container mx-auto min-h-screen pt-8 pb-20">
         <div class="flex flex-col gap-y-6 w-full">
           <UBreadcrumb
             :items="items"
@@ -37,7 +37,14 @@
               </div>
             </div>
           </div>
-          <ContentRenderer v-if="page" :value="page" />
+          <div class="max-w-5xl mx-auto">
+            <span class="text-primary text-3xl">{{ pageMeta?.title }}</span>
+            <ContentRenderer 
+              v-if="page"
+              :value="page" 
+              
+            />
+        </div>
         </div>
     </div>
 </template>

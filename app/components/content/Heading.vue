@@ -1,10 +1,10 @@
 <template>
-    <span 
-    class="font-bold text-primary"
+    <div 
+    class="font-bold text-primary mt-6 "
     :class="textSize"
     >
-        <slot />
-    </span>
+        <slot  mdc-unwrap="p" />
+    </div>
 </template>
 
 <script lang="ts" setup>
