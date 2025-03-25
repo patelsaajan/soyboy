@@ -12,7 +12,7 @@
               />
             <div class="md:my-10">
               <span class="flex text-primary text-xl w-full justify-center mb-6">Ingredients</span>
-              <div class="flex flex-col gap-y-3 w-[400px] md:w-[300px] mx-auto">
+              <div class="flex flex-col gap-y-3 w-full md:w-[300px] mx-auto">
                 <div
                   v-if="pageMeta"
                   v-for="ingredient in pageMeta.ingredients"
@@ -20,6 +20,19 @@
                 >
                 <span>{{ingredient.item}}</span>
                 <span>{{ingredient.quantity}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="md:my-10">
+              <span class="flex text-primary text-xl w-full justify-center mb-6">Nutritional</span>
+              <div class="flex flex-col gap-y-3 w-full md:w-[300px] mx-auto">
+                <div
+                  v-if="pageMeta"
+                  v-for="nutritional in pageMeta.nutritional"
+                  class="flex flex-row justify-between"
+                >
+                <span>{{nutritional.item}}</span>
+                <span>{{nutritional.value}}</span>
                 </div>
               </div>
             </div>
@@ -43,7 +56,7 @@ const { data: page } = await useAsyncData(route.path, () => {
 
 const { data: pageMeta } = await useAsyncData('recipe-ingredients', () => {
   return queryCollection('recipes')
-    .select('ingredients', 'imgSrc', 'title')
+    .select('ingredients', 'imgSrc', 'title', 'nutritional')
     .path(route.path)
     .first()
 })

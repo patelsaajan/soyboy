@@ -27,6 +27,14 @@ ingredients:
     item: gochujang
   - quantity: 3tps
     item: vegetable oil
+
+nutritional:
+  - item: "cals"
+    value: "256kcal"
+  - item: "protein"
+    value: "24g"
+  - item: "other"
+    value: "24g"
 ---
 
 ## Instructions

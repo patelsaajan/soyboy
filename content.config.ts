@@ -20,7 +20,15 @@ export default defineContentConfig({
           .array(
             z.object({
               quantity: z.string().optional(),
-              item: z.string(),
+              item: z.string().optional(),
+            })
+          )
+          .optional(),
+        nutritional: z
+          .array(
+            z.object({
+              item: z.string().optional(),
+              value: z.string().optional(),
             })
           )
           .optional(),
