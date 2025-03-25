@@ -2,12 +2,12 @@
 title: Vietnamese Tomato Tofu
 date: 2025-03-07
 cuisine: Vietnamese
-
 time: 25 minutes
 serves: 4
-
-description: Vietnamese Tomato Tofu is a comforting dish where crispy fried tofu is simmered in a tangy, savoury tomato sauce infused with garlic and shallots. The rich flavors of the tomatoes and soy sauce create a perfect balance, making it a delicious and wholesome vegan meal often served with steamed rice.
-
+description: Vietnamese Tomato Tofu is a comforting dish where crispy fried tofu
+  is simmered in a tangy, savoury tomato sauce infused with garlic and shallots.
+  The rich flavors of the tomatoes and soy sauce create a perfect balance,
+  making it a delicious and wholesome vegan meal often served with steamed rice.
 imgSrc: viet-tomato-tofu.jpg
 uri: vietnamese-tomato-tofu
 ---
@@ -51,5 +51,4 @@ We welcome contributions to Silk Avo Artichoke. To contribute, please follow the
 Silk Avo Artichoke is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 ```text
-
 ```

@@ -2,32 +2,31 @@
 title: Korean Satay Sauce
 date: 2023-10-05
 cuisine: Korean
-
 time: 15 minutes
 serves: 4
-
-description: "Korean Satay Sauce blends the spicy, smoky flavour of gochujang with creamy peanut butter for a rich, savoury kick. Perfect for grilled skewers or stir-fries, it balances sweetness and heat with a touch of lime for a bold, flavourful twist."
-
+description: Korean Satay Sauce blends the spicy, smoky flavour of gochujang
+  with creamy peanut butter for a rich, savoury kick. Perfect for grilled
+  skewers or stir-fries, it balances sweetness and heat with a touch of lime for
+  a bold, flavourful twist.
 imgSrc: korean-satay.jpg
 uri: korean-satay-sauce
-
 ingredients:
-  - quantity: "400g"
-    item: "firm tofu"
-  - quantity: "2tbsp"
-    item: "light soya sauce"
-  - quantity: "2tbsp"
-    item: "lemon/rice vinegar"
-  - quantity: "1/2 bulb"
-    item: "garlic"
-  - quantity: "3-4"
-    item: "finger chilis"
-  - quantity: "3 tbps"
-    item: "peanut butter"
-  - quantity: "1tbps"
-    item: "gochujang"
-  - quantity: "3tps"
-    item: "vegetable oil"
+  - quantity: 400g
+    item: firm tofu
+  - quantity: 2tbsp
+    item: light soya sauce
+  - quantity: 2tbsp
+    item: lemon/rice vinegar
+  - quantity: 1/2 bulb
+    item: garlic
+  - quantity: 3-4
+    item: finger chilis
+  - quantity: 3 tbps
+    item: peanut butter
+  - quantity: 1tbps
+    item: gochujang
+  - quantity: 3tps
+    item: vegetable oil
 ---
 
 ## Instructions
