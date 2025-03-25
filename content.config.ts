@@ -11,6 +11,7 @@ export default defineContentConfig({
       source: "recipes/**/*.md",
       schema: z.object({
         uri: z.string().optional(),
+        published: z.boolean().optional(),
         imgSrc: z.string().optional(),
         time: z.string().optional(),
         serves: z.number().optional(),
