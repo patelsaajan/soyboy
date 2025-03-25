@@ -9,3 +9,7 @@
     --color-neutral  : #031726;
     --text-heading   : 3rem;
 }
+
+@utility container {
+        padding-inline: 20px;
+}
