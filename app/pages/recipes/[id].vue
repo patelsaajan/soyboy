@@ -40,9 +40,8 @@
           <div class="max-w-5xl mx-auto">
             <span class="text-primary text-3xl">{{ pageMeta?.title }}</span>
             <ContentRenderer 
-              v-if="page"
+              v-if="page?.title"
               :value="page" 
-              
             />
         </div>
         </div>
