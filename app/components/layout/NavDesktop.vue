@@ -15,8 +15,6 @@
 
 const route = useRouter()
 
-console.log(route.currentRoute.value.path.split('/')[1])
-
 const items = ref([
     [
         {
