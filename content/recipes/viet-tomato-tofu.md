@@ -1,5 +1,5 @@
 ---
-title: Vietnamese Tomato Tofu
+title: Tomato Tofu
 date: 2024-03-07
 cuisine: Vietnamese
 time: 25 minutes
@@ -28,20 +28,20 @@ ingredients:
     item: onion
 
 nutritional:
-  - item: "kcals"
-    value: "249.5kcal"
+  - item: "Calories"
+    value: "240kcal"
   - item: "Protein"
-    value: "24.0g"
+    value: "18g"
   - item: "Carbohydrates"
-    value: "17.3g"
+    value: "12g"
   - item: "Fat"
-    value: "11.1g"
-  - item: "Calcium"
-    value: "40% DRI"
-  - item: "Iron"
-    value: "30% DV"
-  - item: "Vitamin C"
-    value: "60% DV"
+    value: "14g"
+  - item: "Fiber"
+    value: "4g"
+  - item: "Vitamin A"
+    value: "20% DV"
+  - item: "Potassium"
+    value: "15% DV"
 ---
 
 ::heading{size="2xl"}

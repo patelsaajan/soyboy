@@ -1,5 +1,5 @@
 ---
-title: Korean Satay Sauce
+title: Satay Sauce
 date: 2023-10-05
 published: true
 cuisine: Korean

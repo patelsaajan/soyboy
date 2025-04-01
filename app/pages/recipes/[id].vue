@@ -24,7 +24,7 @@
               </div>
             </div>
             <div class="md:my-10">
-              <span class="flex text-primary text-xl w-full justify-center mb-6">Nutritional</span>
+              <span class="flex text-primary text-xl w-full justify-center mb-6">Nutritional <span class="text-sm">(per serve)</span></span>
               <div class="flex flex-col gap-y-3 w-full md:w-[300px] mx-auto">
                 <div
                   v-if="page"
@@ -56,13 +56,8 @@ definePageMeta({
   layout: 'neutral'
 })
 
-// const { data: page } = await useAsyncData(route.path, () => {
-//   return queryCollection('recipes').path(route.path).first()
-// })
-
 const { data: page } = await useAsyncData(route.path, () => {
   return queryCollection('recipes')
-    // .select('ingredients', 'imgSrc', 'title', 'nutritional')
     .path(route.path)
     .first()
 })
