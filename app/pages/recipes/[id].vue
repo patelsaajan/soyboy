@@ -37,8 +37,9 @@
               </div>
             </div>
           </div>
-          <div class="max-w-5xl mx-auto">
-            <span class="text-primary text-3xl">{{ page?.title }}</span>
+          <div class="max-w-5xl mx-auto flex flex-col gap-y-1">
+            <span class="text-primary text-lg font-bold">{{ page?.cuisine }}</span>
+            <span class="text-primary text-3xl font-bold">{{ page?.title }}</span>
             <ContentRenderer 
               v-if="page?.title"
               :value="page" 
