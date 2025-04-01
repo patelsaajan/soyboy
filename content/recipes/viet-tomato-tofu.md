@@ -99,3 +99,7 @@ Return the fried tofu to the pan and gently stir to coat each piece with the sau
 
 Sprinkle with chopped green onions and fresh cilantro if using. Serve hot with steamed rice and enjoy!
 ::
+
+::para
+Enjoy this easy-to-make, nutrient-packed dish that’s sure to fuel you up for the day ahead! 🌱
+::
