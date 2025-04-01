@@ -28,7 +28,7 @@ ingredients:
     item: Gochujang
 
 nutritional:
-  - item: "kcals"
+  - item: "Calories"
     value: "223kcal"
   - item: "Protein"
     value: "16.3g"
