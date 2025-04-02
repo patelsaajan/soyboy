@@ -4,7 +4,7 @@ date: 2023-07-14
 published: true
 cuisine: Fusion
 time: 30 mins
-serves: 2-3
+serves: 3
 description: If you're bored of basic baked beans, this spicy, flavor-packed version will wake up your taste buds. Perfect for using up leftovers and getting creative with spices!
 imgSrc: spicy-beans.jpeg
 uri: spicy-beans
