@@ -6,13 +6,18 @@
                 @click="modal.open()"
             >
             <template #header>
-                <NuxtImg
-                    :src="`/imgs/recipes/${ recipe.imgSrc }`"
-                    :alt="recipe.title"
-                    class="rounded-xl"
-                    width="500"
-                    height="500"
-                />
+                <div class="relative">
+                    <USkeleton v-if="!isImageLoaded" class="bg-skeleton rounded-xl h-[250px] w-[250px]" />
+                    <NuxtImg
+                        v-if="isImageLoaded"
+                        :src="`/imgs/recipes/${ recipe.imgSrc }`"
+                        :alt="recipe.title"
+                        class="rounded-xl relative"
+                        width="250"
+                        height="250"
+                        loading="lazy"
+                    />
+                </div>
             </template>
                 <div
                     class="flex flex-col"
@@ -40,13 +45,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ModalsRecipe } from '#components';
+import { ModalsRecipe } from '#components'
 
 const overlay = useOverlay()
+const isImageLoaded = ref(false);
 
 const props = defineProps<{
     recipe: any; 
 }>();
+
+const loadImage = () => {
+    const img = new Image();
+    img.src = `/imgs/recipes/${props.recipe.imgSrc}`;
+    img.onload = () => {
+        isImageLoaded.value = true;
+    };
+};
+
+onMounted(() => {
+    loadImage();
+});
 
 const modal = overlay.create(ModalsRecipe, {
    props: {
