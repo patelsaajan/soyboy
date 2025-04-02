@@ -10,6 +10,8 @@
                     :src="`/imgs/recipes/${ recipe.imgSrc }`"
                     :alt="recipe.title"
                     class="rounded-xl"
+                    width="500"
+                    height="500"
                 />
             </template>
                 <div
