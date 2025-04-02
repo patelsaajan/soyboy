@@ -1,6 +1,6 @@
 <template>
     <div class="container mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 h-full py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 h-full py-8">
             <PartsRecipeCard 
                 v-for="(recipe, index) in recipes" 
                 :key="index" 

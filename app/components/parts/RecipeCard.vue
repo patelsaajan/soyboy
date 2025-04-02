@@ -18,7 +18,7 @@
                     class="flex flex-col"
                 >
                     <span class="text-sub-heading text-primary text-lg font-bold">{{ recipe.cuisine }}</span>
-                    <span class="text-sub-heading font-bold text-2xl">{{ recipe.title }}</span>
+                    <span class="text-sub-heading font-bold text-2xl block truncate w-[200px]">{{ recipe.title }}</span>
                     <div class="flex flex-row justify-between mt-4">
                         <UBadge
                             trailing-icon="material-symbols:timer-outline-rounded" 
