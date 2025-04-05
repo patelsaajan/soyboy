@@ -12,7 +12,7 @@
                 <span class="text-2xl w-full text-center max-w-[800px] mx-auto">
                     Take a look around and grab any ideas that catch your eye. Feel free to share what you create—I'd love to see how you make it your own.
                 </span>
-                <div class="flex flex-row gap-x-6 justify-center flex-wrap gap-y-4">
+                <div class="flex flex-row gap-x-6 justify-center flex-wrap gap-y-6">
                     <UButton
                         color="primary"
                         variant="soft"
