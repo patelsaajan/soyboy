@@ -14,3 +14,7 @@
 @utility container {
         padding-inline: 20px;
 }
+
+body {
+    background-color: var(--color-neutral);
+}

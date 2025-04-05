@@ -72,7 +72,7 @@ const items = ref([
   {
     label: 'Recipes',
     icon: 'uil:diary',
-    to: '/'
+    to: '/recipes'
   },
 ])
 

@@ -1,36 +1,43 @@
 <template>
-    <div class="container mx-auto">
-        <div class="flex flex-col gap-y-6 h-screen justify-center">
-            <span class="text-primary text-4xl w-full text-center">
-            Welcome
-            </span>
-            <span class=" text-2xl w-full text-center max-w-[800px] mx-auto">
-                Take a look around and grab any ideas that catch your eye. Feel free to share what you create—I'd love to see how you make it your own.
-            </span>
-            <div class="flex flex-row gap-x-6 justify-center">
-                <UButton
-                    color="primary"
-                    variant="soft"
-                    to="/recipes"
-                    label="Recipes"
-                    icon="uil:diary"
-                />
-                <UButton
-                    color="primary"
-                    variant="soft"
-                    to="/about"
-                    icon="i-lucide-user"
-                    label="About me"
-                />
-                <UButton
-                    color="primary"
-                    variant="solid"
-                    icon="i-lucide-dice-5"
-                    label="I'm Feeling Lucky"
-                    @click="async () => await feelingLucky()"
-                />
+    <div 
+        class="relative w-full flex flex-col justify-evenly"
+        style="height: calc(100vh - 65px);"
+    >
+        <PartsScrollingWords :words="veganWords1" :fontSize="'8rem'" :direction="'left'" />
+        <div class="container mx-auto">
+            <div class="flex flex-col gap-y-6 justify-center">
+                <span class="text-primary text-4xl w-full text-center">
+                Welcome
+                </span>
+                <span class="text-2xl w-full text-center max-w-[800px] mx-auto">
+                    Take a look around and grab any ideas that catch your eye. Feel free to share what you create—I'd love to see how you make it your own.
+                </span>
+                <div class="flex flex-row gap-x-6 justify-center flex-wrap gap-y-4">
+                    <UButton
+                        color="primary"
+                        variant="soft"
+                        to="/recipes"
+                        label="Recipes"
+                        icon="uil:diary"
+                    />
+                    <UButton
+                        color="primary"
+                        variant="soft"
+                        to="/about"
+                        icon="i-lucide-user"
+                        label="About me"
+                    />
+                    <UButton
+                        color="primary"
+                        variant="solid"
+                        icon="i-lucide-dice-5"
+                        label="I'm Feeling Lucky"
+                        @click="async () => await feelingLucky()"
+                    />
+                </div>
             </div>
         </div>
+        <PartsScrollingWords :words="veganWords2" :fontSize="'8rem'" />
     </div>
 </template>
 
@@ -63,7 +70,31 @@ const feelingLucky = async () => {
     }
 }
 
+const veganWords1 = [
+    "Tofu",
+    "Lentils",
+    "Beets",
+    "Chickpeas",
+    "Tempeh",
+    "Seitan",
+    "Carrots",
+    "Quinoa",
+    "Aubergine",
+    "Falafel"
+]
 
+const veganWords2 = [
+    "Miso",
+    "Hummus",
+    "Broccoli",
+    "Mushrooms",
+    "Avocado",
+    "Beans",
+    "Squash",
+    "Peanuts",
+    "Spinach",
+    "Cashews"
+]
 </script>
 
 <style lang="scss" scoped>
