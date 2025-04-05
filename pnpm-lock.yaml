@@ -32,9 +32,6 @@ importers:
       eslint:
         specifier: ^9.0.0
         version: 9.23.0(jiti@2.4.2)
-      gsap:
-        specifier: ^3.12.7
-        version: 3.12.7
       module:
         specifier: ^1.2.5
         version: 1.2.5
@@ -2748,9 +2745,6 @@ packages:
 
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
-
-  gsap@3.12.7:
-    resolution: {integrity: sha512-V4GsyVamhmKefvcAKaoy0h6si0xX7ogwBoBSs2CTJwt7luW0oZzC0LhdkyuKV8PJAXr7Yaj8pMjCKD4GJ+eEMg==}
 
   gulp-sourcemaps@1.12.1:
     resolution: {integrity: sha512-2NYnMpB67LJhc36sEv+hNY05UOy1lD9DPtLi+en4hbGH+085G9Zzh3cet2VEqrDlQrLk9Eho0MM9dZ3Z+dL0XA==}
@@ -8595,8 +8589,6 @@ snapshots:
   graceful-fs@4.2.11: {}
 
   graphemer@1.4.0: {}
-
-  gsap@3.12.7: {}
 
   gulp-sourcemaps@1.12.1:
     dependencies:
