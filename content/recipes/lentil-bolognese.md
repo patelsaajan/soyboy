@@ -61,9 +61,9 @@ Quick Facts
 ::
 
 ::para
-- **Perfect for meal prep** – makes great leftovers! 🍽️
-- **Packed with fiber and protein** from lentils and veggies 🥕
-- **Customizable** – add extra veg or swap in your favorite seasonings 🌿
+- **Perfect for meal prep 🍽️** – makes great leftovers! 
+- **Packed with fiber and protein 🥕** from lentils and veggies 
+- **Customizable 🌿** – add extra veg or swap in your favourite seasonings
 ::
 
 # Method
@@ -71,25 +71,25 @@ Quick Facts
 ::para
 **Step 1: Prepare the Veggies**
 
-Start by dicing the **carrots**, **celery**, and **onions**. Add them to a large pan with a pinch of salt and a splash of boiling water. Cover with a lid and let them sweat down. The longer they cook, the richer the flavor. Add each ingredient as you chop to save time! ⏱️
+Start by dicing the **carrots**, **celery**, and **onions**. Add them to a large pan with a pinch of salt and a splash of boiling water. Cover with a lid and let them sweat down. The longer they cook, the richer the flavour. Add each ingredient as you chop to save time!
 ::
 
 ::para
 **Step 2: Add Garlic and Chilis**
 
-Finely dice the **chilis** and **mince the garlic**. Push the veggies aside in the pan and sauté the garlic and chilis for about **30 seconds**, then stir them into the mixture. 🌶️🧄
+Finely dice the **chilis** and **mince the garlic**. Push the veggies aside in the pan and sauté the garlic and chilis for about **1 minute**, then stir them into the mixture.
 ::
 
 ::para
 **Step 3: Season**
 
-Add the dried **oregano**, **thyme**, salt, and pepper. Cook for a minute or two to toast the spices before adding the **tinned tomatoes**. Pour in a bit of boiling water to loosen the mixture, then let it reduce down. 🍅
+Add the dried **oregano**, **thyme**, salt, and pepper. Cook for a minute or two to toast the spices before adding the **tinned tomatoes**. Pour in a bit of boiling water to loosen the mixture, then let it reduce down.
 ::
 
 ::para
 **Step 4: Add Lentils and Simmer**
 
-Once reduced, add the **tinned lentils** and some additional boiling water. Simmer for at least **10 minutes**, adjusting the sauce consistency to your preference. While this simmers, cook your pasta. 🍝
+Once reduced, add the **tinned lentils** and some additional boiling water. Simmer for at least **10 minutes**, adjusting the sauce consistency to your preference. While this simmers, cook your pasta.
 ::
 
 ::para
@@ -101,7 +101,7 @@ Just before serving, chiffonade the **fresh basil** and stir it through the sauc
 ::para
 ## 🍽️ **Bonus: Maple Mustard Broccoli**
 
-Wash and cut the **tenderstem broccoli**. In a bowl, mix **Dijon mustard** and **maple syrup** (about **60–70% mustard, 30–40% syrup**). Add a splash of water to loosen the sauce. Coat the broccoli in the mixture and bake at **180°C** for **30–40 minutes**. 🥦🍯
+Wash and cut the **tenderstem broccoli**. In a bowl, mix **Dijon mustard** and **maple syrup** (about **60–70% mustard, 30–40% syrup**). Add a splash of water to loosen the sauce. Coat the broccoli in the mixture and bake at **180°C** for **30–40 minutes**.
 ::
 
 ::para

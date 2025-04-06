@@ -59,15 +59,17 @@ Quick Facts
 ::
 
 ::para  
-A classic Vietnamese dish featuring crispy tofu simmered in a tangy tomato sauce, perfect when paired with steamed rice.  
+A classic Vietnamese dish featuring crispy tofu simmered in a tangy tomato sauce, perfect when paired with steamed rice. It was a dish I ate daily while travelling vietnam 
 ::
 
-# Method
+::heading{size="xl"}
+Method
+::
 
 ::para
 **Step 1: Prepare the Tofu**
 
-Take the tofu out of the packaging and press it for about 15-20 minutes to remove excess moisture. Then, cut it into bite-sized cubes or rectangles.
+Take the tofu out of the packaging and either place it in a boiling water salt bath or microwave it for 5 minutes to remove excess moisture. Then, cut it into triangles.
 ::
 
 ::para
@@ -85,19 +87,19 @@ Using the same pan, remove most of the excess oil, leaving about 2 tablespoons. 
 ::para
 **Step 4: Season the Sauce**
 
-Add soy sauce (or vegan fish sauce), a pinch of sugar, salt, and black pepper. Stir everything together and let it cook for a few minutes, adjusting the seasoning to taste.
+Add soy sauce, a pinch of sugar, salt, and black pepper. Stir everything together and let it cook for a few minutes, adjusting the seasoning to taste.
 ::
 
 ::para
 **Step 5: Combine the Tofu and Sauce**
 
-Return the fried tofu to the pan and gently stir to coat each piece with the sauce. Add a splash of water, mix well, and let it simmer for about 10 minutes so the tofu absorbs the flavors.
+Return the fried tofu to the pan and gently stir to coat each piece with the sauce. Add a splash of water, mix well, and let it simmer for about 10 minutes so the tofu absorbs the flavours.
 ::
 
 ::para
 **Step 6: Garnish and Serve**
 
-Sprinkle with chopped green onions and fresh cilantro if using. Serve hot with steamed rice and enjoy!
+Sprinkle with chopped green onions and fresh coriander if using. Serve hot with steamed rice and enjoy!
 ::
 
 ::para

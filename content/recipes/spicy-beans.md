@@ -63,8 +63,8 @@ Quick Facts
 
 ::para
 - **Easy & Flexible** – a "throw it together" type of dish!  
-- **Uses up leftovers** – perfect for whatever’s in your kitchen.  
-- **Customizable spice levels** – mild or fiery, it’s up to you! 🌶️🔥  
+- **Uses up leftovers** – perfect for whatever's in your kitchen.  
+- **Customizable spice levels** – mild or fiery, it's up to you! 🌶️🔥  
 ::
 
 ## Method  
@@ -78,7 +78,7 @@ Start by slicing the **onion** into a shape that sparks joy. (I prefer mine fine
 ::para
 **Step 2: Sauté the Aromatics**  
 
-Heat some oil in a saucepan over **medium-high heat**. I usually use vegetable oil since olive oil can overpower the flavors (or so I've been told!).  
+Heat some oil in a saucepan over **medium-high heat**. I usually use vegetable oil since olive oil can overpower the flavours (or so I've been told!).  
 
 Once hot, fry the **onions** until they start turning golden. Add the **garlic and chilis**, then lower the heat slightly. Cook for **2-3 minutes** until fragrant. 🧄🔥  
 ::
@@ -86,9 +86,12 @@ Once hot, fry the **onions** until they start turning golden. Add the **garlic a
 ::para
 **Step 3: Spice it Up**  
 
-Now, **add your favorite dry spices**—I love **oregano, paprika, cumin, salt, and pepper**, but feel free to get creative! Toast them for a minute before pouring in the **tinned tomatoes**.  
+Now, **add your favourite dry spices**—I love **oregano, paprika, cumin, salt, and pepper**, but feel free to get creative! I also throw in a spoonful of balsamic vinegar, but its personal preference.
 
-Add a mug of water, then **let it reduce for 5 minutes** on medium heat. 🍅  
+
+::para
+**Step 3: Saucing**  
+After a couple of minutes toss in the **tinned tomatoes**.  Add a mug of water, then **let it reduce for 5 minutes** on medium heat.
 ::
 
 ::para
@@ -96,7 +99,13 @@ Add a mug of water, then **let it reduce for 5 minutes** on medium heat. 🍅
 
 Stir in your **beans** and another splash of water. Let them **simmer for about 10 minutes**, soaking up all those flavors. **Adjust consistency** with water as needed.  
 
-Right before serving, squeeze in **some lemon juice** and drizzle with **olive oil**. If you're feeling bold, add a dash of **Tabasco** for extra kick! 🌶️🍋  
+Right before serving, squeeze in **some lemon juice** and drizzle with **olive oil**. If you're feeling bold, add a dash of **Tabasco** for extra kick! 
+::
+
+::para
+**Step 5: Thickness**  
+
+If the consistency is too thin then add some cornstarch using a slurry
 ::
 
 ::heading{size="2xl"}
