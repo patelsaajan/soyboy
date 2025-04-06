@@ -6,11 +6,11 @@
         <PartsScrollingWords :words="veganWords1" :fontSize="'8rem'" :direction="'left'" />
         <div class="container mx-auto">
             <div class="flex flex-col gap-y-6 justify-center">
-                <span class="text-primary text-4xl w-full text-center">
-                Welcome
+                <span class="text-primary text-6xl w-full text-center">
+                Welcome!
                 </span>
                 <span class="text-2xl w-full text-center max-w-[800px] mx-auto">
-                    Take a look around and grab any ideas that catch your eye. Feel free to share what you create—I'd love to see how you make it your own.
+                    This is just a bunch of recipes I make from time to time and don’t want to forget. I figured I’d write them down somewhere easy to find and now they’re here if you ever want to give them a go.
                 </span>
                 <div class="flex flex-row gap-x-6 justify-center flex-wrap gap-y-6">
                     <UButton
@@ -72,28 +72,28 @@ const feelingLucky = async () => {
 
 const veganWords1 = [
     "Tofu",
+    "Soyboy",
     "Lentils",
-    "Beets",
+    "Vegan",
     "Chickpeas",
     "Tempeh",
+    "Beets",
     "Seitan",
-    "Carrots",
-    "Quinoa",
     "Aubergine",
     "Falafel"
 ]
 
 const veganWords2 = [
-    "Miso",
     "Hummus",
-    "Broccoli",
+    "Plant-based",
     "Mushrooms",
+    "Cumin",
     "Avocado",
     "Beans",
-    "Squash",
     "Peanuts",
-    "Spinach",
-    "Cashews"
+    "Tomatoes",
+    "Soyboy",
+    "Garlic"
 ]
 </script>
 

@@ -1,6 +1,6 @@
 ---
 title: Mushroom Fried Rice
-date: 2025-31-03
+date: 2022-31-03
 published: true
 cuisine: Chinese
 time: 30 mins
