@@ -1,8 +1,8 @@
 <template>
-    <div class="max-w-[400px] mx-auto">
+    <div class="max-w-[400px] mx-auto" ref="container">
         <UCard
                 variant="soft"
-                class="bg-neutral border-1 "
+                class="bg-neutral border-1 cursor-pointer hover:scale-105 transition-all duration-300"
                 @click="modal.open()"
             >
             <template #header>
@@ -46,6 +46,8 @@
 
 <script lang="ts" setup>
 import { ModalsRecipe } from '#components'
+
+const container = ref(null)
 
 const overlay = useOverlay()
 const isImageLoaded = ref(false);
