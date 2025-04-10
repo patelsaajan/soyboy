@@ -1,9 +1,9 @@
 <template>
     <div 
-        class="relative w-full flex flex-col justify-evenly"
+        class="relative w-full flex flex-col justify-between"
         style="height: calc(100vh - 65px);"
     >
-        <PartsScrollingWords :words="veganWords1" :fontSize="'8rem'" :direction="'left'" />
+    <div></div>
         <div class="container mx-auto">
             <div class="flex flex-col gap-y-6 justify-center">
                 <span class="text-primary text-6xl w-full text-center">
@@ -37,7 +37,21 @@
                 </div>
             </div>
         </div>
-        <PartsScrollingWords :words="veganWords2" :fontSize="'8rem'" />
+        <div>
+            <NuxtMarquee
+                direction="right"
+                :speed="35"
+                >
+            <span 
+                v-for="i in 20" 
+                :key="i" 
+                class="w-content md:text-2xl text-lg ml-10 text-primary"
+                >
+                Soyboy Saajan
+            </span>
+            </NuxtMarquee>
+            <PartsScrollingWords :words="veganWords1" :fontSize="'8rem'" :direction="'left'" />
+        </div>
     </div>
 </template>
 
@@ -72,7 +86,6 @@ const feelingLucky = async () => {
 
 const veganWords1 = [
     "Tofu",
-    "Soyboy",
     "Lentils",
     "Vegan",
     "Chickpeas",
@@ -80,21 +93,15 @@ const veganWords1 = [
     "Beets",
     "Seitan",
     "Aubergine",
-    "Falafel"
-]
-
-const veganWords2 = [
-    "Hummus",
+    "Falafel",
     "Plant-based",
     "Mushrooms",
-    "Cumin",
     "Avocado",
     "Beans",
     "Peanuts",
-    "Tomatoes",
-    "Soyboy",
-    "Garlic"
 ]
+
+
 </script>
 
 <style lang="scss" scoped>

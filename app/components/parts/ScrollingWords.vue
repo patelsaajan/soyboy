@@ -1,6 +1,7 @@
 <template>
      <NuxtMarquee
-     :direction="direction"   
+     :direction="direction"
+     :speed="35"
      >
         <span 
             v-for="word in words" 

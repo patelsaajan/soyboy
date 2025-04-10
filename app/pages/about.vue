@@ -1,6 +1,6 @@
 
 <template>
-  <div class="container mx-auto">
+  <div class="container max-w-[1000px] mx-auto">
     <ContentRenderer v-if="about" :value="about" />
     <div v-else>page not found</div>   
   </div>
