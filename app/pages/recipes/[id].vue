@@ -4,7 +4,7 @@
           <UBreadcrumb
             :items="items"
           />
-            <div class="flex flex-col gap-y-6 w-full md:flex-row md:gap-x-10 lg:gap-x-20 md:items-center md:justify-center">
+            <div class="flex flex-col gap-y-6 w-full md:flex-row md:flex-wrap md:gap-x-10 lg:gap-x-20 md:items-center md:justify-center">
             <PartsImgSingle
               v-if="page?.imgSrc && page?.title"
               :imgSrc="`/imgs/recipes/${page.imgSrc}`"
