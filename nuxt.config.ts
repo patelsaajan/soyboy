@@ -21,8 +21,4 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "nuxt-marquee",
   ],
-
-  nitro: {
-    preset: "cloudflare_pages",
-  },
 });
