@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxt/icon",
     "@nuxt/fonts",
+    "@nuxthq-studio",
     "nuxt-marquee",
   ],
 });
