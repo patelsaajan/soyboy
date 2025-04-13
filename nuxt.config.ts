@@ -20,5 +20,6 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/fonts",
     "nuxt-marquee",
+    "@nuxthub/core",
   ],
 });
