@@ -58,6 +58,13 @@
 <script lang="ts" setup>
 const route = useRouter()
 
+useHead({
+    title: 'Soyboy Saajan',
+    meta: [
+        { name: 'description', content: 'Soyboy Saajan is a website for recipes' },
+    ],
+})
+
 
 // get all recipes 
 async function getRandomRecipe() {

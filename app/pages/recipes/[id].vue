@@ -50,7 +50,6 @@
 </template>
 
 <script lang="ts" setup>
-
 const route = useRoute()
 
 definePageMeta({
@@ -86,9 +85,15 @@ onMounted(() => {
   }
 })
 
+useHead({
+  title: page.value?.title, 
+})
 
-
-console.log('ingredients', page.value?.imgSrc)
+useSeoMeta({
+  title: page.value?.title,
+  description: page.value?.description,
+  ogImage: page.value?.imgSrc,
+})
 
 </script>
 

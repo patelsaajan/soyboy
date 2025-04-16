@@ -12,6 +12,13 @@
 
 <script lang="ts" setup>
 
+useHead({
+  title: 'Saajan\'s Recipes',
+  meta: [
+    { name: 'description', content: 'Saajan\'s Recipes' },
+  ],
+})
+
 const { data: recipes } = await useAsyncData('navigation', async () => {
     const data = await queryCollectionNavigation('recipes', ['uri', 'time', 'cuisine', 'serves', 'imgSrc']).order('date', 'DESC');
     return data[0]?.children;
