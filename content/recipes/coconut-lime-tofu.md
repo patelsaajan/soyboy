@@ -10,9 +10,9 @@ imgSrc: coconut-lime-tofu.jpg
 uri: coconut-lime-tofu
 
 ingredients:
-  - quantity: Tin
-    item: Coconut Milk
-  - quantity: 2 blocks
+  - quantity: 250ml
+    item: Coconut Cream
+  - quantity: 400g
     item: Firm tofu
   - quantity: 1/2
     item: Lime
