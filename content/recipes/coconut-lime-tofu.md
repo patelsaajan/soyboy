@@ -18,7 +18,7 @@ ingredients:
     item: Lime
   - quantity: 1
     item: Onion (any type)
-  - quantity: 1–2
+  - quantity: 1
     item: Chillies
   - quantity: 2–3 cloves
     item: Garlic
