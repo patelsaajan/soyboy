@@ -1,159 +1,136 @@
-# Turborepo starter
+# Sidequest Saajan — Payload Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+A Turborepo monorepo for building and selling Payload CMS-powered client sites. Each client gets their own app. Shared functionality lives in plugin packages that any app can install.
 
-## Using this example
+## Structure
 
-Run the following command:
+```
+apps/
+├── payload-vanilla/        # Base template — copy this when starting a new client app
+└── payload-soyboy/         # Recipe website (soyboy.saajan.dev)
 
-```sh
-npx create-turbo@latest
+packages/
+├── plugin-vanilla/         # Base plugin template — copy this when creating a new plugin
+├── plugin-recipes/         # Recipe CMS plugin (collections, fields, hooks)
+├── ui/                     # Shared React components
+├── eslint-config/          # Shared ESLint config
+└── typescript-config/      # Shared tsconfig presets
 ```
 
-## What's inside?
+### How it works
 
-This Turborepo includes the following packages/apps:
+- **Apps** are full Payload + Next.js sites. They own their own database, `.env`, and any site-specific config.
+- **Plugins** are TypeScript packages that export a Payload plugin function. They add collections, fields, hooks, and endpoints to whichever app installs them.
+- Apps consume plugins by adding them to `dependencies` and registering them in `payload.config.ts`.
 
-### Apps and Packages
+## Prerequisites
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- [Bun](https://bun.sh) `>= 1.2`
+- [Docker](https://www.docker.com) (for local Postgres)
+- Node `>= 18`
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Getting started
 
-### Utilities
+**1. Install dependencies from the monorepo root:**
 
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+bun install
 ```
 
-Without global `turbo`, use your package manager:
+**2. Start the database for the app you want to run:**
 
-```sh
-cd my-turborepo
-npx turbo build
-bun dlx turbo build
-bun exec turbo build
+```bash
+cd apps/payload-soyboy
+docker compose up postgres -d
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+**3. Set up your `.env`:**
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```bash
+cp .env.example .env  # if one exists, otherwise create it
 ```
 
-Without global `turbo`:
+Minimum required variables:
 
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
+```env
+DATABASE_URL=postgresql://postgres:payload@localhost:5432/<db-name>
+PAYLOAD_SECRET=your-random-secret
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 ```
 
-### Develop
+**4. Run the app:**
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+bun dev
 ```
 
-Without global `turbo`, use your package manager:
+Admin panel is at `http://localhost:3000/admin`.
 
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
-```
+## Creating a new client app
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+1. Copy the vanilla app:
+   ```bash
+   cp -r apps/payload-vanilla apps/<client-name>
+   ```
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+2. Update `apps/<client-name>/package.json`:
+   ```json
+   { "name": "@sidequest-saajan/<client-name>" }
+   ```
 
-```sh
-turbo dev --filter=web
-```
+3. Update `docker-compose.yml` — change `POSTGRES_DB` to match the new app name.
 
-Without global `turbo`:
+4. Create `.env` with a fresh `DATABASE_URL` and `PAYLOAD_SECRET`.
 
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
-```
+5. Install plugins the client needs by adding them to `dependencies` and registering in `payload.config.ts`.
 
-### Remote Caching
+6. Update `next.config.ts` — add any local plugins to `transpilePackages`.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Creating a new plugin
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+1. Copy the vanilla plugin:
+   ```bash
+   cp -r packages/plugin-vanilla packages/plugin-<name>
+   ```
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+2. Update `packages/plugin-<name>/package.json`:
+   ```json
+   { "name": "@sidequest-saajan/plugin-<name>" }
+   ```
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+3. Build your collections and logic in `src/collections/` and wire them into `src/index.ts`.
 
-```sh
-cd my-turborepo
-turbo login
-```
+4. Add the plugin to an app's `package.json`:
+   ```json
+   { "dependencies": { "@sidequest-saajan/plugin-<name>": "*" } }
+   ```
 
-Without global `turbo`, use your package manager:
+5. Register it in the app's `payload.config.ts`:
+   ```ts
+   import { myPlugin } from '@sidequest-saajan/plugin-<name>'
 
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
+   export default buildConfig({
+     plugins: [myPlugin({})],
+   })
+   ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+6. Add it to `transpilePackages` in `next.config.ts`:
+   ```ts
+   transpilePackages: ['@sidequest-saajan/plugin-<name>']
+   ```
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+7. Run `bun install` from the monorepo root.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Common commands
 
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+| Command | What it does |
+|---|---|
+| `bun install` | Install/link all workspace dependencies |
+| `bun dev` | Run the app in the current directory |
+| `bun run build` | Build the app |
+| `bun run generate:types` | Regenerate `payload-types.ts` after schema changes |
+| `docker compose up postgres -d` | Start the local Postgres container in the background |
+| `docker compose down` | Stop Postgres |
+| `docker compose down -v` | Stop Postgres and wipe all data |
+| `turbo build` | Build all apps and packages |
+| `turbo dev --filter=@sidequest-saajan/<app>` | Run a specific app |
