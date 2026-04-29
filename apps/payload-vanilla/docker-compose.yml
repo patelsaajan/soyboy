@@ -1,0 +1,37 @@
+# version: '3'
+
+services:
+  payload:
+    image: node:20-alpine
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app/
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && pnpm dev"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  postgres:
+    restart: always
+    image: postgres:16-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: payload-vanilla
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: payload
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d payload-vanilla"]
+      interval: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  node_modules:
