@@ -7,6 +7,7 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { recipesPlugin } from '@sidequest-saajan/plugin-recipes'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -30,5 +31,5 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [recipesPlugin({})],
 })
