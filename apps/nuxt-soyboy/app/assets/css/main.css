@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+@import "tailwindcss";
+@import "@nuxt/ui";
+@import 'swiper/css';
+@import "./typography.css";
+
+
+@theme {
+    --ui-primary     : #d20a2e;
+    --ui-bg :  #111520!important;
+    --color-primary  : #d20a2e;
+    --ui-secondary   : #457b7f;
+    --color-secondary: #F0ECD9;
+    --color-background  : #111520;
+    --color-surface: color-mix(in srgb, white 5%, #111520);
+    --color-skeleton : #0A2A40;
+    --text-heading   : 3rem;
+}
+
+
+@utility container {
+        padding-inline: 20px;
+}
+
+body {
+    background-color: var(--color-background);
+}
