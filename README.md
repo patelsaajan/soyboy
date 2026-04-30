@@ -7,11 +7,11 @@ A Turborepo monorepo for building and selling Payload CMS-powered client sites. 
 ```
 apps/
 ├── payload-vanilla/        # Base template — copy this when starting a new client app
-└── payload-soyboy/         # Recipe website (soyboy.saajan.dev)
+└── <client-name>/          # Client apps
 
 packages/
 ├── plugin-vanilla/         # Base plugin template — copy this when creating a new plugin
-├── plugin-recipes/         # Recipe CMS plugin (collections, fields, hooks)
+├── plugin-<name>/          # Feature plugins (collections, fields, hooks)
 ├── ui/                     # Shared React components
 ├── eslint-config/          # Shared ESLint config
 └── typescript-config/      # Shared tsconfig presets
@@ -25,29 +25,29 @@ packages/
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) `>= 1.2`
+- [pnpm](https://pnpm.io) `>= 9`
 - [Docker](https://www.docker.com) (for local Postgres)
-- Node `>= 18`
+- Node `>= 20.9.0`
 
 ## Getting started
 
 **1. Install dependencies from the monorepo root:**
 
 ```bash
-bun install
+pnpm install
 ```
 
 **2. Start the database for the app you want to run:**
 
 ```bash
-cd apps/payload-soyboy
+cd apps/<app-name>
 docker compose up postgres -d
 ```
 
 **3. Set up your `.env`:**
 
 ```bash
-cp .env.example .env  # if one exists, otherwise create it
+cp .env.example .env
 ```
 
 Minimum required variables:
@@ -61,7 +61,7 @@ NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 **4. Run the app:**
 
 ```bash
-bun dev
+pnpm dev
 ```
 
 Admin panel is at `http://localhost:3000/admin`.
@@ -86,6 +86,8 @@ Admin panel is at `http://localhost:3000/admin`.
 
 6. Update `next.config.ts` — add any local plugins to `transpilePackages`.
 
+7. Run `pnpm install` from the monorepo root.
+
 ## Creating a new plugin
 
 1. Copy the vanilla plugin:
@@ -102,7 +104,7 @@ Admin panel is at `http://localhost:3000/admin`.
 
 4. Add the plugin to an app's `package.json`:
    ```json
-   { "dependencies": { "@sidequest-saajan/plugin-<name>": "*" } }
+   { "dependencies": { "@sidequest-saajan/plugin-<name>": "workspace:*" } }
    ```
 
 5. Register it in the app's `payload.config.ts`:
@@ -119,18 +121,68 @@ Admin panel is at `http://localhost:3000/admin`.
    transpilePackages: ['@sidequest-saajan/plugin-<name>']
    ```
 
-7. Run `bun install` from the monorepo root.
+7. Run `pnpm install` from the monorepo root.
+
+## Deploying to Railway
+
+Each client app deploys as its own Railway service pointing at the monorepo root.
+
+### Prerequisites
+
+- A Railway project with a Postgres database service added
+- The monorepo pushed to GitHub and connected to Railway
+
+### Service settings
+
+**Root Directory:** `/`
+
+**Custom Build Command:**
+```
+pnpm --filter @sidequest-saajan/<app-name> build
+```
+
+**Pre-deploy Step** (click "+ Add pre-deploy step"):
+```
+pnpm --filter @sidequest-saajan/<app-name> payload migrate
+```
+
+**Custom Start Command:**
+```
+pnpm --filter @sidequest-saajan/<app-name> start
+```
+
+**Watch Paths** (so Railway only redeploys when relevant files change):
+```
+apps/<app-name>/**
+packages/plugin-<name>/**
+```
+
+### Environment variables
+
+Set these in the Railway service → Variables tab:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
+| `PAYLOAD_SECRET` | Any long random string |
+| `NEXT_PUBLIC_SERVER_URL` | Your Railway public URL (e.g. `https://your-app.up.railway.app`) |
+
+### Notes
+
+- `pnpm-lock.yaml` and `pnpm-workspace.yaml` must be committed — Railway uses them to install dependencies
+- The pre-deploy step runs `payload migrate` once after the build, before the new instance starts serving traffic
+- Migrations are intentionally separate from startup to prevent race conditions on scaled deployments
 
 ## Common commands
 
 | Command | What it does |
 |---|---|
-| `bun install` | Install/link all workspace dependencies |
-| `bun dev` | Run the app in the current directory |
-| `bun run build` | Build the app |
-| `bun run generate:types` | Regenerate `payload-types.ts` after schema changes |
+| `pnpm install` | Install/link all workspace dependencies |
+| `pnpm dev` | Run the app in the current directory |
+| `pnpm run build` | Build the app |
+| `pnpm run generate:types` | Regenerate `payload-types.ts` after schema changes |
 | `docker compose up postgres -d` | Start the local Postgres container in the background |
 | `docker compose down` | Stop Postgres |
 | `docker compose down -v` | Stop Postgres and wipe all data |
-| `turbo build` | Build all apps and packages |
-| `turbo dev --filter=@sidequest-saajan/<app>` | Run a specific app |
+| `pnpm --filter @sidequest-saajan/<app-name> build` | Build a specific app |
+| `pnpm --filter @sidequest-saajan/<app-name> dev` | Run a specific app |
