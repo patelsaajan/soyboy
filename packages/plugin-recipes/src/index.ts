@@ -1,5 +1,7 @@
 import type { Config } from 'payload'
+
 import { Recipes } from './collections/Recipes'
+
 
 
 
