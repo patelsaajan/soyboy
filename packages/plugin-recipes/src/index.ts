@@ -1,7 +1,8 @@
 import type { Config } from 'payload'
-
-import { Categories } from './collections/Categories'
 import { Recipes } from './collections/Recipes'
+
+
+
 
 export type RecipesPluginConfig = {
   disabled?: boolean
@@ -14,7 +15,7 @@ export const recipesPlugin =
       config.collections = []
     }
 
-    config.collections.push(Categories, Recipes)
+    config.collections.push(Recipes)
 
     if (pluginOptions.disabled) {
       return config
