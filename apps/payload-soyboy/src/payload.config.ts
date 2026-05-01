@@ -4,10 +4,12 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { recipesPlugin } from '@sidequest-saajan/plugin-recipes'
+import { config } from 'dotenv'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,5 +33,27 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [recipesPlugin({})],
+  plugins: [
+    recipesPlugin({}),
+    s3Storage({
+    enabled: !!process.env.S3_SECRET_ACCESS_KEY,
+    collections : {
+      media: true,
+    },
+    bucket: process.env.S3_BUCKET_NAME || '',
+    config: {
+      region: process.env.S3_REGION || '',
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+      }
+    }
+  }),
+  ],
+  cors: [
+    process.env.FRONTEND_URL || 'http://localhost:4000',
+    process.env.PAYLOAD_URL || 'http://localhost:3000',
+    'http://localhost:4000', // Local development,
+    'http://localhost:4001', // Preview mode
+  ].filter(Boolean),
 })
