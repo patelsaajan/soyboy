@@ -12,8 +12,12 @@ export function useCursorBanner(options: UseCursorBannerOptions = {}) {
     const text = ref('');
     const x = ref(0);
     const y = ref(0);
+    const rawX = ref(0);
+    const rawY = ref(0);
 
     function onMouseMove(event: MouseEvent) {
+        rawX.value = event.clientX;
+        rawY.value = event.clientY;
         x.value = event.clientX + offsetX;
         y.value = event.clientY + offsetY;
     }
@@ -21,6 +25,8 @@ export function useCursorBanner(options: UseCursorBannerOptions = {}) {
     function show(bannerText: string, event?: MouseEvent) {
         text.value = bannerText;
         if (event) {
+            rawX.value = event.clientX;
+            rawY.value = event.clientY;
             x.value = event.clientX + offsetX;
             y.value = event.clientY + offsetY;
         }
@@ -42,6 +48,8 @@ export function useCursorBanner(options: UseCursorBannerOptions = {}) {
         text,
         x,
         y,
+        rawX,
+        rawY,
         show,
         hide,
     };

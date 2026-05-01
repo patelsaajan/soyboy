@@ -1,7 +1,4 @@
 <template>
-    <!-- <CorePill>
-        {{ recipe.cuisine }}
-    </CorePill> -->
     <CorePill icon="ph:users-three">
         Serves {{ recipe.serves }}
     </CorePill>

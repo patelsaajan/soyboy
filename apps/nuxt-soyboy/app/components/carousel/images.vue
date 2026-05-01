@@ -7,8 +7,8 @@
             <Swiper
                 ref="swiperRef"
                 :modules="[Autoplay]"
-                :slides-per-view="'auto'"
-                :space-between="40"
+                :slides-per-view="1"
+                :space-between="16"
                 :loop="true"
                 :speed="1000"
                 :autoplay="{
@@ -16,16 +16,19 @@
                     disableOnInteraction: false,
                     pauseOnMouseEnter: true,
                 }"
+                :breakpoints="{
+                    768: { slidesPerView: 'auto', spaceBetween: 40 },
+                }"
                 @swiper="onSwiper"
                 class="w-full"
             >
                 <SwiperSlide
                     v-for="(slide, index) in slides"
                     :key="index"
-                    class="w-auto! flex! items-center!"
+                    class="md:w-auto! flex! items-center!"
                 >
                     <div
-                        class="slide-image w-30 md:w-80 rounded-2xl bg-primary bg-cover bg-center cursor-none"
+                        class="slide-image w-full md:w-80 rounded-2xl bg-primary bg-cover bg-center md:cursor-none mx-4"
                         :style="{
                             backgroundImage: `url(${slide.image})`,
                             ...getSlideHeight(slide.height),
@@ -97,11 +100,8 @@ onMounted(() => {
 });
 
 const getSlideHeight = (desktopHeight: string) => {
-    const desktop = parseInt(desktopHeight);
-    const mobile = Math.round(desktop / 8 * 3);
     return {
-        '--mobile-height': `${mobile}px`,
-        '--desktop-height': `${desktop}px`,
+        '--desktop-height': desktopHeight,
     };
 };
 
@@ -135,7 +135,7 @@ const slides: CarouselSlide[] = [
 }
 
 .slide-image {
-    height: var(--mobile-height);
+    height: 280px;
 }
 
 @media (min-width: 768px) {

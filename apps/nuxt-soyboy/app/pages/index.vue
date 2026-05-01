@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-12 md:gap-60 mt-10">
+    <div class="flex flex-col gap-12 md:gap-60 mt-10 md:mb-40">
         <div class="container mx-auto px-4 md:px-0">
             <div class="flex flex-col gap-12 md:gap-40 justify-center mt-12 md:mt-60">
                 <div class="grid grid-cols-12 gap-8 items-end">
@@ -34,10 +34,10 @@
 
                     <!-- Text and buttons on the right -->
                     <div ref="contentRef" class="col-span-12 lg:col-span-5 pb-6 opacity-0 flex flex-col items-center">
-                        <p class="text-lg text-gray-300 mb-6 max-w-md text-justify">
+                        <p class="text-lg text-gray-300 mb-6 max-w-md">
                             Soyboy (noun) is a term used to describe a man perceived as lacking traditional masculine traits, often characterised as passive or "soft."
                         </p>
-                        <div class="flex gap-4 justify-center lg:justify-start w-md ">
+                        <div class="flex gap-4 justify-center lg:justify-start">
                             <CoreButton
                                 color="primary"
                                 to="/recipes"
@@ -48,91 +48,73 @@
                                 color="secondary"
                                 to="https://www.instagram.com/soyboysaajan/"
                                 icon="ph:instagram-logo"
-
                             >
                                 Instagram
                             </CoreButton>
                         </div>
                     </div>
                 </div>
-                <RecipeDaily ref="recipeDailyRef" :disable-entrance="true" class="mt-8 w-full" />
+                <RecipeDaily ref="recipeDailyRef" :disable-entrance="true" class="w-full" />
             </div>
         </div>
-        <div
-            class="w-full h-fit flex relative mt-20"
-        >
-             <div class="absolute inset-0 pointer-events-none z-10 flex justify-between">
-                <div
-                    class="overlay hidden md:block h-full w-60 bg-gradient-to-r from-background to-transparent"
+
+        <div class="w-full h-fit flex relative">
+            <CarouselImages />
+        </div>
+
+        <div class="container mx-auto flex flex-col gap-30">
+            <!-- Story + Countdown side by side -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+                  <UiHoverText
+                    text="How long I've been a soyboy?"
+                    container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans lg:col-span-7 gap-x-4"
                 />
-                <div
-                    class="overlay hidden md:block h-full w-60 bg-gradient-to-l from-background to-transparent"
+                <p class="lg:col-span-5 text-white/60 text-lg leading-relaxed">
+                    I grew up vegetarian, so going fully vegan was never the leap most people assume. In 2018 I started eating mostly plant-based, letting myself one cheat meal a month. Every single time, I paid for it the next day. Sluggish, heavy, slow. The last one was my sister's birthday. A Chinese takeaway, usually one of my favourites, that just didn't hit the same. I couldn't justify it anymore. That was 16 June 2020.
+                </p>
+            </div>
+
+            <div class="lg:col-span-12">
+                <UiCountdown
+                    :date="new Date('2020-06-16T20:10:29Z')"
                 />
             </div>
-            <CarouselImages />
+
+            <UiImpactLedger
+                heading="What those days added up to?!"
+                :items="[
+                    { value: veganDays, title: 'animals', subtitle: 'no longer harmed', color: 'oklch(0.44 0.22 25)', prefix: '~' },
+                    { value: Math.round(veganDays * 4160 / 1000), title: 'water', subtitle: 'not consumed', color: 'oklch(0.60 0.12 228)', unit: 'k L' },
+                    { value: veganDays * 9, title: 'CO₂', subtitle: 'kept from the atmosphere', color: 'oklch(0.74 0.15 68)', unit: 'kg' },
+                    { value: Math.round(veganDays * 2.8), title: 'forest', subtitle: 'still standing', color: 'oklch(0.58 0.13 145)', unit: 'm²' },
+                ]"
+            >
+                <span class="text-xs text-white/20 text-right">
+                    Stats via <a href="https://thevegancalculator.com/" target="_blank" class="underline hover:text-white/40 transition-colors">Vegan Calculator</a>
+                </span>
+            </UiImpactLedger>
         </div>
 
         <div class="w-full">
             <UiFeatureList :features="features" />
         </div>
 
-        <div class="w-full flex flex-col items-center gap-20">
-            <UiCountdown
-                title="How long i've been a soyboy?"
-                :date="new Date('2020-06-16T20:10:29Z')"
-            />
-            <div
-                ref="statsRef"
-                class="container mx-auto opacity-0 translate-y-10"
-            >
+        <div class="w-full h-fit flex relative">
+            <div class="absolute inset-0 pointer-events-none z-10 flex justify-between">
                 <div
-                    class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start"
-                >
-                    <CoreCard 
-                        variant="outline"
-                        class="mt-8"
-                        title="CO2 Saved"
-                        :number="veganDays * 9"
-                        unit="kg"
-                        color="#C77700"
-
-                    />
-                    <CoreCard 
-                        variant="outline"
-                        class="mt-8"
-                        title="Water Saved"
-                        :number="veganDays * 4160"
-                        unit="liters"
-                        color="#0D47A1"                        
-                    />
-                    <CoreCard 
-                        variant="primary"
-                        class="mt-8"
-                        title="Animals Saved"
-                        :number="veganDays * 1"
-                        unit="lives"
-                        
-                    />
-                    <CoreCard 
-                        variant="outline"
-                        class="mt-8"
-                        title="Forest Saved"
-                        :number="(veganDays * 2.8).toFixed(0)"
-                        unit="m²"
-                        color="#1B5E20"
-                    />
-                </div>
-                <span
-                    class="text-sm text-gray-400 mt-4 block text-center"
-                >
-                Statistics sourced from <a href="https://thevegancalculator.com/" target="_blank">Vegan Calculator</a>. Try it to calculate your own impact.</span>
+                    class="overlay hidden md:block h-full w-60 bg-linear-to-r from-background to-transparent"
+                />
+                <div
+                    class="overlay hidden md:block h-full w-60 bg-linear-to-l from-background to-transparent"
+                />
             </div>
-
+            <RecipeCarousel />
         </div>
-        <div class="w-full mb-20">
+
+        <div class="w-full">
             <UiAccordion
-            title="Frequently Asked Questions"
-            :questions="questions"
+                title="Frequently Asked Questions"
+                :questions="questions"
             />
         </div>
     </div>
@@ -183,7 +165,6 @@ onMounted(() => {
 
         gsap.set(letterElements, { color: primaryColor });
 
-        // Each letter appears in red, then fades to white
         letterElements.forEach((el, index) => {
             gsap.to(el, {
                 opacity: 1,
@@ -196,7 +177,6 @@ onMounted(() => {
                         ease: 'power2.out',
                     });
 
-                    // After last letter, fade in content and recipe daily
                     if (index === allLetters.length - 1) {
                         const tl = gsap.timeline({ delay: 0.3 });
                         tl.to(contentRef.value, {
@@ -221,20 +201,7 @@ onMounted(() => {
     }
 });
 
-const { elementRef: statsRef } = useScrollEntrance({
-    threshold: 0.6,
-    onEnter: () => {
-        if (statsRef.value) {
-            gsap.to(statsRef.value, {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power2.out',
-            });
-        }
-    },
-});
 </script>
 
 <style scoped>
-</style
+</style>

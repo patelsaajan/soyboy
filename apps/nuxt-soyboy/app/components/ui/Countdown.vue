@@ -5,6 +5,7 @@
     >
         <div class="flex flex-col gap-20 w-full">
             <UiHoverText
+                    v-if="title"
                     :text="title"
                     container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans col-span-12 lg:col-span-7 gap-x-4"
                 />
@@ -45,7 +46,7 @@ const minutes = ref(0);
 const seconds = ref(0);
 
 const props = defineProps<{
-        title: string;
+        title?: string;
         date: Date;
     }>();
 

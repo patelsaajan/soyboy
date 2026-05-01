@@ -3,7 +3,7 @@
         <div class="grid grid-cols-12 gap-6">
             <div ref="leftColumn" class="hidden lg:flex col-span-3 flex-col gap-6 sticky top-20 self-start">
                <RecipeCalculator :ingredients="recipe.ingredients"/>
-                <div class="text-xl">
+                <div class="text-xl font-sans">
                     You might also like
                 </div>
                 <RecipeCard
@@ -14,13 +14,13 @@
                     :to="`/recipes/${r.uri}`"
                 />
             </div>
-            <div class="col-span-12 lg:col-span-6 flex flex-col gap-6">
+            <div class="col-span-12 lg:col-span-6 flex flex-col gap-8">
                   <NuxtImg
                     ref="heroImage"
                     :src="recipeImage"
-                    class="bg-white aspect-square w-full object-cover rounded-md lg:col-span-3">
-                    Image
-                </NuxtImg>
+                    :alt="recipe.title"
+                    class="bg-white aspect-square w-full object-cover rounded-md lg:col-span-3"
+                />
                 <h2 ref="title">{{ recipe.title }}</h2>
                 <div ref="pills" class="flex gap-3">
                     <RecipeMeta :recipe="recipe" />
@@ -28,7 +28,7 @@
                 <p ref="intro" class="text-white/80">
                     {{ recipe.intro }}
                 </p>
-                <div ref="stepsContainer" class="flex flex-col gap-8">
+                <div ref="stepsContainer" class="flex flex-col gap-8 pt-2">
                     <div
                         v-for="(step, index) in recipe.method"
                         :key="index"
@@ -60,20 +60,20 @@
                             Ingredients
                         </CoreButton>
                         <template #content>
-                            <div class="p-6 scroll-auto">
+                            <div class="p-6 max-h-[80vh] overflow-y-auto">
                                 <div class="text-xl mb-4">Ingredients</div>
                                 <RecipeCalculator :ingredients="recipe.ingredients"/>
                             </div>
                         </template>
                     </UDrawer>
                 </div>
-                <div ref="footerSection" class="flex flex-col gap-6">
+                <div ref="footerSection" class="flex flex-col gap-6 pt-4">
                     <span class="text-white/80 text-2xl font-sans">
                         Made this? Tag me on Instagram @soyboysaajan
                     </span>
                     <div class="flex flex-col gap-4">
                         <CoreButton
-                            to="https://www.instagram.com/"
+                            to="https://www.instagram.com/soyboysaajan/"
                             color="primary"
                             icon="ph:instagram-logo"
                             icon-position="right"
@@ -90,8 +90,8 @@
                     </div>
                 </div>
             </div>
-            <div ref="rightColumn" class="hidden lg:flex col-span-3 flex-col gap-6 top-20 self-start">
-                <div class="text-xl">
+            <div ref="rightColumn" class="hidden lg:flex col-span-3 flex-col gap-6 sticky top-20 self-start">
+                <div class="text-xl font-sans">
                     Nutritional Information (per 100g)
                 </div>
                 <div class="flex flex-col gap-3">

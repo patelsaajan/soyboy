@@ -1,7 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;700&display=swap');
 @import "tailwindcss";
 @import "@nuxt/ui";
 @import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
 @import "./typography.css";
 
 
@@ -15,6 +17,8 @@
     --color-surface: color-mix(in srgb, white 5%, #111520);
     --color-skeleton : #0A2A40;
     --text-heading   : 3rem;
+    --font-display   : 'Bungee', sans-serif;
+    --font-body      : 'Nunito', sans-serif;
 }
 
 
@@ -24,4 +28,6 @@
 
 body {
     background-color: var(--color-background);
+    font-family: 'Nunito', sans-serif;
+    font-kerning: normal;
 }

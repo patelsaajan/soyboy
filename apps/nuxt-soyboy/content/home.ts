@@ -4,12 +4,12 @@ export const features = {
   "items": [
     {
       "id": 1,
-      "label": "Enviromental Impact",
+      "label": "Environmental Impact",
       "title": "Better for the planet",
       "desc": "Animal agriculture is one of the biggest drivers of greenhouse gas emissions, deforestation, and water consumption. Turns out, what's on your plate matters more than you'd think. The good news? Choosing plant-based is one of the simplest swaps you can make.",
       "icon": "lucide:globe",
       "image": "/imgs/memes/groot.jpg",
-      'hoverLabel': "Groot, Guardian of the Galexy",
+      'hoverLabel': "Groot, Guardian of the Galaxy",
     },
     {
       'id': 2,

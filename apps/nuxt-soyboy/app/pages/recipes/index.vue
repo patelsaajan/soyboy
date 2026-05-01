@@ -1,7 +1,7 @@
 <template>
 
     <div
-        class="container mx-auto my-12 px-4 lg:px-0"
+        class="container mx-auto my-16 lg:my-20 px-4 lg:px-0"
     >
         <div
             class="grid grid-cols-1 lg:grid-cols-12 gap-8"
@@ -127,7 +127,7 @@
             <!-- RIGHT COLUMN - sticky div that shows the current select recipe / im feeling lucky button if none selected -->
             <div
                 ref="rightColumn"
-                class="hidden lg:flex col-span-4 h-full pt-13"
+                class="hidden lg:flex col-span-4 h-full pt-12"
             >
 
                 <div
@@ -251,7 +251,6 @@
 <script lang="ts" setup>
 import type { Recipe } from '~~/types/recipes';
 import { allRecipes } from '~~/content/recipes';
-import gochujangSatay from '~~/content/recipes/gochujang-satay-sauce';
 import lentilBolognese from '~~/content/recipes/lentil-bolognese';
 import aglioEOlio from '~~/content/recipes/aglio-e-olio';
 import spicyBeans from '~~/content/recipes/baked-beans';
@@ -358,7 +357,7 @@ function animateOutAndSelect(recipe: Recipe) {
             opacity: 0,
             x: 30,
             duration: 0.25,
-            deplay: 0.2,
+            delay: 0.2,
             ease: 'power2.in'
         });
     } else {

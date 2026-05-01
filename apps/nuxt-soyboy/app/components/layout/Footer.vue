@@ -1,7 +1,7 @@
 <template>
     <footer 
         ref="elementRef"
-        class="container mx-auto mb-16 opacity-0 translate-y-10"
+        class="container mx-auto mt-20 mb-16 opacity-0 translate-y-10"
     >
         <div class="grid grid-cols-6 gap-6">
             <div
@@ -45,7 +45,7 @@
 
         <!-- Copyright -->
         <div class="mt-6 pt-6 border-t border-white/20 text-center">
-            <p class="text-gray-400 text-sm">
+            <p class="text-white/40 text-sm">
                 &copy; {{ new Date().getFullYear() }} Soyboy Saajan. Built with plants and code.
             </p>
         </div>
