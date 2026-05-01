@@ -36,7 +36,7 @@ export default buildConfig({
   plugins: [
     recipesPlugin({}),
     s3Storage({
-    enabled: !!process.env.S3_SECRET_ACCESS_KEY,
+    enabled: !!(process.env.S3_SECRET_ACCESS_KEY && process.env.S3_BUCKET_NAME),
     collections : {
       media: true,
     },
