@@ -75,7 +75,7 @@ Admin panel is at `http://localhost:3000/admin`.
 
 2. Update `apps/<client-name>/package.json`:
    ```json
-   { "name": "@sidequest-saajan/<client-name>" }
+   { "name": "@soyboy/<client-name>" }
    ```
 
 3. Update `docker-compose.yml` — change `POSTGRES_DB` to match the new app name.
@@ -97,19 +97,19 @@ Admin panel is at `http://localhost:3000/admin`.
 
 2. Update `packages/plugin-<name>/package.json`:
    ```json
-   { "name": "@sidequest-saajan/plugin-<name>" }
+   { "name": "@soyboy/plugin-<name>" }
    ```
 
 3. Build your collections and logic in `src/collections/` and wire them into `src/index.ts`.
 
 4. Add the plugin to an app's `package.json`:
    ```json
-   { "dependencies": { "@sidequest-saajan/plugin-<name>": "workspace:*" } }
+   { "dependencies": { "@soyboy/plugin-<name>": "workspace:*" } }
    ```
 
 5. Register it in the app's `payload.config.ts`:
    ```ts
-   import { myPlugin } from '@sidequest-saajan/plugin-<name>'
+   import { myPlugin } from '@soyboy/plugin-<name>'
 
    export default buildConfig({
      plugins: [myPlugin({})],
@@ -118,7 +118,7 @@ Admin panel is at `http://localhost:3000/admin`.
 
 6. Add it to `transpilePackages` in `next.config.ts`:
    ```ts
-   transpilePackages: ['@sidequest-saajan/plugin-<name>']
+   transpilePackages: ['@soyboy/plugin-<name>']
    ```
 
 7. Run `pnpm install` from the monorepo root.
@@ -138,17 +138,17 @@ Each client app deploys as its own Railway service pointing at the monorepo root
 
 **Custom Build Command:**
 ```
-pnpm --filter @sidequest-saajan/<app-name> build
+pnpm --filter @soyboy/<app-name> build
 ```
 
 **Pre-deploy Step** (click "+ Add pre-deploy step"):
 ```
-pnpm --filter @sidequest-saajan/<app-name> payload migrate
+pnpm --filter @soyboy/<app-name> payload migrate
 ```
 
 **Custom Start Command:**
 ```
-pnpm --filter @sidequest-saajan/<app-name> start
+pnpm --filter @soyboy/<app-name> start
 ```
 
 **Watch Paths** (so Railway only redeploys when relevant files change):
@@ -184,5 +184,5 @@ Set these in the Railway service → Variables tab:
 | `docker compose up postgres -d` | Start the local Postgres container in the background |
 | `docker compose down` | Stop Postgres |
 | `docker compose down -v` | Stop Postgres and wipe all data |
-| `pnpm --filter @sidequest-saajan/<app-name> build` | Build a specific app |
-| `pnpm --filter @sidequest-saajan/<app-name> dev` | Run a specific app |
+| `pnpm --filter @soyboy/<app-name> build` | Build a specific app |
+| `pnpm --filter @soyboy/<app-name> dev` | Run a specific app |

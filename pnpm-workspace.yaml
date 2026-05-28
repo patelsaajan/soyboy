@@ -1,3 +1,11 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  esbuild: true
+  mongodb-memory-server: false
+  sharp: true
+  unrs-resolver: true
+  vue-demi: false

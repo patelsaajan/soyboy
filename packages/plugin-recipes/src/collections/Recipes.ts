@@ -79,7 +79,7 @@ export const Recipes: CollectionConfig = {
               type: 'array',
               admin: {
                 components: {
-                  RowLabel: '@sidequest-saajan/plugin-recipes/client#IngredientRowLabel',
+                  RowLabel: '@soyboy/plugin-recipes/client#IngredientRowLabel',
                 },
               },
               fields: [
@@ -110,7 +110,7 @@ export const Recipes: CollectionConfig = {
               type: 'array',
               admin: {
                 components: {
-                  RowLabel: '@sidequest-saajan/plugin-recipes/client#StepRowLabel',
+                  RowLabel: '@soyboy/plugin-recipes/client#StepRowLabel',
                 },
               },
               fields: [
