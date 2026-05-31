@@ -53,6 +53,7 @@ function mapRecipe(doc: PayloadRecipeDoc, base: string): Recipe {
     title: doc.title,
     date: doc.createdAt,
     published: doc._status === 'published',
+    highlighted: doc.highlighted ?? false,
     cuisine: doc.cuisine ?? '',
     time: doc.time ?? (doc.cookTime ? `${doc.cookTime} minutes` : ''),
     serves: doc.servings,

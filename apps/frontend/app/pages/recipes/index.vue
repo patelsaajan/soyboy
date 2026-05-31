@@ -269,11 +269,22 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const { data: allRecipes } = await useAllRecipes()
-const { data: highlights } = await useHighlightedRecipes()
-const { data: recentRecipes } = await useRecentRecipes()
 
-const featuredRecent = computed(() => recentRecipes.value?.[0] ?? null)
-const otherRecent = computed(() => recentRecipes.value?.slice(1) ?? [])
+const highlights = computed(() =>
+    [...(allRecipes.value ?? [])]
+        .filter(r => r.highlighted)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 4)
+)
+
+const recentRecipes = computed(() =>
+    [...(allRecipes.value ?? [])]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 5)
+)
+
+const featuredRecent = computed(() => recentRecipes.value[0] ?? null)
+const otherRecent = computed(() => recentRecipes.value.slice(1))
 
 const excludedUris = computed(() => {
     const uris = new Set<string>()

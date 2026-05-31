@@ -22,6 +22,7 @@ export interface Recipe {
   title: string;
   date: string;
   published: boolean;
+  highlighted: boolean;
   cuisine: string;
   time: string;
   serves: number;
