@@ -95,10 +95,11 @@
             <div ref="moreRecipesSection" class="flex flex-col gap-4">
                 <h2>More Recipes</h2>
                 <!-- Mobile: 2 column small cards -->
-                <div class="grid grid-cols-2 gap-4 lg:hidden">
+                <TransitionGroup tag="div" name="more-recipe" appear class="grid grid-cols-2 gap-4 lg:hidden">
                     <RecipeCard
-                        v-for="r in visibleMoreRecipes"
+                        v-for="(r, i) in visibleMoreRecipes"
                         :key="`more-mobile-${r.uri}`"
+                        :style="{ '--stagger': i % LOAD_MORE_COUNT }"
                         size="small"
                         class="aspect-square"
                         :recipe="r"
@@ -106,19 +107,20 @@
                         :selected="selectedRecipe?.uri === r.uri"
                         @click="selectRecipe(r)"
                     />
-                </div>
+                </TransitionGroup>
                 <!-- Desktop: 4 column small cards -->
-                <div class="hidden lg:grid grid-cols-4 gap-4">
+                <TransitionGroup tag="div" name="more-recipe" appear class="hidden lg:grid grid-cols-4 gap-4">
                     <RecipeCard
-                        v-for="r in visibleMoreRecipes"
+                        v-for="(r, i) in visibleMoreRecipes"
                         :key="`more-desktop-${r.uri}`"
+                        :style="{ '--stagger': i % LOAD_MORE_COUNT }"
                         size="small"
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
                         @click="selectRecipe(r)"
                     />
-                </div>
+                </TransitionGroup>
             </div>
 
             <!-- LOAD MORE -->
@@ -275,7 +277,6 @@ const otherRecent = computed(() => recentRecipes.value?.slice(1) ?? [])
 
 const excludedUris = computed(() => {
     const uris = new Set<string>()
-    highlights.value?.forEach(r => uris.add(r.uri))
     recentRecipes.value?.forEach(r => uris.add(r.uri))
     return uris
 })
@@ -284,11 +285,10 @@ const moreRecipes = computed(() =>
     (allRecipes.value ?? []).filter(r => !excludedUris.value.has(r.uri))
 )
 
-const DESKTOP_INITIAL = 12
-const MOBILE_INITIAL = 6
+const INITIAL_COUNT = 12
 const LOAD_MORE_COUNT = 6
 
-const shownCount = ref(DESKTOP_INITIAL)
+const shownCount = ref(INITIAL_COUNT)
 
 const visibleMoreRecipes = computed(() =>
     moreRecipes.value.slice(0, shownCount.value)
@@ -403,10 +403,6 @@ function selectRandomRecipe() {
 }
 
 onMounted(() => {
-    if (window.innerWidth < 1024) {
-        shownCount.value = MOBILE_INITIAL
-    }
-
     const mm = gsap.matchMedia();
 
     mm.add('(min-width: 1024px)', () => {
@@ -434,16 +430,10 @@ onMounted(() => {
 
         if (moreRecipesSection.value) {
             const heading = moreRecipesSection.value.querySelector('h2');
-            const cards = moreRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
 
             gsap.from(heading, {
                 opacity: 0, y: 20, duration: 0.5, ease: 'power2.out',
                 scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 85%' }
-            });
-
-            gsap.from(cards, {
-                opacity: 0, y: 30, duration: 0.5, stagger: 0.08, ease: 'power2.out',
-                scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 80%' }
             });
         }
     });
@@ -472,18 +462,24 @@ onMounted(() => {
 
         if (moreRecipesSection.value) {
             const heading = moreRecipesSection.value.querySelector('h2');
-            const cards = moreRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
 
             gsap.from(heading, {
                 opacity: 0, y: 20, duration: 0.5, ease: 'power2.out',
                 scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 85%' }
             });
-
-            gsap.from(cards, {
-                opacity: 0, y: 30, duration: 0.5, stagger: 0.08, ease: 'power2.out',
-                scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 80%' }
-            });
         }
     });
 });
 </script>
+
+<style scoped>
+.more-recipe-enter-active {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition-delay: calc(var(--stagger, 0) * 60ms);
+}
+
+.more-recipe-enter-from {
+    opacity: 0;
+    transform: translateY(16px);
+}
+</style>

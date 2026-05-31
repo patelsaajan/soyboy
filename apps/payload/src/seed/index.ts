@@ -69,6 +69,7 @@ async function seed() {
         data: {
           ...(existingDoc.featuredImage ? {} : { featuredImage: mediaDoc?.id ?? undefined }),
           highlighted: recipe.highlighted ?? false,
+          _status: 'published',
         },
       })
       console.log(`  Updated "${recipe.title}"`)
