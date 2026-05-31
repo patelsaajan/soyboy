@@ -76,9 +76,9 @@ function mapRecipe(doc: PayloadRecipeDoc, base: string): Recipe {
 export function useAllRecipes() {
   const config = useRuntimeConfig()
   const base = (config.public.payloadUrl as string).replace(/\/$/, '')
-  return useFetch<Recipe[]>(`${base}/api/recipes`, {
+  return useFetch(`${base}/api/recipes`, {
     query: { limit: 100, depth: 1 },
-    transform: (res: PayloadListResponse) => res.docs.map(doc => mapRecipe(doc, base)),
+    transform: (res: PayloadListResponse): Recipe[] => res.docs.map(doc => mapRecipe(doc, base)),
     default: (): Recipe[] => [],
     key: 'all-recipes',
   })
@@ -87,9 +87,9 @@ export function useAllRecipes() {
 export function useRecentRecipes() {
   const config = useRuntimeConfig()
   const base = (config.public.payloadUrl as string).replace(/\/$/, '')
-  return useFetch<Recipe[]>(`${base}/api/recipes`, {
+  return useFetch(`${base}/api/recipes`, {
     query: { limit: 5, depth: 1, sort: '-createdAt' },
-    transform: (res: PayloadListResponse) => res.docs.map(doc => mapRecipe(doc, base)),
+    transform: (res: PayloadListResponse): Recipe[] => res.docs.map(doc => mapRecipe(doc, base)),
     default: (): Recipe[] => [],
     key: 'recent-recipes',
   })
@@ -98,9 +98,9 @@ export function useRecentRecipes() {
 export function useHighlightedRecipes() {
   const config = useRuntimeConfig()
   const base = (config.public.payloadUrl as string).replace(/\/$/, '')
-  return useFetch<Recipe[]>(`${base}/api/recipes`, {
+  return useFetch(`${base}/api/recipes`, {
     query: { 'where[highlighted][equals]': true, limit: 4, depth: 1, sort: '-createdAt' },
-    transform: (res: PayloadListResponse) => res.docs.map(doc => mapRecipe(doc, base)),
+    transform: (res: PayloadListResponse): Recipe[] => res.docs.map(doc => mapRecipe(doc, base)),
     default: (): Recipe[] => [],
     key: 'highlighted-recipes',
   })
@@ -109,9 +109,9 @@ export function useHighlightedRecipes() {
 export function useRecipeOfTheDay() {
   const config = useRuntimeConfig()
   const base = (config.public.payloadUrl as string).replace(/\/$/, '')
-  return useFetch<Recipe | null>(`${base}/api/globals/recipe-of-the-day`, {
+  return useFetch(`${base}/api/globals/recipe-of-the-day`, {
     query: { depth: 1 },
-    transform: (res: PayloadRecipeOfTheDayResponse) =>
+    transform: (res: PayloadRecipeOfTheDayResponse): Recipe | null =>
       res.recipe ? mapRecipe(res.recipe, base) : null,
     default: (): Recipe | null => null,
     key: 'recipe-of-the-day',
@@ -121,9 +121,10 @@ export function useRecipeOfTheDay() {
 export function useRecipeBySlug(slug: string) {
   const config = useRuntimeConfig()
   const base = (config.public.payloadUrl as string).replace(/\/$/, '')
-  return useFetch<Recipe | null>(`${base}/api/recipes`, {
+  return useFetch(`${base}/api/recipes`, {
     query: { 'where[slug][equals]': slug, limit: 1, depth: 1 },
-    transform: (res: PayloadListResponse) => res.docs[0] ? mapRecipe(res.docs[0], base) : null,
+    transform: (res: PayloadListResponse): Recipe | null =>
+      res.docs[0] ? mapRecipe(res.docs[0], base) : null,
     default: (): Recipe | null => null,
     key: `recipe-${slug}`,
   })

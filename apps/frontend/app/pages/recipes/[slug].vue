@@ -113,21 +113,23 @@
 import RecipeCalculator from '~/components/recipe/Calculator.vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import type { ComponentPublicInstance } from 'vue';
+import type { ComponentPublicInstance, Ref } from 'vue';
+import type { Recipe } from '~~/types/recipes';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const route = useRoute();
 const slug = route.params.slug as string;
 
-const { data: recipe, error } = await useRecipeBySlug(slug)
+const { data: recipeData, error } = await useRecipeBySlug(slug)
 const { data: allRecipes } = await useAllRecipes()
 
-if (error.value || !recipe.value) {
+if (error.value || !recipeData.value) {
     throw createError({ statusCode: 404, statusMessage: 'Recipe not found' })
 }
 
-const recipeImage = computed(() => recipe.value!.imgSrc);
+const recipe = recipeData as Ref<Recipe>
+const recipeImage = computed(() => recipe.value.imgSrc);
 
 const relatedRecipes = computed(() =>
     (allRecipes.value ?? []).filter(r => r.uri !== slug).slice(0, 2)

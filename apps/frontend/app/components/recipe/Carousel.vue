@@ -42,6 +42,7 @@
 import Swiper from 'swiper';
 import type { SwiperOptions } from 'swiper/types';
 import { Navigation, Pagination } from 'swiper/modules';
+import type { Recipe } from '~~/types/recipes';
 
 const CAROUSEL_SLUGS = ['lentil-bolognese', 'aglio-e-olio', 'baked-beans', 'infused-tofu', 'banana-bread']
 
@@ -50,7 +51,7 @@ const { data: allRecipes } = await useAllRecipes()
 const carouselRecipes = computed(() =>
     CAROUSEL_SLUGS
         .map(slug => (allRecipes.value ?? []).find(r => r.uri === slug))
-        .filter(Boolean)
+        .filter((r): r is Recipe => Boolean(r))
 )
 
 const swiperEl = ref<HTMLElement | null>(null);

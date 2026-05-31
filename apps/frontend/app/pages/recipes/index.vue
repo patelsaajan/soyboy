@@ -44,18 +44,18 @@
             <div ref="recentRecipesSection" class="flex flex-col gap-4">
                 <h2>Recent Recipes</h2>
                 <!-- Mobile: stacked first, small grid for rest -->
-                <div v-if="recentRecipes?.length" class="flex flex-col gap-4 lg:hidden">
+                <div v-if="featuredRecent" class="flex flex-col gap-4 lg:hidden">
                     <RecipeCard
-                        :key="`recent-mobile-featured-${recentRecipes[0].uri}`"
+                        :key="`recent-mobile-featured-${featuredRecent!.uri}`"
                         size="stacked"
-                        :recipe="recentRecipes[0]"
+                        :recipe="featuredRecent!"
                         :linkable="false"
-                        :selected="selectedRecipe?.uri === recentRecipes[0].uri"
-                        @click="selectRecipe(recentRecipes[0])"
+                        :selected="selectedRecipe?.uri === featuredRecent!.uri"
+                        @click="selectRecipe(featuredRecent!)"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
-                            v-for="r in recentRecipes.slice(1)"
+                            v-for="r in otherRecent"
                             :key="`recent-mobile-${r.uri}`"
                             size="small"
                             class="aspect-square"
@@ -67,18 +67,18 @@
                     </div>
                 </div>
                 <!-- Desktop: large first + 2-col grid for rest -->
-                <div v-if="recentRecipes?.length" class="hidden lg:flex lg:flex-col gap-4">
+                <div v-if="featuredRecent" class="hidden lg:flex lg:flex-col gap-4">
                     <RecipeCard
-                        :key="`recent-desktop-featured-${recentRecipes[0].uri}`"
+                        :key="`recent-desktop-featured-${featuredRecent!.uri}`"
                         size="large"
-                        :recipe="recentRecipes[0]"
+                        :recipe="featuredRecent!"
                         :linkable="false"
-                        :selected="selectedRecipe?.uri === recentRecipes[0].uri"
-                        @click="selectRecipe(recentRecipes[0])"
+                        :selected="selectedRecipe?.uri === featuredRecent!.uri"
+                        @click="selectRecipe(featuredRecent!)"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
-                            v-for="r in recentRecipes.slice(1)"
+                            v-for="r in otherRecent"
                             :key="`recent-desktop-${r.uri}`"
                             size="regular"
                             class="h-full"
@@ -269,6 +269,9 @@ gsap.registerPlugin(ScrollTrigger);
 const { data: allRecipes } = await useAllRecipes()
 const { data: highlights } = await useHighlightedRecipes()
 const { data: recentRecipes } = await useRecentRecipes()
+
+const featuredRecent = computed(() => recentRecipes.value?.[0] ?? null)
+const otherRecent = computed(() => recentRecipes.value?.slice(1) ?? [])
 
 const excludedUris = computed(() => {
     const uris = new Set<string>()
