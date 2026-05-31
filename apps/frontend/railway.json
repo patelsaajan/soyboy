@@ -9,7 +9,7 @@
   "deploy": {
     "runtime": "V2",
     "numReplicas": 1,
-    "startCommand": "pnpm --filter @soyboy/frontend generate",
+    "startCommand": "node apps/frontend/.output/server/index.mjs",
     "limitOverride": {
       "containers": {
         "cpu": 4,

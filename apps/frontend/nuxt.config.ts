@@ -6,6 +6,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
 
+  runtimeConfig: {
+    public: {
+      payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3000',
+    },
+  },
+
   modules: [
     "@nuxt/eslint",
     "@nuxt/image",

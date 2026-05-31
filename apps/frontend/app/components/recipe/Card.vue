@@ -137,7 +137,7 @@ const props = withDefaults(defineProps<{
 });
 
 const imageSrc = computed(() => {
-    return props.recipe.imgSrc ? `/imgs/food/${props.recipe.imgSrc}` : null;
+    return props.recipe.imgSrc || null;
 });
 
 const recipeLink = computed(() => {

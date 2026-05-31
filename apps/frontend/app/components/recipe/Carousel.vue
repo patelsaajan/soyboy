@@ -21,7 +21,7 @@
             </div>
                 <div class="swiper-wrapper">
                     <div
-                        v-for="(recipe, index) in recipes"
+                        v-for="(recipe, index) in carouselRecipes"
                         :key="recipe.uri || index"
                         class="swiper-slide"
                     >
@@ -43,19 +43,15 @@ import Swiper from 'swiper';
 import type { SwiperOptions } from 'swiper/types';
 import { Navigation, Pagination } from 'swiper/modules';
 
-import lentilBolognese from '~~/content/recipes/lentil-bolognese';
-import aglioEOlio from '~~/content/recipes/aglio-e-olio';
-import spicyBeans from '~~/content/recipes/baked-beans';
-import infusedTofu from '~~/content/recipes/infused-tofu';
-import bananaBread from '~~/content/recipes/banana-bread';
+const CAROUSEL_SLUGS = ['lentil-bolognese', 'aglio-e-olio', 'baked-beans', 'infused-tofu', 'banana-bread']
 
-const recipes = [
-    lentilBolognese,
-    aglioEOlio,
-    spicyBeans,
-    infusedTofu,
-    bananaBread,
-];
+const { data: allRecipes } = await useAllRecipes()
+
+const carouselRecipes = computed(() =>
+    CAROUSEL_SLUGS
+        .map(slug => (allRecipes.value ?? []).find(r => r.uri === slug))
+        .filter(Boolean)
+)
 
 const swiperEl = ref<HTMLElement | null>(null);
 const activeIndex = ref(0);
@@ -120,12 +116,12 @@ onUnmounted(() => {
     color: white;
     z-index: 15;
 
-    @media screen and (max-width: 768px) {    
+    @media screen and (max-width: 768px) {
         display: none !important;
     }
 }
 
-:deep(.swiper-button-prev) { 
+:deep(.swiper-button-prev) {
     left: auto;
     margin-right: 66px;
 }

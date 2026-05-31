@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     recipes: Recipe;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -81,6 +82,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     recipes: RecipesSelect<false> | RecipesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -89,15 +91,27 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'recipe-of-the-day': RecipeOfTheDay;
+    'payload-jobs-stats': PayloadJobsStat;
+  };
+  globalsSelect: {
+    'recipe-of-the-day': RecipeOfTheDaySelect<false> | RecipeOfTheDaySelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      'rotate-recipe-of-the-day': TaskRotateRecipeOfTheDay;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -169,12 +183,26 @@ export interface Media {
  */
 export interface Recipe {
   id: number;
+  /**
+   * Show in the Highlights section on the recipe archive page
+   */
+  highlighted?: boolean | null;
   slug?: string | null;
+  cuisine?: string | null;
+  /**
+   * e.g. "30 minutes"
+   */
+  time?: string | null;
   cookTime?: number | null;
   servings?: number | null;
-  heroImage?: (number | null) | Media;
+  /**
+   * e.g. "aglio-e-olio.jpg"
+   */
+  imgSrc?: string | null;
+  featuredImage?: (number | null) | Media;
   title: string;
   description: string;
+  intro?: string | null;
   ingredients?:
     | {
         item: string;
@@ -187,6 +215,20 @@ export interface Recipe {
     | {
         title: string;
         description: string;
+        id?: string | null;
+      }[]
+    | null;
+  suggestions?:
+    | {
+        title: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  nutritional?:
+    | {
+        item: string;
+        value: string;
         id?: string | null;
       }[]
     | null;
@@ -210,6 +252,107 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'rotate-recipe-of-the-day';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'rotate-recipe-of-the-day') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -317,12 +460,17 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "recipes_select".
  */
 export interface RecipesSelect<T extends boolean = true> {
+  highlighted?: T;
   slug?: T;
+  cuisine?: T;
+  time?: T;
   cookTime?: T;
   servings?: T;
-  heroImage?: T;
+  imgSrc?: T;
+  featuredImage?: T;
   title?: T;
   description?: T;
+  intro?: T;
   ingredients?:
     | T
     | {
@@ -338,6 +486,20 @@ export interface RecipesSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  suggestions?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        id?: T;
+      };
+  nutritional?:
+    | T
+    | {
+        item?: T;
+        value?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -349,6 +511,38 @@ export interface RecipesSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  meta?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -384,6 +578,59 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipe-of-the-day".
+ */
+export interface RecipeOfTheDay {
+  id: number;
+  recipe: number | Recipe;
+  /**
+   * Last time the recipe was automatically rotated
+   */
+  lastRotated?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipe-of-the-day_select".
+ */
+export interface RecipeOfTheDaySelect<T extends boolean = true> {
+  recipe?: T;
+  lastRotated?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -391,6 +638,14 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRotate-recipe-of-the-day".
+ */
+export interface TaskRotateRecipeOfTheDay {
+  input?: unknown;
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

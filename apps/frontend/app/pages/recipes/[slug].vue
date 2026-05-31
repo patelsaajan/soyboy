@@ -111,7 +111,6 @@
 
 <script setup lang="ts">
 import RecipeCalculator from '~/components/recipe/Calculator.vue';
-import { getRecipeBySlug, allRecipes } from '~~/content/recipes';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { ComponentPublicInstance } from 'vue';
@@ -121,23 +120,18 @@ gsap.registerPlugin(ScrollTrigger);
 const route = useRoute();
 const slug = route.params.slug as string;
 
-const recipe = getRecipeBySlug(slug);
+const { data: recipe, error } = await useRecipeBySlug(slug)
+const { data: allRecipes } = await useAllRecipes()
 
-if (!recipe) {
-    throw createError({
-        statusCode: 404,
-        statusMessage: 'Recipe not found'
-    });
+if (error.value || !recipe.value) {
+    throw createError({ statusCode: 404, statusMessage: 'Recipe not found' })
 }
 
-const recipeImage = computed(() => `/imgs/food/${recipe.imgSrc}`);
+const recipeImage = computed(() => recipe.value!.imgSrc);
 
-// Get related recipes (excluding current recipe)
-const relatedRecipes = computed(() => {
-    return allRecipes
-        .filter(r => r.uri !== recipe.uri)
-        .slice(0, 2);
-});
+const relatedRecipes = computed(() =>
+    (allRecipes.value ?? []).filter(r => r.uri !== slug).slice(0, 2)
+);
 
 // Refs
 const leftColumn = ref<HTMLElement | null>(null);
@@ -151,7 +145,6 @@ const suggestionsContainer = ref<HTMLElement | null>(null);
 const footerSection = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-    // Collect all scroll-triggered elements
     const scrollElements: HTMLElement[] = [];
 
     if (intro.value) scrollElements.push(intro.value);
@@ -163,11 +156,9 @@ onMounted(() => {
     }
     if (footerSection.value) scrollElements.push(footerSection.value);
 
-    // Hide scroll-triggered elements initially
     gsap.set(scrollElements, { opacity: 0, y: 20 });
 
     const setupScrollTriggers = () => {
-        // Animate each element individually when it scrolls into view
         scrollElements.forEach((el) => {
             gsap.to(el, {
                 opacity: 1,
@@ -181,31 +172,26 @@ onMounted(() => {
 
     const mm = gsap.matchMedia();
 
-    // Desktop (≥1024px): full animation with column animations and delay
     mm.add('(min-width: 1024px)', () => {
         const tl = gsap.timeline({
             defaults: { ease: 'power2.out' },
             onComplete: setupScrollTriggers
         });
 
-        // First: hero, title, pills stagger in
         tl.from(heroImage.value?.$el, { opacity: 0, scale: 1.02, duration: 0.6 })
           .from(title.value, { opacity: 0, y: 20, duration: 0.5 }, '-=0.3')
           .from(pills.value?.children ?? [], { opacity: 0, y: 15, duration: 0.4, stagger: 0.08 }, '-=0.2');
 
-        // After hero/title/pills: left and right columns fade in
         tl.from(leftColumn.value, { opacity: 0, y: 20, duration: 0.6 })
           .from(rightColumn.value, { opacity: 0, y: 20, duration: 0.6 });
     });
 
-    // Mobile (<1024px): skip column animations, immediate scroll triggers
     mm.add('(max-width: 1023px)', () => {
         const tl = gsap.timeline({
             defaults: { ease: 'power2.out' },
             onComplete: setupScrollTriggers
         });
 
-        // Hero, title, pills stagger in - then immediately set up scroll triggers
         tl.from(heroImage.value?.$el, { opacity: 0, scale: 1.02, duration: 0.6 })
           .from(title.value, { opacity: 0, y: 20, duration: 0.5 }, '-=0.3')
           .from(pills.value?.children ?? [], { opacity: 0, y: 15, duration: 0.4, stagger: 0.08 }, '-=0.2');

@@ -8,7 +8,9 @@ import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import { recipesPlugin } from '@soyboy/plugin-recipes'
+import { Recipes } from './collections/Recipes'
+import { RecipeOfTheDay } from './globals/RecipeOfTheDay'
+import { rotateRecipeOfTheDayTask } from './tasks/rotateRecipeOfTheDay'
 import { config } from 'dotenv'
 
 const filename = fileURLToPath(import.meta.url)
@@ -21,7 +23,15 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Recipes],
+  globals: [RecipeOfTheDay],
+  jobs: {
+    tasks: [rotateRecipeOfTheDayTask],
+    autoRun: [{ cron: '* * * * *', queue: 'default' }],
+    access: {
+      run: ({ req }) => !!req.user,
+    },
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -34,7 +44,6 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
-    recipesPlugin({}),
     s3Storage({
     enabled: !!(process.env.S3_SECRET_ACCESS_KEY && process.env.S3_BUCKET_NAME),
     collections : {

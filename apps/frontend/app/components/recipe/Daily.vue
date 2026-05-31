@@ -13,12 +13,13 @@
         </CoreButton>
 
         <div
+            v-if="recipe"
             ref="recipeCard"
             class="recipe-card relative grid grid-cols-1 md:grid-cols-12 col-span-12 border-white border-b-0 gap-4 md:gap-8 rounded-t-md"
             :class="isOpen ? 'p-4 md:p-8 border-3' : 'p-0 border-0'"
         >
             <NuxtImg
-                :src="`/imgs/food/${recipe.imgSrc}`"
+                :src="recipe.imgSrc"
                 class="bg-white aspect-square w-full object-cover rounded-md md:col-span-3">
                 Image
             </NuxtImg>
@@ -66,7 +67,7 @@
                     v-for="n in 4"
                     :key="n"
                     class="text-white text-2xl font-sans">
-                        {{isOpen ? recipe.title : "Go on, you know you're curious!"}}
+                        {{isOpen && recipe ? recipe.title : "Go on, you know you're curious!"}}
                 </span>
             </UMarquee>
         </div>
@@ -76,17 +77,16 @@
 
 <script setup lang="ts">
 import { gsap } from 'gsap';
-import { getRecipeBySlug } from '../../../content/recipes';
 
 const props = defineProps<{
     disableEntrance?: boolean;
 }>();
 
+const { data: recipe } = await useRecipeOfTheDay()
+
 const isOpen = ref(false);
 const recipeCard = ref<HTMLElement | null>(null);
 const isAnimating = ref(false);
-
-const recipe = getRecipeBySlug('korean-satay-sauce')!;
 
 const { elementRef } = useScrollEntrance({
     threshold: 0.5,

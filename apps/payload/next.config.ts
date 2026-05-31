@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@soyboy/plugin-recipes'],
+  transpilePackages: [''],
   images: {
     localPatterns: [
       {

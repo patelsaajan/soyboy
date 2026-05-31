@@ -17,7 +17,7 @@
                 <!-- Mobile: single column stacked cards -->
                 <div class="grid grid-cols-2 gap-4 lg:hidden">
                     <RecipeCard
-                        v-for="r in recipes"
+                        v-for="r in highlights"
                         :key="`top-mobile-${r.uri}`"
                         size="stacked"
                         :recipe="r"
@@ -29,7 +29,7 @@
                 <!-- Desktop: 2 column regular cards -->
                 <div class="hidden lg:grid grid-cols-2 gap-4">
                     <RecipeCard
-                        v-for="r in recipes"
+                        v-for="r in highlights"
                         :key="`top-desktop-${r.uri}`"
                         size="regular"
                         :recipe="r"
@@ -43,19 +43,19 @@
             <!-- RECENT RECIPES -->
             <div ref="recentRecipesSection" class="flex flex-col gap-4">
                 <h2>Recent Recipes</h2>
-                <!-- Mobile: stacked for featured, small 2-col grid for rest -->
-                <div class="flex flex-col gap-4 lg:hidden">
+                <!-- Mobile: stacked first, small grid for rest -->
+                <div v-if="recentRecipes?.length" class="flex flex-col gap-4 lg:hidden">
                     <RecipeCard
-                        :key="`recent-mobile-featured-${bananaBread.uri}`"
+                        :key="`recent-mobile-featured-${recentRecipes[0].uri}`"
                         size="stacked"
-                        :recipe="bananaBread"
+                        :recipe="recentRecipes[0]"
                         :linkable="false"
-                        :selected="selectedRecipe?.uri === bananaBread.uri"
-                        @click="selectRecipe(bananaBread)"
+                        :selected="selectedRecipe?.uri === recentRecipes[0].uri"
+                        @click="selectRecipe(recentRecipes[0])"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
-                            v-for="r in recipes"
+                            v-for="r in recentRecipes.slice(1)"
                             :key="`recent-mobile-${r.uri}`"
                             size="small"
                             class="aspect-square"
@@ -66,29 +66,28 @@
                         />
                     </div>
                 </div>
-                <!-- Desktop: large featured + regular grid -->
-                <div class="hidden lg:grid grid-cols-2 grid-rows-2 gap-4">
-                    <div class="row-span-2 col-span-2">
+                <!-- Desktop: large first + 2-col grid for rest -->
+                <div v-if="recentRecipes?.length" class="hidden lg:flex lg:flex-col gap-4">
+                    <RecipeCard
+                        :key="`recent-desktop-featured-${recentRecipes[0].uri}`"
+                        size="large"
+                        :recipe="recentRecipes[0]"
+                        :linkable="false"
+                        :selected="selectedRecipe?.uri === recentRecipes[0].uri"
+                        @click="selectRecipe(recentRecipes[0])"
+                    />
+                    <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
-                            :key="`recent-desktop-featured-${bananaBread.uri}`"
-                            size="large"
+                            v-for="r in recentRecipes.slice(1)"
+                            :key="`recent-desktop-${r.uri}`"
+                            size="regular"
                             class="h-full"
-                            :recipe="bananaBread"
+                            :recipe="r"
                             :linkable="false"
-                            :selected="selectedRecipe?.uri === bananaBread.uri"
-                            @click="selectRecipe(bananaBread)"
+                            :selected="selectedRecipe?.uri === r.uri"
+                            @click="selectRecipe(r)"
                         />
                     </div>
-                    <RecipeCard
-                        v-for="r in recipes"
-                        :key="`recent-desktop-${r.uri}`"
-                        size="regular"
-                        class="h-full"
-                        :recipe="r"
-                        :linkable="false"
-                        :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
-                    />
                 </div>
             </div>
 
@@ -98,7 +97,7 @@
                 <!-- Mobile: 2 column small cards -->
                 <div class="grid grid-cols-2 gap-4 lg:hidden">
                     <RecipeCard
-                        v-for="r in recipes"
+                        v-for="r in visibleMoreRecipes"
                         :key="`more-mobile-${r.uri}`"
                         size="small"
                         class="aspect-square"
@@ -111,7 +110,7 @@
                 <!-- Desktop: 4 column small cards -->
                 <div class="hidden lg:grid grid-cols-4 gap-4">
                     <RecipeCard
-                        v-for="r in recipes"
+                        v-for="r in visibleMoreRecipes"
                         :key="`more-desktop-${r.uri}`"
                         size="small"
                         :recipe="r"
@@ -120,6 +119,18 @@
                         @click="selectRecipe(r)"
                     />
                 </div>
+            </div>
+
+            <!-- LOAD MORE -->
+            <div v-if="canLoadMore" class="flex justify-center pt-4">
+                <CoreButton
+                    color="secondary"
+                    icon="ph:arrow-down"
+                    icon-position="right"
+                    @click="loadMore"
+                >
+                    Load More
+                </CoreButton>
             </div>
 
             </div>
@@ -136,7 +147,7 @@
                     class="flex flex-col p-6 gap-6 h-fit sticky bg-surface rounded-md top-10 bottom-0"
                 >
                     <NuxtImg
-                        :src="`/imgs/food/${selectedRecipe.imgSrc}`"
+                        :src="selectedRecipe.imgSrc"
                         class="bg-white aspect-square w-full object-cover rounded-md"
                     />
 
@@ -214,7 +225,7 @@
             <div v-if="selectedRecipe" class="flex flex-col max-h-[80vh]">
                 <div class="p-6 flex flex-col gap-4 overflow-y-auto flex-1">
                     <NuxtImg
-                        :src="`/imgs/food/${selectedRecipe.imgSrc}`"
+                        :src="selectedRecipe.imgSrc"
                         class="bg-white aspect-square w-full object-cover rounded-md"
                     />
 
@@ -250,18 +261,43 @@
 
 <script lang="ts" setup>
 import type { Recipe } from '~~/types/recipes';
-import { allRecipes } from '~~/content/recipes';
-import lentilBolognese from '~~/content/recipes/lentil-bolognese';
-import aglioEOlio from '~~/content/recipes/aglio-e-olio';
-import spicyBeans from '~~/content/recipes/baked-beans';
-import infusedTofu from '~~/content/recipes/infused-tofu';
-import bananaBread from '~~/content/recipes/banana-bread';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const recipes = [lentilBolognese, aglioEOlio, spicyBeans, infusedTofu];
+const { data: allRecipes } = await useAllRecipes()
+const { data: highlights } = await useHighlightedRecipes()
+const { data: recentRecipes } = await useRecentRecipes()
+
+const excludedUris = computed(() => {
+    const uris = new Set<string>()
+    highlights.value?.forEach(r => uris.add(r.uri))
+    recentRecipes.value?.forEach(r => uris.add(r.uri))
+    return uris
+})
+
+const moreRecipes = computed(() =>
+    (allRecipes.value ?? []).filter(r => !excludedUris.value.has(r.uri))
+)
+
+const DESKTOP_INITIAL = 12
+const MOBILE_INITIAL = 6
+const LOAD_MORE_COUNT = 6
+
+const shownCount = ref(DESKTOP_INITIAL)
+
+const visibleMoreRecipes = computed(() =>
+    moreRecipes.value.slice(0, shownCount.value)
+)
+
+const canLoadMore = computed(() =>
+    shownCount.value < moreRecipes.value.length
+)
+
+function loadMore() {
+    shownCount.value += LOAD_MORE_COUNT
+}
 
 const selectedRecipe = ref<Recipe | null>(null);
 const drawerOpen = ref(false);
@@ -275,7 +311,6 @@ const recipePreview = ref<HTMLElement | null>(null);
 const ingredientsContainer = ref<HTMLElement | null>(null);
 const ingredientsOpen = ref(false);
 
-// Animate ingredients toggle
 watch(ingredientsOpen, (isOpen) => {
     if (!ingredientsContainer.value) return;
 
@@ -298,14 +333,12 @@ function selectRecipe(recipe: Recipe) {
     animateOutAndSelect(recipe);
 }
 
-// GSAP transition when recipe changes
 watch(selectedRecipe, (newRecipe) => {
     if (!newRecipe) return;
 
     nextTick(() => {
         if (!recipePreview.value) return;
 
-        // Slide in from left (works for first selection and switching)
         gsap.fromTo(recipePreview.value,
             { opacity: 0, x: -30 },
             { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' }
@@ -313,11 +346,9 @@ watch(selectedRecipe, (newRecipe) => {
     });
 });
 
-// Animate out before recipe changes
 function animateOutAndSelect(recipe: Recipe) {
     const isMobile = window.innerWidth < 1024;
 
-    // If same recipe is clicked, just reopen drawer on mobile if closed
     if (selectedRecipe.value?.uri === recipe.uri) {
         if (isMobile && !drawerOpen.value) {
             drawerOpen.value = true;
@@ -325,7 +356,6 @@ function animateOutAndSelect(recipe: Recipe) {
         return;
     }
 
-    // Only open drawer on mobile
     if (isMobile) {
         drawerOpen.value = true;
         selectedRecipe.value = recipe;
@@ -339,7 +369,6 @@ function animateOutAndSelect(recipe: Recipe) {
             }
         });
 
-        // First close ingredients if open
         if (ingredientsOpen.value && ingredientsContainer.value) {
             tl.to(ingredientsContainer.value, {
                 height: 0,
@@ -352,7 +381,6 @@ function animateOutAndSelect(recipe: Recipe) {
             });
         }
 
-        // Then fade out sidebar
         tl.to(recipePreview.value, {
             opacity: 0,
             x: 30,
@@ -366,18 +394,21 @@ function animateOutAndSelect(recipe: Recipe) {
 }
 
 function selectRandomRecipe() {
-    const randomIndex = Math.floor(Math.random() * allRecipes.length);
-    selectedRecipe.value = allRecipes[randomIndex] ?? null;
+    const all = allRecipes.value ?? []
+    const randomIndex = Math.floor(Math.random() * all.length);
+    selectedRecipe.value = all[randomIndex] ?? null;
 }
 
 onMounted(() => {
+    if (window.innerWidth < 1024) {
+        shownCount.value = MOBILE_INITIAL
+    }
+
     const mm = gsap.matchMedia();
 
-    // Desktop animations
     mm.add('(min-width: 1024px)', () => {
         const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
-        // Top recipes first
         if (topRecipesSection.value) {
             const heading = topRecipesSection.value.querySelector('h2');
             const cards = topRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
@@ -386,12 +417,10 @@ onMounted(() => {
               .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
         }
 
-        // Right column fade in
         if (rightColumn.value) {
             tl.from(rightColumn.value, { opacity: 0, x: 20, duration: 0.6 }, '-=0.3');
         }
 
-        // Recent recipes after a delay
         if (recentRecipesSection.value) {
             const heading = recentRecipesSection.value.querySelector('h2');
             const cards = recentRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
@@ -400,35 +429,25 @@ onMounted(() => {
               .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
         }
 
-        // Scroll-triggered: More recipes
         if (moreRecipesSection.value) {
             const heading = moreRecipesSection.value.querySelector('h2');
             const cards = moreRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
 
             gsap.from(heading, {
-                opacity: 0,
-                y: 20,
-                duration: 0.5,
-                ease: 'power2.out',
+                opacity: 0, y: 20, duration: 0.5, ease: 'power2.out',
                 scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 85%' }
             });
 
             gsap.from(cards, {
-                opacity: 0,
-                y: 30,
-                duration: 0.5,
-                stagger: 0.08,
-                ease: 'power2.out',
+                opacity: 0, y: 30, duration: 0.5, stagger: 0.08, ease: 'power2.out',
                 scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 80%' }
             });
         }
     });
 
-    // Mobile animations
     mm.add('(max-width: 1023px)', () => {
         const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
-        // Top recipes first
         if (topRecipesSection.value) {
             const heading = topRecipesSection.value.querySelector('h2');
             const cards = topRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
@@ -437,7 +456,6 @@ onMounted(() => {
               .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
         }
 
-        // Recent recipes after a delay
         if (recentRecipesSection.value) {
             const heading = recentRecipesSection.value.querySelector('h2');
             const mobileContent = recentRecipesSection.value.querySelector('.flex.flex-col.gap-4.lg\\:hidden');
@@ -449,25 +467,17 @@ onMounted(() => {
             }
         }
 
-        // Scroll-triggered: More recipes
         if (moreRecipesSection.value) {
             const heading = moreRecipesSection.value.querySelector('h2');
             const cards = moreRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
 
             gsap.from(heading, {
-                opacity: 0,
-                y: 20,
-                duration: 0.5,
-                ease: 'power2.out',
+                opacity: 0, y: 20, duration: 0.5, ease: 'power2.out',
                 scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 85%' }
             });
 
             gsap.from(cards, {
-                opacity: 0,
-                y: 30,
-                duration: 0.5,
-                stagger: 0.08,
-                ease: 'power2.out',
+                opacity: 0, y: 30, duration: 0.5, stagger: 0.08, ease: 'power2.out',
                 scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 80%' }
             });
         }
