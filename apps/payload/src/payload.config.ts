@@ -22,6 +22,9 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      icons: [{ rel: 'icon', url: '/favicon.svg', type: 'image/svg+xml' }],
+    },
   },
   collections: [Users, Media, Recipes],
   globals: [RecipeOfTheDay],
