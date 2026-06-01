@@ -95,7 +95,7 @@
             <div ref="moreRecipesSection" class="flex flex-col gap-4">
                 <h2>More Recipes</h2>
                 <!-- Mobile: 2 column small cards -->
-                <TransitionGroup tag="div" name="more-recipe" appear class="grid grid-cols-2 gap-4 lg:hidden">
+                <TransitionGroup tag="div" name="more-recipe" class="grid grid-cols-2 gap-4 lg:hidden">
                     <RecipeCard
                         v-for="(r, i) in visibleMoreRecipes"
                         :key="`more-mobile-${r.uri}`"
@@ -109,7 +109,7 @@
                     />
                 </TransitionGroup>
                 <!-- Desktop: 4 column small cards -->
-                <TransitionGroup tag="div" name="more-recipe" appear class="hidden lg:grid grid-cols-4 gap-4">
+                <TransitionGroup tag="div" name="more-recipe" class="hidden lg:grid grid-cols-4 gap-4">
                     <RecipeCard
                         v-for="(r, i) in visibleMoreRecipes"
                         :key="`more-desktop-${r.uri}`"
@@ -419,69 +419,78 @@ function selectRandomRecipe() {
 
 onMounted(() => {
     const mm = gsap.matchMedia();
+    const ease = 'power2.out';
 
     mm.add('(min-width: 1024px)', () => {
-        const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-
+        // 1. Highlights
         if (topRecipesSection.value) {
             const heading = topRecipesSection.value.querySelector('h2');
             const cards = topRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
-
-            tl.from(heading, { opacity: 0, y: 20, duration: 0.5 })
-              .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
+            gsap.timeline({ scrollTrigger: { trigger: topRecipesSection.value, start: 'top 82%', once: true } })
+                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
+                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.2');
         }
 
+        // 2. Sidebar
         if (rightColumn.value) {
-            tl.from(rightColumn.value, { opacity: 0, x: 20, duration: 0.6 }, '-=0.3');
+            gsap.from(rightColumn.value, {
+                opacity: 0, x: 20, duration: 0.6, ease,
+                scrollTrigger: { trigger: rightColumn.value, start: 'top 82%', once: true }
+            });
         }
 
+        // 3. Recent Recipes
         if (recentRecipesSection.value) {
             const heading = recentRecipesSection.value.querySelector('h2');
-            const cards = recentRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
-
-            tl.from(heading, { opacity: 0, y: 20, duration: 0.5 }, '-=0.2')
-              .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
+            const featuredCard = recentRecipesSection.value.querySelector('.hidden.lg\\:flex > *:first-child');
+            const gridCards = recentRecipesSection.value.querySelectorAll('.hidden.lg\\:flex .grid > *');
+            const tl = gsap.timeline({ scrollTrigger: { trigger: recentRecipesSection.value, start: 'top 82%', once: true } });
+            tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
+            if (featuredCard) tl.from(featuredCard, { opacity: 0, y: 30, duration: 0.5, ease }, '-=0.2');
+            if (gridCards.length) tl.from(gridCards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.2');
         }
 
+        // 4. More Recipes
         if (moreRecipesSection.value) {
             const heading = moreRecipesSection.value.querySelector('h2');
-
-            gsap.from(heading, {
-                opacity: 0, y: 20, duration: 0.5, ease: 'power2.out',
-                scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 85%' }
-            });
+            const cards = moreRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
+            gsap.timeline({ scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 82%', once: true } })
+                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
+                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.05, ease }, '-=0.2');
         }
     });
 
     mm.add('(max-width: 1023px)', () => {
-        const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-
+        // 1. Highlights
         if (topRecipesSection.value) {
             const heading = topRecipesSection.value.querySelector('h2');
             const cards = topRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
-
-            tl.from(heading, { opacity: 0, y: 20, duration: 0.5 })
-              .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
+            gsap.timeline({ scrollTrigger: { trigger: topRecipesSection.value, start: 'top 82%', once: true } })
+                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
+                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.2');
         }
 
+        // 2. Recent Recipes
         if (recentRecipesSection.value) {
             const heading = recentRecipesSection.value.querySelector('h2');
             const mobileContent = recentRecipesSection.value.querySelector('.flex.flex-col.gap-4.lg\\:hidden');
-
-            tl.from(heading, { opacity: 0, y: 20, duration: 0.5 }, '+=0.2');
-
+            const tl = gsap.timeline({ scrollTrigger: { trigger: recentRecipesSection.value, start: 'top 82%', once: true } });
+            tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
             if (mobileContent) {
-                tl.from(mobileContent.children, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1 }, '-=0.2');
+                const featuredCard = mobileContent.children[0];
+                const gridCards = mobileContent.querySelectorAll('.grid > *');
+                if (featuredCard) tl.from(featuredCard, { opacity: 0, y: 30, duration: 0.5, ease }, '-=0.2');
+                if (gridCards.length) tl.from(gridCards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.3');
             }
         }
 
+        // 3. More Recipes
         if (moreRecipesSection.value) {
             const heading = moreRecipesSection.value.querySelector('h2');
-
-            gsap.from(heading, {
-                opacity: 0, y: 20, duration: 0.5, ease: 'power2.out',
-                scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 85%' }
-            });
+            const cards = moreRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
+            gsap.timeline({ scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 82%', once: true } })
+                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
+                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.05, ease }, '-=0.2');
         }
     });
 });
