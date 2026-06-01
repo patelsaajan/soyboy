@@ -148,9 +148,11 @@
                     ref="recipePreview"
                     class="flex flex-col p-6 gap-6 h-fit sticky bg-surface rounded-md top-10 bottom-0"
                 >
-                    <NuxtImg
+                    <UiImage
+                        :key="selectedRecipe.uri"
                         :src="selectedRecipe.imgSrc"
-                        class="bg-white aspect-square w-full object-cover rounded-md"
+                        container-class="aspect-square w-full rounded-md"
+                        class="object-cover"
                     />
 
                     <h3 class="font-sans">{{ selectedRecipe.title }}</h3>
@@ -226,9 +228,11 @@
         <template #content>
             <div v-if="selectedRecipe" class="flex flex-col max-h-[80vh]">
                 <div class="p-6 flex flex-col gap-4 overflow-y-auto flex-1">
-                    <NuxtImg
+                    <UiImage
+                        :key="`drawer-${selectedRecipe.uri}`"
                         :src="selectedRecipe.imgSrc"
-                        class="bg-white aspect-square w-full object-cover rounded-md"
+                        container-class="aspect-square w-full rounded-md"
+                        class="object-cover"
                     />
 
                     <h3 class="font-sans">{{ selectedRecipe.title }}</h3>

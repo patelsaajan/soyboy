@@ -7,10 +7,11 @@
         <!-- LARGE: Horizontal with 40/60 split -->
         <template v-if="size === 'large'">
             <div class="relative z-10 flex gap-6 h-full">
-                <NuxtImg
+                <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
-                    class="w-2/5 h-full rounded-md shrink-0 object-cover"
+                    container-class="w-2/5 h-full rounded-md shrink-0"
+                    class="object-cover"
                 />
                 <div
                     v-else
@@ -31,10 +32,11 @@
         <!-- REGULAR: Horizontal rectangle with image left, text right -->
         <template v-else-if="size === 'regular'">
             <div class="relative z-10 flex gap-6 h-full">
-                <NuxtImg
+                <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
-                    class="w-40 h-full rounded-md shrink-0 object-cover"
+                    container-class="w-40 h-full rounded-md shrink-0"
+                    class="object-cover"
                 />
                 <div
                     v-else
@@ -55,10 +57,11 @@
         <!-- SMALL: Image with title overlay at bottom -->
         <template v-else-if="size === 'small'">
             <div class="relative z-10 h-full w-full">
-                <NuxtImg
+                <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
-                    class="w-full h-full object-cover rounded-md"
+                    container-class="w-full h-full rounded-md"
+                    class="object-cover"
                 />
                 <div
                     v-else
@@ -73,10 +76,11 @@
         <!-- STACKED: Vertical layout with image on top, text below -->
         <template v-else-if="size === 'stacked'">
             <div class="relative z-10 flex flex-col gap-3">
-                <NuxtImg
+                <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
-                    class="w-full aspect-square rounded-md object-cover"
+                    container-class="w-full aspect-square rounded-md"
+                    class="object-cover"
                 />
                 <div
                     v-else
@@ -95,10 +99,11 @@
         <template v-else>
             <div class="relative z-10 p-3">
                 <div class="flex gap-4">
-                    <NuxtImg
+                    <UiImage
                         v-if="imageSrc"
                         :src="imageSrc"
-                        class="w-24 h-24 rounded-md shrink-0 object-cover"
+                        container-class="w-24 h-24 rounded-md shrink-0"
+                        class="object-cover"
                     />
                     <div
                         v-else

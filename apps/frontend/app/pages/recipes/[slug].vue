@@ -15,11 +15,12 @@
                 />
             </div>
             <div class="col-span-12 lg:col-span-6 flex flex-col gap-8">
-                  <NuxtImg
+                  <UiImage
                     ref="heroImage"
                     :src="recipeImage"
                     :alt="recipe.title"
-                    class="bg-white aspect-square w-full object-cover rounded-md lg:col-span-3"
+                    container-class="aspect-square w-full rounded-md lg:col-span-3"
+                    class="object-cover"
                 />
                 <h2 ref="title">{{ recipe.title }}</h2>
                 <div ref="pills" class="flex gap-3">
