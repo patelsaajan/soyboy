@@ -8,16 +8,16 @@
   },
   "deploy": {
     "runtime": "V2",
-    "numReplicas": 1,
+    "numReplicas": 0,
     "preDeployCommand": ["pnpm --filter @soyboy/payload payload migrate"],
-    "startCommand": "pnpm --filter @soyboy/payload start",
+    "startCommand": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=512\" pnpm --filter @soyboy/payload start",
     "limitOverride": {
       "containers": {
         "cpu": 2,
         "memoryBytes": 2000000000
       }
     },
-    "sleepApplication": false,
+    "sleepApplication": true,
     "useLegacyStacker": false,
     "ipv6EgressEnabled": false,
     "multiRegionConfig": {
