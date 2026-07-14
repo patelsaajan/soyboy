@@ -62,12 +62,48 @@ R2_ENDPOINT="https://<account>.r2.cloudflarestorage.com" \
 # Local smoke test against the Worker runtime
 pnpm --filter @soyboy/payload cf:preview
 
-# Deploy
+# Deploy (build + deploy from your machine)
 pnpm --filter @soyboy/payload cf:deploy
 ```
 
-The build runs `next build --webpack` (Turbopack can't externalize the native
-deps OpenNext needs) then `opennextjs-cloudflare build`.
+`cf:build` runs `next build` (Turbopack) then `opennextjs-cloudflare build`.
+Turbopack is required: the webpack build mangles `pg-cloudflare`'s
+`import('cloudflare:sockets')`, breaking the Postgres driver at runtime.
+
+## Git-connected builds (auto-deploy on push)
+
+Configured in the Cloudflare dashboard (Workers → the Worker → Settings →
+Builds). Connect the GitHub repo, then set:
+
+| Setting | Value |
+|---|---|
+| **Root directory** | `apps/payload` |
+| **Build command** | `pnpm cf:ci:build` |
+| **Deploy command** | `pnpm cf:ci:deploy` |
+| **Build cache** | **On** |
+
+- `cf:ci:build` = `generate:importmap` (regenerates the admin import map) → `cf:build`.
+- `cf:ci:deploy` = `payload migrate` (applies pending migrations to Neon) →
+  `wrangler deploy`. Migrations run before the new Worker goes live, so the code
+  never hits an old schema. `payload migrate` is idempotent — safe every deploy.
+
+**Root directory (not `--filter`):** `wrangler deploy` finds `wrangler.jsonc` by
+CWD, and the `main`/`assets` paths inside it are relative — both resolve only
+when the command runs *in* `apps/payload`. pnpm still finds the workspace root by
+walking up, so the install + patch still work.
+
+### Build environment variables (dashboard → Build → Variables)
+
+`cf:ci:build`/`cf:ci:deploy` boot the Payload config, and `payload migrate`
+connects to Neon, so set these as **build** vars (separate from the runtime
+`wrangler secret`s):
+
+| Var | Value |
+|---|---|
+| `DATABASE_URL` | Neon **direct** connection string (no `-pooler`) — for migrations |
+| `PAYLOAD_SECRET` | same value as the runtime secret |
+
+(S3/R2 vars aren't needed at build — the storage plugin just stays disabled.)
 
 ## After deploy
 
