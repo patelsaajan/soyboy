@@ -2,7 +2,7 @@
  * Media proxy — serves Payload uploads from the frontend origin so the Payload
  * URL never appears in the browser. On Cloudflare the bytes come from Payload
  * over the BACKEND service binding (internal, no public hop); locally it falls
- * back to HTTP via payloadUrl.
+ * back to HTTP via payloadUrl. Responses are cached long-lived and immutable.
  */
 export default defineEventHandler(async (event) => {
   const path = getRouterParam(event, 'path')
