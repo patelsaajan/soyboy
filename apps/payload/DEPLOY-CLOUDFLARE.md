@@ -81,6 +81,10 @@ Builds). Connect the GitHub repo, then set:
 | **Build command** | `pnpm cf:ci:build` |
 | **Deploy command** | `pnpm cf:ci:deploy` |
 | **Build cache** | **On** |
+| **Build watch path** | `apps/payload/*` (only rebuild when the app changes) |
+
+Note: with a watch path set, an *empty* commit won't trigger a build — the push
+must change a file under the watch path.
 
 - `cf:ci:build` = `generate:importmap` (regenerates the admin import map) → `cf:build`.
 - `cf:ci:deploy` = `payload migrate` (applies pending migrations to Neon) →
