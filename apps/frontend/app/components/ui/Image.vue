@@ -4,7 +4,8 @@
             <div v-if="!loaded" class="absolute inset-0 animate-pulse bg-white/8" />
         </Transition>
         <NuxtImg
-            sizes="100vw"
+            format="auto"
+            sizes="xs:100vw sm:100vw md:100vw lg:100vw xl:100vw xxl:100vw"
             v-bind="$attrs"
             class="w-full h-full transition-opacity duration-300"
             :class="loaded ? 'opacity-100' : 'opacity-0'"

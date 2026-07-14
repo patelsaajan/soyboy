@@ -36,10 +36,9 @@ export default defineNuxtConfig({
   image: {
     provider: 'cloudflare',
     cloudflare: { baseURL: 'https://soyboy.saajanpatel.co.uk' },
-    // Convert to modern formats + cap quality by default so every image routes
-    // through Transformations (huge byte savings vs the full-res png/jpeg
-    // originals). Per-image `sizes`/`width` drive the actual resize.
-    format: ['avif', 'webp'],
+    // Default quality for every transformed image. Format conversion is driven
+    // by format="auto" on NuxtImg (→ f=auto, Cloudflare serves AVIF/WebP per
+    // the browser's Accept header) and resizing by the `sizes` prop.
     quality: 80,
   },
 
