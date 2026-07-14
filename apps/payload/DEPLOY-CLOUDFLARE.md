@@ -1,3 +1,5 @@
+<!-- Payload deploys to Cloudflare Workers via Git-connected builds from main. -->
+
 # Deploying Payload to Cloudflare Workers (Neon + Hyperdrive + R2)
 
 The Payload app runs on Cloudflare Workers via the OpenNext adapter. Postgres is
