@@ -4,6 +4,15 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-04-01",
   "compatibility_flags": ["nodejs_compat"],
+  // Single front door: the CMS is only reachable at its custom domain
+  // (cms.soyboy.saajanpatel.co.uk) — no duplicate *.workers.dev origin serving
+  // the admin + API. The frontend reaches it via the BACKEND service binding.
+  "workers_dev": false,
+  // Payload makes several sequential DB round-trips per request; smart placement
+  // runs the Worker near Hyperdrive/Neon (eu-west-2) instead of near the visitor.
+  "placement": { "mode": "smart" },
+  // Persisted logs + metrics in the dashboard (not just live tail).
+  "observability": { "enabled": true },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

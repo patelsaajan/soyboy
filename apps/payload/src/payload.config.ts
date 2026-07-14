@@ -58,6 +58,9 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor(),
+  // The frontend consumes REST over the service binding; GraphQL is unused, so
+  // disable it to shrink the public attack surface (and the bundle).
+  graphQL: { disable: true },
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

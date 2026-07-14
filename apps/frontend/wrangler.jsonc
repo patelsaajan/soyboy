@@ -12,6 +12,10 @@
   "routes": [
     { "pattern": "soyboy.saajanpatel.co.uk", "custom_domain": true }
   ],
+  // Single front door (workers.dev already 404s under global_fetch_strictly_public).
+  "workers_dev": false,
+  // Persisted logs + metrics in the dashboard (not just live tail).
+  "observability": { "enabled": true },
   "assets": {
     "directory": "./.output/public",
     "binding": "ASSETS"

@@ -22,6 +22,16 @@ export default defineNuxtConfig({
   // Stale-while-revalidate: serve cached HTML instantly and revalidate in the
   // background, so most page views skip a full SSR render.
   routeRules: {
+    // Baseline security headers on every response.
+    '/**': {
+      headers: {
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+      },
+    },
     '/':            { swr: 60 * 60 * 24 },      // home — revalidate daily
     '/recipes':     { swr: 60 * 60 * 24 * 7 },  // recipes index — weekly
     '/recipes/**':  { swr: 60 * 60 * 24 * 7 },  // recipe pages — weekly
