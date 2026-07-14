@@ -15,6 +15,10 @@ export default defineNuxtConfig({
     },
   },
 
+  nitro: {
+    preset: 'cloudflare_module',
+  },
+
   runtimeConfig: {
     payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3000',
   },

@@ -9,3 +9,4 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   vue-demi: false
+  workerd: true
