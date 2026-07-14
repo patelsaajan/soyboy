@@ -3,7 +3,15 @@
   "name": "soyboy-frontend",
   "main": "./.output/server/index.mjs",
   "compatibility_date": "2026-04-01",
-  "compatibility_flags": ["nodejs_compat"],
+  // global_fetch_strictly_public: route the Worker's own fetches through the
+  // public edge instead of looping back internally, so same-zone requests (the
+  // frontend + payload share the saajanpatel.co.uk zone) don't fail with
+  // Cloudflare error 1042.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Custom domain — also the zone that runs Image Transformations.
+  "routes": [
+    { "pattern": "soyboy.saajanpatel.co.uk", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./.output/public",
     "binding": "ASSETS"
