@@ -28,14 +28,14 @@ export default defineNuxtConfig({
   },
 
   // Image optimization via Cloudflare Transformations (resize + WebP/AVIF at the
-  // edge, no sharp). REQUIRES the frontend on a Cloudflare custom domain with
-  // Image Transformations enabled (dashboard → Images → Transformations). It does
-  // NOT work on *.workers.dev. Until then this is off and NuxtImg passes images
-  // through full-size. Flip it on once the domain is live:
-  // image: {
-  //   provider: 'cloudflare',
-  //   cloudflare: { baseURL: 'https://<your-frontend-domain>' },
-  // },
+  // edge, no sharp). Needs Image Transformations enabled on the zone
+  // (dashboard → Images → Transformations) and the frontend served from this
+  // domain. NuxtImg rewrites srcs to /cdn-cgi/image/<opts>/<src>, and the source
+  // it fetches is the hidden media proxy — so images stay private.
+  image: {
+    provider: 'cloudflare',
+    cloudflare: { baseURL: 'https://soyboy.saajanpatel.co.uk' },
+  },
 
   runtimeConfig: {
     payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3000',

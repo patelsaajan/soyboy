@@ -4,6 +4,12 @@
   "main": "./.output/server/index.mjs",
   "compatibility_date": "2026-04-01",
   "compatibility_flags": ["nodejs_compat"],
+  // Serve the site from the custom domain (also the zone that runs Image
+  // Transformations for /cdn-cgi/image/...). Requires the saajanpatel.co.uk zone
+  // to be on this Cloudflare account.
+  "routes": [
+    { "pattern": "soyboy.saajanpatel.co.uk", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./.output/public",
     "binding": "ASSETS"
