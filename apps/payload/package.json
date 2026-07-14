@@ -18,7 +18,7 @@
     "cf:preview": "pnpm cf:build && opennextjs-cloudflare preview",
     "cf:deploy": "pnpm cf:build && opennextjs-cloudflare deploy",
     "cf:ci:build": "pnpm generate:importmap && pnpm cf:build",
-    "cf:ci:deploy": "cross-env NODE_OPTIONS=--no-deprecation payload migrate && wrangler deploy",
+    "cf:ci:deploy": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload migrate && wrangler deploy",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/index.ts",
     "reset-admin": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/reset-admin.ts",
     "test": "pnpm run test:int && pnpm run test:e2e",
