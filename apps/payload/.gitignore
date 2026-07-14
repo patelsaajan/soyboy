@@ -56,3 +56,8 @@ node_modules/
 
 # bun
 bun.lock
+
+# cloudflare / opennext build output
+/.open-next/
+.wrangler/
+cloudflare-env.d.ts
