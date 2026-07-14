@@ -106,10 +106,21 @@ export type PayloadRecipeOfTheDayResponse = {
 }
 
 export function mapRecipe(doc: PayloadRecipeDoc): Recipe {
-  // Keep media URLs RELATIVE so the browser loads them from the frontend origin,
-  // where /api/media/file/** is proxied to Payload over the service binding.
-  // This keeps the Payload URL out of the page entirely.
-  const heroUrl = doc.featuredImage?.url ?? null
+  // Normalize media URLs to a path relative to the frontend origin, where
+  // /api/media/file/** is proxied to Payload over the service binding. Payload
+  // may return an ABSOLUTE url (its serverURL / custom domain), so strip the
+  // origin — otherwise the Payload domain leaks into the page and the browser
+  // tries to load images from a host it can't reach.
+  const rawUrl = doc.featuredImage?.url
+  let heroUrl: string | null = null
+  if (rawUrl) {
+    try {
+      const u = new URL(rawUrl, 'http://frontend')
+      heroUrl = u.pathname + u.search
+    } catch {
+      heroUrl = rawUrl
+    }
+  }
   return {
     title: doc.title,
     date: doc.createdAt,
