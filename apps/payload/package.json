@@ -20,6 +20,7 @@
     "cf:ci:build": "pnpm generate:importmap && pnpm cf:build",
     "cf:ci:deploy": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload migrate && wrangler deploy",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/index.ts",
+    "db:clear-dev-marker": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation tsx ./src/seed/clear-dev-migration.ts",
     "reset-admin": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/reset-admin.ts",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
