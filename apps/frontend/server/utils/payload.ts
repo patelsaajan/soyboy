@@ -5,14 +5,32 @@ import type { Recipe } from '~~/types/recipes'
 type ServiceBinding = { fetch: (request: Request) => Promise<Response> }
 
 /**
- * The public Payload base URL, used to build absolute image URLs the browser
- * can load directly. This stays the public origin even when API calls go
- * through the service binding — the binding only serves the SSR fetch, not the
- * user's browser.
+ * Payload base URL. Only used as a server-side fallback when the BACKEND service
+ * binding isn't present (local dev / non-Workers hosts). In production the
+ * binding handles everything, so this URL is never sent to the browser — the
+ * Payload origin stays private.
  */
 export function payloadBase(): string {
   const { payloadUrl } = useRuntimeConfig()
   return (payloadUrl as string).replace(/\/$/, '')
+}
+
+/** The BACKEND service binding, if we're running on Cloudflare Workers. */
+function backendBinding(event: H3Event): ServiceBinding | undefined {
+  return (event.context as { cloudflare?: { env?: Record<string, unknown> } })
+    .cloudflare?.env?.BACKEND as ServiceBinding | undefined
+}
+
+/**
+ * Fetch a raw Response from Payload (used to proxy media). Goes worker-to-worker
+ * via the binding when available, else public HTTP via payloadUrl for local dev.
+ */
+export async function payloadRaw(event: H3Event, path: string): Promise<Response> {
+  const backend = backendBinding(event)
+  if (backend) {
+    return backend.fetch(new Request(`https://backend${path}`))
+  }
+  return fetch(`${payloadBase()}${path}`)
 }
 
 /**
@@ -33,8 +51,7 @@ export async function payloadFetch<T>(
       ).toString()
     : ''
 
-  const backend = (event.context as { cloudflare?: { env?: Record<string, unknown> } })
-    .cloudflare?.env?.BACKEND as ServiceBinding | undefined
+  const backend = backendBinding(event)
 
   if (backend) {
     // The service binding ignores the host, so any absolute URL works — only
@@ -88,12 +105,11 @@ export type PayloadRecipeOfTheDayResponse = {
   lastRotated?: string | null
 }
 
-export function mapRecipe(doc: PayloadRecipeDoc, base: string): Recipe {
-  const heroUrl = doc.featuredImage?.url
-    ? doc.featuredImage.url.startsWith('http')
-      ? doc.featuredImage.url
-      : `${base}${doc.featuredImage.url}`
-    : null
+export function mapRecipe(doc: PayloadRecipeDoc): Recipe {
+  // Keep media URLs RELATIVE so the browser loads them from the frontend origin,
+  // where /api/media/file/** is proxied to Payload over the service binding.
+  // This keeps the Payload URL out of the page entirely.
+  const heroUrl = doc.featuredImage?.url ?? null
   return {
     title: doc.title,
     date: doc.createdAt,

@@ -9,7 +9,7 @@ export default defineCachedEventHandler(async (event) => {
     limit: 1,
     depth: 1,
   })
-  return (res.docs[0] ? mapRecipe(res.docs[0], payloadBase()) : null) as Recipe | null
+  return (res.docs[0] ? mapRecipe(res.docs[0]) : null) as Recipe | null
 }, {
   maxAge: 60 * 10,
   name: 'recipes-slug',

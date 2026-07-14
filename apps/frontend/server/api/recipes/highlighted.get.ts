@@ -5,5 +5,5 @@ export default defineCachedEventHandler(async (event) => {
     depth: 1,
     sort: '-createdAt',
   })
-  return res.docs.map(doc => mapRecipe(doc, payloadBase()))
+  return res.docs.map(doc => mapRecipe(doc))
 }, { maxAge: 60 * 15, name: 'recipes-highlighted', getKey: () => 'highlighted' })
