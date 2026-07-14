@@ -10,7 +10,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Recipes } from './collections/Recipes'
 import { RecipeOfTheDay } from './globals/RecipeOfTheDay'
-// import { rotateRecipeOfTheDayTask } from './tasks/rotateRecipeOfTheDay'
+import { rotateRecipeOfTheDayTask } from './tasks/rotateRecipeOfTheDay'
 import { config } from 'dotenv'
 
 const filename = fileURLToPath(import.meta.url)
@@ -47,16 +47,16 @@ export default buildConfig({
   },
   collections: [Users, Media, Recipes],
   globals: [RecipeOfTheDay],
-  // Cron/jobs disabled for the Cloudflare Workers spike — Payload's autoRun
-  // scheduler needs a persistent process, which Workers doesn't provide.
-  // Re-enable via Cloudflare Cron Triggers when moving this off Railway.
-  // jobs: {
-  //   tasks: [rotateRecipeOfTheDayTask],
-  //   autoRun: [{ cron: '* * * * *', queue: 'default' }],
-  //   access: {
-  //     run: ({ req }) => !!req.user,
-  //   },
-  // },
+  // The task stays registered (so its slug is typed and a Cloudflare Cron
+  // Trigger can invoke it later), but autoRun is intentionally omitted:
+  // Payload's autoRun scheduler needs a persistent process, which Workers
+  // doesn't have. Nothing runs this until a Cron Trigger hits the jobs endpoint.
+  jobs: {
+    tasks: [rotateRecipeOfTheDayTask],
+    access: {
+      run: ({ req }) => !!req.user,
+    },
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
