@@ -14,7 +14,7 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "cf:build": "cross-env CI=true NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build --webpack && cross-env CI=true opennextjs-cloudflare build --skipNextBuild",
+    "cf:build": "cross-env CI=true NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build && cross-env CI=true opennextjs-cloudflare build --skipNextBuild",
     "cf:preview": "pnpm cf:build && opennextjs-cloudflare preview",
     "cf:deploy": "pnpm cf:build && opennextjs-cloudflare deploy",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/index.ts",

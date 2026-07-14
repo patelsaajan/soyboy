@@ -14,11 +14,12 @@ const nextConfig: NextConfig = {
   // the monorepo root so file tracing resolves workspace deps correctly.
   output: 'standalone',
   outputFileTracingRoot: path.resolve(dirname, '../..'),
-  // sharp is a native binary and can't be bundled into the Worker. Keep it
-  // external so the OpenNext build succeeds. NOTE: it still won't *execute* on
-  // Workers — image resizing will fail at runtime until it's replaced
-  // (e.g. Cloudflare Images). Fine for local/Railway, which run real Node.
-  serverExternalPackages: ['sharp'],
+  // sharp: native binary, can't run on Workers (kept external so build passes).
+  // pg / pg-cloudflare: keep them out of webpack's bundle — webpack resolves
+  // pg-cloudflare to its node/"default" export (an empty stub), which breaks the
+  // Cloudflare socket at runtime ("b2 is not a constructor"). Left external,
+  // OpenNext bundles them with the "workerd" condition and the real socket.
+  serverExternalPackages: ['sharp', 'pg', 'pg-cloudflare'],
   images: {
     localPatterns: [
       {

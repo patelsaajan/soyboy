@@ -10,3 +10,5 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: false
   workerd: true
+patchedDependencies:
+  '@opennextjs/cloudflare@1.20.1': patches/@opennextjs__cloudflare@1.20.1.patch

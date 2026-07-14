@@ -8,6 +8,16 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  // Service binding to the Nuxt frontend Worker — lets Payload call the frontend
+  // worker-to-worker over Cloudflare's internal network (no public hop, no
+  // egress) via env.FRONTEND.fetch(). The reciprocal BACKEND binding lives in
+  // apps/frontend/wrangler.jsonc, so the two Workers point at each other.
+  "services": [
+    {
+      "binding": "FRONTEND",
+      "service": "soyboy-frontend"
+    }
+  ],
   // Hyperdrive: edge connection pooling + query caching in front of Neon.
   // Use Neon's DIRECT (non-pooled) connection string — Hyperdrive does the
   // pooling itself. Create the config, then paste the returned id below:
@@ -16,7 +26,7 @@
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "REPLACE_WITH_HYPERDRIVE_ID",
+      "id": "eb2a5245edf84b6b943aac5e9089ff2a",
       // localConnectionString lets `wrangler dev` hit local Postgres directly
       // instead of the remote Hyperdrive config (swap for Neon to dev against it).
       "localConnectionString": "postgresql://postgres:payload@localhost:5432/payload-vanilla"
