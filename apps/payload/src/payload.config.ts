@@ -5,16 +5,36 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { s3Storage } from '@payloadcms/storage-s3'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Recipes } from './collections/Recipes'
 import { RecipeOfTheDay } from './globals/RecipeOfTheDay'
-import { rotateRecipeOfTheDayTask } from './tasks/rotateRecipeOfTheDay'
+// import { rotateRecipeOfTheDayTask } from './tasks/rotateRecipeOfTheDay'
 import { config } from 'dotenv'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+/**
+ * Resolve the Postgres connection string.
+ *
+ * On Cloudflare Workers we route through the Hyperdrive binding (edge connection
+ * pooling + query caching); everywhere else (local dev, Payload CLI, build,
+ * Railway) we fall back to DATABASE_URL. getCloudflareContext() throws outside
+ * the Workers runtime, so the try/catch is the switch between the two.
+ */
+function resolveConnectionString(): string {
+  try {
+    const { env } = getCloudflareContext()
+    const hyperdrive = (env as { HYPERDRIVE?: { connectionString?: string } }).HYPERDRIVE
+    if (hyperdrive?.connectionString) return hyperdrive.connectionString
+  } catch {
+    // Not inside the Workers runtime — use the plain connection string below.
+  }
+  return process.env.DATABASE_URL || ''
+}
 
 export default buildConfig({
   admin: {
@@ -28,13 +48,16 @@ export default buildConfig({
   },
   collections: [Users, Media, Recipes],
   globals: [RecipeOfTheDay],
-  jobs: {
-    tasks: [rotateRecipeOfTheDayTask],
-    autoRun: [{ cron: '* * * * *', queue: 'default' }],
-    access: {
-      run: ({ req }) => !!req.user,
-    },
-  },
+  // Cron/jobs disabled for the Cloudflare Workers spike — Payload's autoRun
+  // scheduler needs a persistent process, which Workers doesn't provide.
+  // Re-enable via Cloudflare Cron Triggers when moving this off Railway.
+  // jobs: {
+  //   tasks: [rotateRecipeOfTheDayTask],
+  //   autoRun: [{ cron: '* * * * *', queue: 'default' }],
+  //   access: {
+  //     run: ({ req }) => !!req.user,
+  //   },
+  // },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -42,7 +65,11 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || '',
+      connectionString: resolveConnectionString(),
+      // Workers isolates each request, so a long-lived pool can't be reused
+      // across them — Hyperdrive does the pooling instead. maxUses: 1 keeps
+      // node-postgres from holding connections open between requests.
+      maxUses: 1,
     },
   }),
   sharp,

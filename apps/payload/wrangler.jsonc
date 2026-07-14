@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "soyboy-payload",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Hyperdrive: edge connection pooling in front of the existing Postgres DB.
+  // Create the config, then set its id here:
+  //   npx wrangler hyperdrive create soyboy-payload --connection-string="postgres://..."
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "REPLACE_WITH_HYPERDRIVE_ID",
+      // localConnectionString lets `wrangler dev` talk to your local/Railway
+      // Postgres directly instead of the remote Hyperdrive config.
+      "localConnectionString": "postgresql://postgres:payload@localhost:5432/payload-vanilla"
+    }
+  ]
+}
