@@ -1,4 +1,53 @@
+import type { H3Event } from 'h3'
 import type { Recipe } from '~~/types/recipes'
+
+/** Minimal shape of a Cloudflare service binding (a fetcher to another Worker). */
+type ServiceBinding = { fetch: (request: Request) => Promise<Response> }
+
+/**
+ * The public Payload base URL, used to build absolute image URLs the browser
+ * can load directly. This stays the public origin even when API calls go
+ * through the service binding — the binding only serves the SSR fetch, not the
+ * user's browser.
+ */
+export function payloadBase(): string {
+  const { payloadUrl } = useRuntimeConfig()
+  return (payloadUrl as string).replace(/\/$/, '')
+}
+
+/**
+ * Fetch JSON from Payload. On Cloudflare, if the BACKEND service binding is
+ * present, the request goes worker-to-worker (no public hop, lower latency, no
+ * egress). Otherwise it falls back to public HTTP via payloadUrl — so this also
+ * works in local dev and on any non-Workers host.
+ */
+export async function payloadFetch<T>(
+  event: H3Event,
+  path: string,
+  query?: Record<string, string | number | boolean>,
+): Promise<T> {
+  const qs = query
+    ? '?' +
+      new URLSearchParams(
+        Object.entries(query).map(([k, v]) => [k, String(v)]),
+      ).toString()
+    : ''
+
+  const backend = (event.context as { cloudflare?: { env?: Record<string, unknown> } })
+    .cloudflare?.env?.BACKEND as ServiceBinding | undefined
+
+  if (backend) {
+    // The service binding ignores the host, so any absolute URL works — only
+    // the path + query reach the Payload Worker.
+    const res = await backend.fetch(new Request(`https://backend${path}${qs}`))
+    if (!res.ok) {
+      throw createError({ statusCode: res.status, statusMessage: `Payload ${res.status}` })
+    }
+    return (await res.json()) as T
+  }
+
+  return await $fetch<T>(`${payloadBase()}${path}${qs}`)
+}
 
 export type PayloadIngredient  = { id?: string; item: string; quantity: string; unit?: string }
 export type PayloadStep        = { id?: string; title: string; description: string }

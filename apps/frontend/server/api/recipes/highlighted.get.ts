@@ -1,8 +1,9 @@
-export default defineCachedEventHandler(async () => {
-  const { payloadUrl } = useRuntimeConfig()
-  const base = (payloadUrl as string).replace(/\/$/, '')
-  const res = await $fetch<PayloadListResponse>(`${base}/api/recipes`, {
-    query: { 'where[highlighted][equals]': true, limit: 4, depth: 1, sort: '-createdAt' },
+export default defineCachedEventHandler(async (event) => {
+  const res = await payloadFetch<PayloadListResponse>(event, '/api/recipes', {
+    'where[highlighted][equals]': true,
+    limit: 4,
+    depth: 1,
+    sort: '-createdAt',
   })
-  return res.docs.map(doc => mapRecipe(doc, base))
+  return res.docs.map(doc => mapRecipe(doc, payloadBase()))
 }, { maxAge: 60 * 15, name: 'recipes-highlighted', getKey: () => 'highlighted' })
