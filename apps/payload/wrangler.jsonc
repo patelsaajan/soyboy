@@ -8,15 +8,17 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  // Hyperdrive: edge connection pooling in front of the existing Postgres DB.
-  // Create the config, then set its id here:
-  //   npx wrangler hyperdrive create soyboy-payload --connection-string="postgres://..."
+  // Hyperdrive: edge connection pooling + query caching in front of Neon.
+  // Use Neon's DIRECT (non-pooled) connection string — Hyperdrive does the
+  // pooling itself. Create the config, then paste the returned id below:
+  //   npx wrangler hyperdrive create soyboy-payload \
+  //     --connection-string="postgresql://<user>:<pass>@<host>.neon.tech/<db>?sslmode=require"
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
       "id": "REPLACE_WITH_HYPERDRIVE_ID",
-      // localConnectionString lets `wrangler dev` talk to your local/Railway
-      // Postgres directly instead of the remote Hyperdrive config.
+      // localConnectionString lets `wrangler dev` hit local Postgres directly
+      // instead of the remote Hyperdrive config (swap for Neon to dev against it).
       "localConnectionString": "postgresql://postgres:payload@localhost:5432/payload-vanilla"
     }
   ]

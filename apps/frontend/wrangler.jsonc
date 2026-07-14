@@ -7,5 +7,15 @@
   "assets": {
     "directory": "./.output/public",
     "binding": "ASSETS"
-  }
+  },
+  // Service binding to the Payload backend Worker. Lets the Nuxt server call
+  // Payload worker-to-worker (no public internet hop, lower latency, no egress)
+  // via env.BACKEND.fetch(...). The soyboy-payload Worker must be deployed for
+  // this to resolve. Public PAYLOAD_URL over HTTPS still works as a fallback.
+  "services": [
+    {
+      "binding": "BACKEND",
+      "service": "soyboy-payload"
+    }
+  ]
 }

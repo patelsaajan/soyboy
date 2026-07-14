@@ -3,7 +3,6 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
-import sharp from 'sharp'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
@@ -72,23 +71,29 @@ export default buildConfig({
       maxUses: 1,
     },
   }),
-  sharp,
+  // sharp intentionally omitted: it's a native binary that can't run on
+  // Cloudflare Workers. Payload's Media collection has no imageSizes/resize
+  // pipeline, so the only loss is auto width/height metadata + admin
+  // thumbnails. On-the-fly resizing is handled at the edge (Cloudflare Images
+  // / @nuxt/image) instead.
   plugins: [
     s3Storage({
-    enabled: !!(process.env.S3_SECRET_ACCESS_KEY && process.env.S3_BUCKET_NAME),
-    collections : {
-      media: true,
-    },
-    bucket: process.env.S3_BUCKET_NAME || '',
-    config: {
-      region: process.env.S3_REGION || '',
-      endpoint: process.env.S3_ENDPOINT_URL || '',
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-      }
-    }
-  }),
+      enabled: !!(process.env.S3_SECRET_ACCESS_KEY && process.env.S3_BUCKET_NAME),
+      collections: {
+        media: true,
+      },
+      bucket: process.env.S3_BUCKET_NAME || '',
+      config: {
+        region: process.env.S3_REGION || 'auto',
+        endpoint: process.env.S3_ENDPOINT_URL || '',
+        // R2 requires path-style addressing.
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        },
+      },
+    }),
   ],
   cors: [
     process.env.FRONTEND_URL || 'http://localhost:4000',
