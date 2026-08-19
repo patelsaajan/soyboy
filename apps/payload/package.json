@@ -12,6 +12,7 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "check-types": "cross-env NODE_OPTIONS=--no-deprecation tsc --noEmit",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "cf:build": "cross-env CI=true NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build && cross-env CI=true opennextjs-cloudflare build --skipNextBuild",
@@ -21,7 +22,6 @@
     "cf:ci:deploy": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload migrate && wrangler deploy",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/index.ts",
     "db:clear-dev-marker": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation tsx ./src/seed/clear-dev-migration.ts",
-    "reset-admin": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/reset-admin.ts",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
@@ -60,7 +60,7 @@
     "wrangler": "^4.110.0"
   },
   "engines": {
-    "node": "^18.20.2 || >=20.9.0",
+    "node": ">=22.13.0",
     "pnpm": "^11"
   }
 }

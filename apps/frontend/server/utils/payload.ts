@@ -1,3 +1,4 @@
+import { ofetch } from 'ofetch'
 import type { H3Event } from 'h3'
 import type { Recipe } from '~~/types/recipes'
 
@@ -63,7 +64,20 @@ export async function payloadFetch<T>(
     return (await res.json()) as T
   }
 
-  return await $fetch<T>(`${payloadBase()}${path}${qs}`)
+  // `ofetch` rather than `$fetch`: $fetch is typed against Nitro's generated
+  // route table, and matching an absolute external URL against it blows the type
+  // instantiation depth limit. This call never targets an internal route.
+  try {
+    return await ofetch<T>(`${payloadBase()}${path}${qs}`)
+  } catch (err) {
+    // Mirror the service-binding branch: surface the upstream status rather than
+    // letting an ofetch FetchError bubble up as an opaque 500 with a stack trace.
+    const status =
+      (err as { status?: number; statusCode?: number }).status ??
+      (err as { statusCode?: number }).statusCode ??
+      502
+    throw createError({ statusCode: status, statusMessage: `Payload ${status}` })
+  }
 }
 
 export type PayloadIngredient  = { id?: string; item: string; quantity: string; unit?: string }
@@ -71,24 +85,30 @@ export type PayloadStep        = { id?: string; title: string; description: stri
 export type PayloadNutritional = { id?: string; item: string; value: string }
 export type PayloadSuggestion  = { id?: string; title: string; text: string }
 
+/**
+ * Mirrors the nullability of the generated `Recipe` in
+ * apps/payload/src/payload-types.ts. Fields that Payload declares optional are
+ * optional here too — declaring them required is what produced `/recipes/null`
+ * links and "Serves undefined" in the UI.
+ */
 export type PayloadRecipeDoc = {
-  id: string
-  slug: string
-  highlighted?: boolean
-  cuisine?: string
-  time?: string
-  cookTime?: number
-  servings: number
-  imgSrc?: string
+  id: number | string
+  slug?: string | null
+  highlighted?: boolean | null
+  cuisine?: string | null
+  time?: string | null
+  cookTime?: number | null
+  servings?: number | null
+  imgSrc?: string | null
   title: string
   description: string
-  intro?: string
-  featuredImage?: { url: string; alt?: string } | null
-  ingredients?: PayloadIngredient[]
-  steps?: PayloadStep[]
-  nutritional?: PayloadNutritional[]
-  suggestions?: PayloadSuggestion[]
-  _status: string
+  intro?: string | null
+  featuredImage?: { url?: string | null; alt?: string | null } | number | null
+  ingredients?: PayloadIngredient[] | null
+  steps?: PayloadStep[] | null
+  nutritional?: PayloadNutritional[] | null
+  suggestions?: PayloadSuggestion[] | null
+  _status?: 'draft' | 'published' | null
   createdAt: string
   updatedAt: string
 }
@@ -111,7 +131,8 @@ export function mapRecipe(doc: PayloadRecipeDoc): Recipe {
   // may return an ABSOLUTE url (its serverURL / custom domain), so strip the
   // origin — otherwise the Payload domain leaks into the page and the browser
   // tries to load images from a host it can't reach.
-  const rawUrl = doc.featuredImage?.url
+  const featured = typeof doc.featuredImage === 'object' ? doc.featuredImage : null
+  const rawUrl = featured?.url
   let heroUrl: string | null = null
   if (rawUrl) {
     try {
@@ -128,10 +149,10 @@ export function mapRecipe(doc: PayloadRecipeDoc): Recipe {
     highlighted: doc.highlighted ?? false,
     cuisine: doc.cuisine ?? '',
     time: doc.time ?? (doc.cookTime ? `${doc.cookTime} minutes` : ''),
-    serves: doc.servings,
+    serves: doc.servings ?? 0,
     description: doc.description,
     imgSrc: heroUrl ?? (doc.imgSrc ? `/imgs/food/${doc.imgSrc}` : ''),
-    uri: doc.slug,
+    uri: doc.slug ?? String(doc.id),
     intro: doc.intro ?? '',
     ingredients: (doc.ingredients ?? []).map((i) => ({
       quantity: parseFloat(i.quantity) || 0,
