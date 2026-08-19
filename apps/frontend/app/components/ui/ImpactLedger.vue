@@ -18,7 +18,7 @@
                 </span>
                 <div class="text-right">
                     <span class="block font-sans text-white text-lg md:text-2xl leading-tight">{{ item.title }}</span>
-                    <span class="block text-white/40 text-xs uppercase tracking-widest mt-1">{{ item.subtitle }}</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">{{ item.subtitle }}</span>
                 </div>
             </div>
         </div>

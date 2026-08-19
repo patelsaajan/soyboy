@@ -1,30 +1,34 @@
 <template>
     <div class="flex flex-col gap-4">
-        <div class="flex gap-2">
+        <div class="flex gap-2" role="group" aria-label="Scale ingredient quantities">
             <button
                 v-for="option in multiplierOptions"
                 :key="option"
+                type="button"
+                :aria-pressed="multiplier === option"
                 class="px-4 py-2 rounded-full border-2 cursor-pointer font-sans text-sm transition-colors duration-300"
                 :class="multiplier === option
                     ? 'bg-primary border-primary text-white'
-                    : 'border-white/30 text-white/80 hover:border-white hover:text-white'"
+                    : 'border-white/45 text-white/80 hover:border-white hover:text-white'"
                 @click="multiplier = option"
             >
                 {{ option }}x
             </button>
         </div>
-        <div class="flex flex-col gap-3">
+        <p class="sr-only" aria-live="polite">Quantities scaled to {{ multiplier }}x</p>
+        <!-- dl/dt/dd so each amount is programmatically tied to its ingredient. -->
+        <dl class="flex flex-col gap-3">
             <div
                 v-for="(ingredient, index) in ingredients"
                 :key="index"
                 class="flex items-center justify-between py-2 border-b border-white/10"
             >
-                <span class="text-white">{{ ingredient.item }}</span>
-                <span class="text-white/60 font-mono">
+                <dt class="text-white">{{ ingredient.item }}</dt>
+                <dd class="text-white/60 font-mono">
                     {{ formatQuantity(ingredient.quantity * multiplier) }}{{ ingredient.unit }}
-                </span>
+                </dd>
             </div>
-        </div>
+        </dl>
     </div>
 </template>
 

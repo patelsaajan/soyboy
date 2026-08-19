@@ -1,9 +1,19 @@
 <template>
-    <div
+    <section
         ref="elementRef"
         class="relative py-8 w-full overflow-hidden"
+        aria-label="Travel photos"
+        aria-roledescription="carousel"
     >
         <div ref="contentRef">
+            <button
+                type="button"
+                class="absolute top-2 right-4 z-20 rounded-full bg-primary px-4 py-2 text-sm text-white"
+                :aria-pressed="paused"
+                @click="togglePlay"
+            >
+                {{ paused ? 'Play photo carousel' : 'Pause photo carousel' }}
+            </button>
             <Swiper
                 ref="swiperRef"
                 :modules="[Autoplay]"
@@ -33,6 +43,8 @@
                             backgroundImage: `url(${slide.image})`,
                             ...getSlideHeight(slide.height),
                         }"
+                        role="img"
+                        :aria-label="`Photo taken in ${slide.location}`"
                         @mouseenter="(e) => cursorMarqueeRef?.show(slide.location, e)"
                         @mouseleave="cursorMarqueeRef?.hide()"
                     />
@@ -41,7 +53,7 @@
 
             <UiCursorMarquee ref="cursorMarqueeRef" />
         </div>
-    </div>
+    </section>
 </template>
 
 <script setup lang="ts">
@@ -61,10 +73,25 @@ const onSwiper = (swiper: any) => {
     swiperInstance.autoplay.stop();
 };
 
+const reducedMotion = useReducedMotion();
+const paused = ref(false);
+
 const startAutoplay = () => {
-    if (swiperInstance) {
-        swiperInstance.autoplay.start();
+    if (!swiperInstance) return;
+    // An auto-advancing carousel is exactly what prefers-reduced-motion asks us
+    // not to do, so start paused and let the user opt in.
+    if (reducedMotion.value) {
+        paused.value = true;
+        return;
     }
+    swiperInstance.autoplay.start();
+};
+
+const togglePlay = () => {
+    if (!swiperInstance) return;
+    paused.value = !paused.value;
+    if (paused.value) swiperInstance.autoplay.stop();
+    else swiperInstance.autoplay.start();
 };
 
 const update = () => {

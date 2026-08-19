@@ -1,9 +1,7 @@
 <template>
-    <div class="bg-neutral text-white min-h-screen">
-        <slot />
+    <div class="bg-background text-white min-h-screen">
+        <main id="main-content" tabindex="-1">
+            <slot />
+        </main>
     </div>
 </template>
-
-<script lang="ts">
-
-</script>

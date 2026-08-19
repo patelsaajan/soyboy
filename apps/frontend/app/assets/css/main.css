@@ -9,7 +9,6 @@
 
 @theme {
     --ui-primary     : #d20a2e;
-    --ui-bg :  #111520!important;
     --color-primary  : #d20a2e;
     --ui-secondary   : #457b7f;
     --color-secondary: #F0ECD9;
@@ -30,4 +29,42 @@ body {
     background-color: var(--color-background);
     font-family: 'Nunito', sans-serif;
     font-kerning: normal;
+}
+
+
+/* Nuxt UI runtime variables. These are consumed by U* components at runtime and
+   are not Tailwind theme namespaces, so they live outside @theme. */
+:root {
+    --ui-bg: var(--color-background);
+}
+
+/* Focus is never removed anywhere in this project, but the browser default is
+   tuned for light backgrounds; white on --color-background measures 18.2:1. */
+:where(a, button, [tabindex]):focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Content is authored at opacity-0 and revealed by GSAP on scroll. Under
+   reduced motion those animations are skipped, so the elements must be made
+   visible here or the page would render blank. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .opacity-0 {
+        opacity: 1 !important;
+    }
+
+    .translate-y-10,
+    .translate-y-20 {
+        transform: none !important;
+    }
 }
