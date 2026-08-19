@@ -9,12 +9,12 @@
 @theme {
     --ui-primary     : #d20a2e;
     --color-primary  : #d20a2e;
-    --ui-secondary   : #457b7f;
     --color-secondary: #F0ECD9;
     --color-background  : #111520;
+    /* Surface = background lifted 5% toward white, so cards read as elevated
+       without a second hard-coded hex drifting from --color-background. */
     --color-surface: color-mix(in srgb, white 5%, #111520);
     --color-skeleton : #0A2A40;
-    --text-heading   : 3rem;
     --font-display   : 'Bungee', sans-serif;
     --font-body      : 'Nunito', sans-serif;
 }
@@ -26,7 +26,7 @@
 
 body {
     background-color: var(--color-background);
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-body);
     font-kerning: normal;
 }
 
