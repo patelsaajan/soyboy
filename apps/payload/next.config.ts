@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
   // OpenNext bundles them with the "workerd" condition and the real socket.
   serverExternalPackages: ['sharp', 'pg', 'pg-cloudflare'],
   images: {
+    // Next's optimiser depends on sharp, which can't run on Workers (see
+    // serverExternalPackages above). Delivery-side resizing is handled by
+    // Cloudflare Transformations on the frontend, so leave images untouched
+    // here rather than shipping a pipeline that cannot execute.
+    unoptimized: true,
     localPatterns: [
       {
         pathname: '/api/media/file/**',

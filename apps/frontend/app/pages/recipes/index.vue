@@ -417,8 +417,19 @@ function selectRandomRecipe() {
     selectedRecipe.value = all[randomIndex] ?? null;
 }
 
+// Hoisted so it can be reverted on unmount. gsap.matchMedia() registers a
+// matchMedia change listener and every scrollTrigger registers global
+// scroll/resize handlers holding DOM references; without revert() these
+// accumulate on every SPA navigation back to this page.
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+
+onUnmounted(() => {
+    mm?.revert();
+    mm = null;
+});
+
 onMounted(() => {
-    const mm = gsap.matchMedia();
+    mm = gsap.matchMedia();
     const ease = 'power2.out';
 
     mm.add('(min-width: 1024px)', () => {

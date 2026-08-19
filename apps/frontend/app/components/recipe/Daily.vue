@@ -20,9 +20,14 @@
         >
             <NuxtImg
                 :src="recipe.imgSrc"
-                class="bg-white aspect-square w-full object-cover rounded-md md:col-span-3">
-                Image
-            </NuxtImg>
+                format="auto"
+                width="400"
+                height="400"
+                sizes="(max-width: 768px) 100vw, 400px"
+                loading="lazy"
+                decoding="async"
+                class="bg-white aspect-square w-full object-cover rounded-md md:col-span-3"
+            />
             <div class="md:col-span-6 flex flex-col justify-between">
                 <h2 class="text-xl md:text-2xl font-bold mb-2 text-white font-sans">{{ recipe.title }}</h2>
                 <p class="text-gray-300 text-sm md:text-base mb-4">{{ recipe.description }}</p>

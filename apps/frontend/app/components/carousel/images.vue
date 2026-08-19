@@ -28,14 +28,23 @@
                     class="md:w-auto! flex! items-center!"
                 >
                     <div
-                        class="slide-image w-full md:w-80 rounded-2xl bg-primary bg-cover bg-center md:cursor-none mx-4"
-                        :style="{
-                            backgroundImage: `url(${slide.image})`,
-                            ...getSlideHeight(slide.height),
-                        }"
+                        class="slide-image relative w-full md:w-80 rounded-2xl overflow-hidden bg-primary md:cursor-none mx-4"
+                        :style="getSlideHeight(slide.height)"
                         @mouseenter="(e) => cursorMarqueeRef?.show(slide.location, e)"
                         @mouseleave="cursorMarqueeRef?.hide()"
-                    />
+                    >
+                        <NuxtImg
+                            :src="slide.image"
+                            :alt="`Photo taken in ${slide.location}`"
+                            format="auto"
+                            :quality="70"
+                            width="320"
+                            sizes="(max-width: 768px) 100vw, 320px"
+                            :loading="index < 3 ? 'eager' : 'lazy'"
+                            decoding="async"
+                            class="absolute inset-0 w-full h-full object-cover"
+                        />
+                    </div>
                 </SwiperSlide>
             </Swiper>
 

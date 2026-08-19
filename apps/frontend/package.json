@@ -28,6 +28,8 @@
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.123",
+    "@iconify-json/ph": "^1.2.2",
     "wrangler": "^4.110.0"
   }
 }
