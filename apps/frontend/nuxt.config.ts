@@ -8,6 +8,8 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: { lang: 'en-GB' },
+      titleTemplate: '%s | Soyboy Saajan',
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -82,13 +84,32 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3000',
+    public: {
+      // Canonical origin for absolute URLs in meta tags, JSON-LD and sitemap.
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://soyboy.saajanpatel.co.uk',
+      siteName: 'Soyboy Saajan',
+    },
   },
 
+  // @nuxt/ui already declares @nuxt/icon and @nuxt/fonts as module dependencies
+  // (with defaults like icon's cssLayer: 'base'). Listing them again after it
+  // risks them initialising without those defaults.
   modules: [
     "@nuxt/eslint",
     "@nuxt/image",
     "@nuxt/ui",
-    "@nuxt/icon",
-    "@nuxt/fonts",
   ],
+
+  // Without a local bundle the server resolver fetches every icon from
+  // api.iconify.design at runtime, putting a third party on the render path.
+  icon: {
+    serverBundle: { collections: ['ph', 'lucide'] },
+  },
+
+  fonts: {
+    families: [
+      { name: 'Bungee', provider: 'google' },
+      { name: 'Nunito', provider: 'google' },
+    ],
+  },
 });

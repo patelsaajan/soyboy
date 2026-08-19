@@ -123,8 +123,26 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue';
 import { gsap } from 'gsap';
-import { features } from '../../content/home';
-import { questions } from '../../content/home';
+import { features, questions } from '../../content/home';
+
+useSeo({
+    title: 'Vegan Recipes That Actually Slap',
+    description:
+        'Bold, fuss-free vegan recipes with exact ingredients, quantities and method. Plant-based cooking without the lecture.',
+    path: '/',
+    type: 'website',
+});
+
+// The FAQ copy is real Q&A content that was previously unmarked.
+useJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: questions.map(q => ({
+        '@type': 'Question',
+        name: q.question,
+        acceptedAnswer: { '@type': 'Answer', text: q.answer },
+    })),
+});
 
 const firstWord = "SOYBOY";
 const secondWord = "SAAJAN";

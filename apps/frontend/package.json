@@ -23,6 +23,8 @@
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.123",
+    "@iconify-json/ph": "^1.2.2",
     "@nuxt/eslint": "1.15.2",
     "@tailwindcss/vite": "^4.2.2",
     "eslint": "^10.1.0",

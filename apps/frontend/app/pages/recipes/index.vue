@@ -272,7 +272,15 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const { data: allRecipes } = await useAllRecipes()
+const { data: allRecipes, error: allRecipesError } = await useAllRecipes()
+
+useSeo({
+    title: 'All Vegan Recipes',
+    description:
+        'Browse every vegan recipe on Soyboy Saajan — highlights, latest additions and the full archive, with ingredients, servings and cook times.',
+    path: '/recipes',
+    type: 'website',
+});
 
 const highlights = computed(() =>
     [...(allRecipes.value ?? [])]
