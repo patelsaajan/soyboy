@@ -82,6 +82,19 @@ let interval: ReturnType<typeof setInterval> | null = null;
 function startCountdown() {
     updateTime();
     interval = setInterval(updateTime, 1000);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+}
+
+// Five reactive writes per second drive a re-render every second for the life
+// of the page; there is no reason to keep that running in a hidden tab.
+function onVisibilityChange() {
+    if (document.hidden) {
+        if (interval) clearInterval(interval);
+        interval = null;
+    } else if (!interval) {
+        updateTime();
+        interval = setInterval(updateTime, 1000);
+    }
 }
 
 onMounted(() => {
@@ -90,5 +103,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     if (interval) clearInterval(interval);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
 });
 </script>

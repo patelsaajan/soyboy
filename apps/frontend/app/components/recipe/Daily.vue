@@ -21,6 +21,12 @@
             <NuxtImg
                 :src="recipe.imgSrc"
                 :alt="recipe.title"
+                format="auto"
+                width="400"
+                height="400"
+                sizes="(max-width: 768px) 100vw, 400px"
+                loading="lazy"
+                decoding="async"
                 class="bg-white aspect-square w-full object-cover rounded-md md:col-span-3"
             />
             <div class="md:col-span-6 flex flex-col justify-between">
