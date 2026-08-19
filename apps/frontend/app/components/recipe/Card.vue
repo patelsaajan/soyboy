@@ -1,9 +1,9 @@
 <template>
     <component
-        :is="linkable ? NuxtLink : 'button'"
+        :is="linkable ? NuxtLink : 'a'"
         :to="linkable ? recipeLink : undefined"
-        :type="linkable ? undefined : 'button'"
-        :aria-pressed="linkable ? undefined : selected"
+        :href="linkable ? undefined : recipeLink"
+        :aria-current="!linkable && selected ? 'true' : undefined"
         :class="containerClasses"
     >
         <!-- LARGE: Horizontal with 40/60 split -->

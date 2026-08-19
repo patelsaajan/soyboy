@@ -1,5 +1,5 @@
 <template>
-
+    <div>
     <div
         class="container mx-auto my-16 lg:my-20 px-4 lg:px-0"
     >
@@ -10,6 +10,8 @@
             <div
                 class="flex flex-col gap-12 lg:gap-20 lg:col-span-8"
             >
+
+            <h1 class="text-[2rem]">Vegan Recipes</h1>
 
             <p v-if="allRecipesError" role="alert" class="text-white/80">
                 Sorry, recipes couldn't be loaded right now. Please try again shortly.
@@ -33,7 +35,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </div>
                 <!-- Desktop: 2 column regular cards -->
@@ -45,7 +47,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </div>
             </div>
@@ -61,7 +63,7 @@
                         :recipe="featuredRecent!"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === featuredRecent!.uri"
-                        @click="selectRecipe(featuredRecent!)"
+                        @click.prevent="selectRecipe(featuredRecent!)"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
@@ -72,7 +74,7 @@
                             :recipe="r"
                             :linkable="false"
                             :selected="selectedRecipe?.uri === r.uri"
-                            @click="selectRecipe(r)"
+                            @click.prevent="selectRecipe(r)"
                         />
                     </div>
                 </div>
@@ -84,7 +86,7 @@
                         :recipe="featuredRecent!"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === featuredRecent!.uri"
-                        @click="selectRecipe(featuredRecent!)"
+                        @click.prevent="selectRecipe(featuredRecent!)"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
@@ -95,7 +97,7 @@
                             :recipe="r"
                             :linkable="false"
                             :selected="selectedRecipe?.uri === r.uri"
-                            @click="selectRecipe(r)"
+                            @click.prevent="selectRecipe(r)"
                         />
                     </div>
                 </div>
@@ -115,7 +117,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </TransitionGroup>
                 <!-- Desktop: 4 column small cards -->
@@ -128,7 +130,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </TransitionGroup>
             </div>
@@ -275,6 +277,7 @@
             </div>
         </template>
     </UDrawer>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -285,6 +288,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const { data: allRecipes, error: allRecipesError } = await useAllRecipes()
+
+useSeo({
+    title: 'All Vegan Recipes',
+    description:
+        'Browse every vegan recipe on Soyboy Saajan — highlights, latest additions and the full archive, with ingredients, servings and cook times.',
+    path: '/recipes',
+    type: 'website',
+});
 
 const highlights = computed(() =>
     [...(allRecipes.value ?? [])]

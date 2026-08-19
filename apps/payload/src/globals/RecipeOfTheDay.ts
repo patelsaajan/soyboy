@@ -1,9 +1,12 @@
 import type { GlobalConfig } from 'payload'
 
+import { authenticated } from '../access'
+
 export const RecipeOfTheDay: GlobalConfig = {
   slug: 'recipe-of-the-day',
   access: {
     read: () => true,
+    update: authenticated,
   },
   fields: [
     {
