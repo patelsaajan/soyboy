@@ -19,6 +19,8 @@
                     ref="heroImage"
                     :src="recipeImage"
                     :alt="recipe.title"
+                    sizes="(max-width: 1024px) 100vw, 640px"
+                    priority
                     container-class="aspect-square w-full rounded-md lg:col-span-3"
                     class="object-cover"
                 />
@@ -251,6 +253,18 @@ const stepsContainer = ref<HTMLElement | null>(null);
 const suggestionsContainer = ref<HTMLElement | null>(null);
 const footerSection = ref<HTMLElement | null>(null);
 
+// See the note in recipes/index.vue — matchMedia and ScrollTrigger both need
+// explicit teardown or they leak across navigations.
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+const scrollTriggers: ScrollTrigger[] = [];
+
+onUnmounted(() => {
+    scrollTriggers.forEach(trigger => trigger.kill());
+    scrollTriggers.length = 0;
+    mm?.revert();
+    mm = null;
+});
+
 onMounted(() => {
     const scrollElements: HTMLElement[] = [];
 
@@ -267,17 +281,20 @@ onMounted(() => {
 
     const setupScrollTriggers = () => {
         scrollElements.forEach((el) => {
-            gsap.to(el, {
+            const tween = gsap.to(el, {
                 opacity: 1,
                 y: 0,
                 duration: 0.5,
                 ease: 'power2.out',
                 scrollTrigger: { trigger: el, start: 'top 90%' }
             });
+            // These live outside the matchMedia context, so revert() won't
+            // reach them — track and kill explicitly.
+            if (tween.scrollTrigger) scrollTriggers.push(tween.scrollTrigger as ScrollTrigger);
         });
     };
 
-    const mm = gsap.matchMedia();
+    mm = gsap.matchMedia();
 
     mm.add('(min-width: 1024px)', () => {
         const tl = gsap.timeline({

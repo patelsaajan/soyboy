@@ -45,7 +45,7 @@
 
         <!-- Copyright -->
         <div class="mt-6 pt-6 border-t border-white/20 text-center">
-            <p class="text-white/40 text-sm">
+            <p class="text-white/60 text-sm">
                 &copy; {{ new Date().getFullYear() }} Soyboy Saajan. Built with plants and code.
             </p>
         </div>

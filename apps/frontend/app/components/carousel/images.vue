@@ -1,9 +1,19 @@
 <template>
-    <div
+    <section
         ref="elementRef"
         class="relative py-8 w-full overflow-hidden"
+        aria-label="Travel photos"
+        aria-roledescription="carousel"
     >
         <div ref="contentRef">
+            <button
+                type="button"
+                class="absolute top-2 right-4 z-20 rounded-full bg-primary px-4 py-2 text-sm text-white"
+                :aria-pressed="paused"
+                @click="togglePlay"
+            >
+                {{ paused ? 'Play photo carousel' : 'Pause photo carousel' }}
+            </button>
             <Swiper
                 ref="swiperRef"
                 :modules="[Autoplay]"
@@ -19,52 +29,80 @@
                 :breakpoints="{
                     768: { slidesPerView: 'auto', spaceBetween: 40 },
                 }"
-                @swiper="onSwiper"
                 class="w-full"
+                @swiper="onSwiper"
             >
                 <SwiperSlide
                     v-for="(slide, index) in slides"
                     :key="index"
                     class="md:w-auto! flex! items-center!"
                 >
-                    <div
-                        class="slide-image w-full md:w-80 rounded-2xl bg-primary bg-cover bg-center md:cursor-none mx-4"
-                        :style="{
-                            backgroundImage: `url(${slide.image})`,
-                            ...getSlideHeight(slide.height),
-                        }"
+                    <figure
+                        class="slide-image relative w-full md:w-80 rounded-2xl overflow-hidden bg-primary mx-4"
+                        :style="getSlideHeight(slide.height)"
                         @mouseenter="(e) => cursorMarqueeRef?.show(slide.location, e)"
                         @mouseleave="cursorMarqueeRef?.hide()"
-                    />
+                    >
+                        <NuxtImg
+                            :src="slide.image"
+                            :alt="`Photo taken in ${slide.location}`"
+                            format="auto"
+                            :quality="70"
+                            width="320"
+                            sizes="(max-width: 768px) 100vw, 320px"
+                            :loading="index < 3 ? 'eager' : 'lazy'"
+                            decoding="async"
+                            class="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <!-- The location is otherwise available only on mouse
+                             hover, so keyboard and touch users never get it. -->
+                        <figcaption class="sr-only">{{ slide.location }}</figcaption>
+                    </figure>
                 </SwiperSlide>
             </Swiper>
 
             <UiCursorMarquee ref="cursorMarqueeRef" />
         </div>
-    </div>
+    </section>
 </template>
 
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Autoplay } from 'swiper/modules';
 import { gsap } from 'gsap';
+import type { Swiper as SwiperClass } from 'swiper/types';
 import type { CarouselSlide, CursorMarqueeExpose } from '~/types';
 
 const cursorMarqueeRef = ref<CursorMarqueeExpose | null>(null);
 const contentRef = ref<HTMLElement | null>(null);
 
-let swiperInstance: any = null;
+let swiperInstance: SwiperClass | null = null;
 
-const onSwiper = (swiper: any) => {
+const onSwiper = (swiper: SwiperClass) => {
     swiperInstance = swiper;
     // Stop autoplay immediately - we'll start it after the entrance animation
     swiperInstance.autoplay.stop();
 };
 
+const reducedMotion = useReducedMotion();
+const paused = ref(false);
+
 const startAutoplay = () => {
-    if (swiperInstance) {
-        swiperInstance.autoplay.start();
+    if (!swiperInstance) return;
+    // An auto-advancing carousel is exactly what prefers-reduced-motion asks us
+    // not to do, so start paused and let the user opt in.
+    if (reducedMotion.value) {
+        paused.value = true;
+        return;
     }
+    swiperInstance.autoplay.start();
+};
+
+const togglePlay = () => {
+    if (!swiperInstance) return;
+    paused.value = !paused.value;
+    if (paused.value) swiperInstance.autoplay.stop();
+    else swiperInstance.autoplay.start();
 };
 
 const update = () => {

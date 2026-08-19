@@ -11,7 +11,6 @@ import { Media } from './collections/Media'
 import { Recipes } from './collections/Recipes'
 import { RecipeOfTheDay } from './globals/RecipeOfTheDay'
 import { rotateRecipeOfTheDayTask } from './tasks/rotateRecipeOfTheDay'
-import { config } from 'dotenv'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

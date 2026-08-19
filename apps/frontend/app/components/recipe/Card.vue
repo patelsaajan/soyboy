@@ -13,6 +13,7 @@
                     v-if="imageSrc"
                     :src="imageSrc"
                     :alt="recipe.title"
+                    sizes="(max-width: 1024px) 40vw, 320px"
                     container-class="w-2/5 h-full rounded-md shrink-0"
                     class="object-cover"
                 />
@@ -39,6 +40,7 @@
                     v-if="imageSrc"
                     :src="imageSrc"
                     :alt="recipe.title"
+                    sizes="160px"
                     container-class="w-40 h-full rounded-md shrink-0"
                     class="object-cover"
                 />
@@ -65,6 +67,7 @@
                     v-if="imageSrc"
                     :src="imageSrc"
                     :alt="recipe.title"
+                    sizes="(max-width: 640px) 50vw, 300px"
                     container-class="w-full h-full rounded-md"
                     class="object-cover"
                 />
@@ -85,6 +88,7 @@
                     v-if="imageSrc"
                     :src="imageSrc"
                     :alt="recipe.title"
+                    sizes="(max-width: 640px) 50vw, 300px"
                     container-class="w-full aspect-square rounded-md"
                     class="object-cover"
                 />
@@ -109,7 +113,8 @@
                         v-if="imageSrc"
                         :src="imageSrc"
                         :alt="recipe.title"
-                        container-class="w-24 h-24 rounded-md shrink-0"
+                        sizes="96px"
+                    container-class="w-24 h-24 rounded-md shrink-0"
                         class="object-cover"
                     />
                     <div

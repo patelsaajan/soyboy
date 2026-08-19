@@ -1,5 +1,5 @@
 <template>
-
+    <div>
     <div
         class="container mx-auto my-16 lg:my-20 px-4 lg:px-0"
     >
@@ -10,6 +10,18 @@
             <div
                 class="flex flex-col gap-12 lg:gap-20 lg:col-span-8"
             >
+
+            <h1 class="text-[2rem]">Vegan Recipes</h1>
+
+            <p v-if="allRecipesError" role="alert" class="text-white/80">
+                Sorry, recipes couldn't be loaded right now. Please try again shortly.
+            </p>
+
+            <!-- Announces sidebar preview swaps, which are otherwise silent to
+                 assistive tech. -->
+            <p class="sr-only" aria-live="polite">
+                {{ selectedRecipe ? `Now previewing ${selectedRecipe.title}` : '' }}
+            </p>
 
             <!-- TOP RECIPES -->
             <div ref="topRecipesSection" class="flex flex-col gap-4">
@@ -151,6 +163,8 @@
                     <UiImage
                         :key="selectedRecipe.uri"
                         :src="selectedRecipe.imgSrc"
+                        :alt="selectedRecipe.title"
+                        sizes="(max-width: 1024px) 100vw, 400px"
                         container-class="aspect-square w-full rounded-md"
                         class="object-cover"
                     />
@@ -231,6 +245,8 @@
                     <UiImage
                         :key="`drawer-${selectedRecipe.uri}`"
                         :src="selectedRecipe.imgSrc"
+                        :alt="selectedRecipe.title"
+                        sizes="(max-width: 1024px) 100vw, 400px"
                         container-class="aspect-square w-full rounded-md"
                         class="object-cover"
                     />
@@ -263,6 +279,7 @@
             </div>
         </template>
     </UDrawer>
+    </div>
 </template>
 
 <script lang="ts" setup>
@@ -425,8 +442,19 @@ function selectRandomRecipe() {
     selectedRecipe.value = all[randomIndex] ?? null;
 }
 
+// Hoisted so it can be reverted on unmount. gsap.matchMedia() registers a
+// matchMedia change listener and every scrollTrigger registers global
+// scroll/resize handlers holding DOM references; without revert() these
+// accumulate on every SPA navigation back to this page.
+let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+
+onUnmounted(() => {
+    mm?.revert();
+    mm = null;
+});
+
 onMounted(() => {
-    const mm = gsap.matchMedia();
+    mm = gsap.matchMedia();
     const ease = 'power2.out';
 
     mm.add('(min-width: 1024px)', () => {
