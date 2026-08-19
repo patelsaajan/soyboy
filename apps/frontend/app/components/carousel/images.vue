@@ -19,8 +19,8 @@
                 :breakpoints="{
                     768: { slidesPerView: 'auto', spaceBetween: 40 },
                 }"
-                @swiper="onSwiper"
                 class="w-full"
+                @swiper="onSwiper"
             >
                 <SwiperSlide
                     v-for="(slide, index) in slides"
@@ -48,14 +48,15 @@
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Autoplay } from 'swiper/modules';
 import { gsap } from 'gsap';
+import type { Swiper as SwiperClass } from 'swiper/types';
 import type { CarouselSlide, CursorMarqueeExpose } from '~/types';
 
 const cursorMarqueeRef = ref<CursorMarqueeExpose | null>(null);
 const contentRef = ref<HTMLElement | null>(null);
 
-let swiperInstance: any = null;
+let swiperInstance: SwiperClass | null = null;
 
-const onSwiper = (swiper: any) => {
+const onSwiper = (swiper: SwiperClass) => {
     swiperInstance = swiper;
     // Stop autoplay immediately - we'll start it after the entrance animation
     swiperInstance.autoplay.stop();

@@ -123,8 +123,7 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue';
 import { gsap } from 'gsap';
-import { features } from '../../content/home';
-import { questions } from '../../content/home';
+import { features, questions } from '../../content/home';
 
 const firstWord = "SOYBOY";
 const secondWord = "SAAJAN";
