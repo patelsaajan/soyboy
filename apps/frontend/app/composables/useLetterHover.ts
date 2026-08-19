@@ -34,13 +34,17 @@ export function useLetterHover(options: UseLetterHoverOptions = {}) {
 
             const intensity = Math.max(0, 1 - distance / maxDistance);
 
+            // overwrite: 'auto' — GSAP defaults to overwrite: false, so without
+            // this every mousemove (60-120/s) stacks one live tween per letter
+            // onto the previous ones, all animating the same property.
             if (intensity > 0) {
                 gsap.to(el, {
                     color: gsap.utils.interpolate(baseColor, primaryColor, intensity),
                     duration,
+                    overwrite: 'auto',
                 });
             } else {
-                gsap.to(el, { color: baseColor, duration });
+                gsap.to(el, { color: baseColor, duration, overwrite: 'auto' });
             }
         });
     }

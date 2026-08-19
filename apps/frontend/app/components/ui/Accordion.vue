@@ -4,6 +4,7 @@
         class="container mx-auto opacity-0 translate-y-10"
     >
         <UiHoverText
+                    as="h2"
             :text="title"
             container-class="text-4xl md:text-6xl font-bold tracking-tight mb-8 font-sans col-span-12 lg:col-span-7 gap-x-4"
         />
@@ -13,20 +14,37 @@
                 :key="item.id"
                 class="border-2 border-primary rounded-lg overflow-hidden"
             >
-                <button
-                    class="w-full flex justify-between items-center p-6 text-left bg-primary/20 hover:bg-primary/40 transition-colors duration-300 cursor-pointer"
-                    @click="toggle(item.id)"
-                >
-                    <span class="text-xl font-bold">{{ item.question }}</span>
-                    <span
-                        class="text-2xl transition-transform duration-300"
-                        :class="{ 'rotate-45': openId === item.id }"
+                <h3>
+                    <button
+                        :id="`faq-trigger-${item.id}`"
+                        type="button"
+                        :aria-expanded="openId === item.id"
+                        :aria-controls="`faq-panel-${item.id}`"
+                        class="w-full flex justify-between items-center p-6 text-left bg-primary/20 hover:bg-primary/40 transition-colors duration-300 cursor-pointer"
+                        @click="toggle(item.id)"
                     >
-                        +
-                    </span>
-                </button>
+                        <span class="text-xl font-bold">{{ item.question }}</span>
+                        <!-- Decorative: the +/x is a visual affordance for the
+                             state already exposed via aria-expanded, and would
+                             otherwise land in the accessible name. -->
+                        <span
+                            aria-hidden="true"
+                            class="text-2xl transition-transform duration-300"
+                            :class="{ 'rotate-45': openId === item.id }"
+                        >
+                            +
+                        </span>
+                    </button>
+                </h3>
+                <!-- height:0 + overflow:hidden hides this visually but leaves
+                     the answer readable by screen readers and its links in the
+                     tab order; `inert` is what actually removes it. -->
                 <div
+                    :id="`faq-panel-${item.id}`"
                     :ref="(el) => setItemRef(item.id, el as HTMLElement)"
+                    role="region"
+                    :aria-labelledby="`faq-trigger-${item.id}`"
+                    :inert="openId !== item.id"
                     class="overflow-hidden"
                     :style="{ height: openId === item.id ? heights[item.id] + 'px' : '0px' }"
                 >

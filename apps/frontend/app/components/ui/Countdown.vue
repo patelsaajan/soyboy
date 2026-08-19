@@ -5,6 +5,7 @@
     >
         <div class="flex flex-col gap-20 w-full">
             <UiHoverText
+                    as="h2"
                     v-if="title"
                     :text="title"
                     container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans col-span-12 lg:col-span-7 gap-x-4"
@@ -81,6 +82,19 @@ let interval: ReturnType<typeof setInterval> | null = null;
 function startCountdown() {
     updateTime();
     interval = setInterval(updateTime, 1000);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+}
+
+// Five reactive writes per second drive a re-render every second for the life
+// of the page; there is no reason to keep that running in a hidden tab.
+function onVisibilityChange() {
+    if (document.hidden) {
+        if (interval) clearInterval(interval);
+        interval = null;
+    } else if (!interval) {
+        updateTime();
+        interval = setInterval(updateTime, 1000);
+    }
 }
 
 onMounted(() => {
@@ -89,5 +103,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     if (interval) clearInterval(interval);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
 });
 </script>
