@@ -11,6 +11,8 @@
                 class="flex flex-col gap-12 lg:gap-20 lg:col-span-8"
             >
 
+            <h1 class="text-[2rem]">Vegan Recipes</h1>
+
             <!-- TOP RECIPES -->
             <div ref="topRecipesSection" class="flex flex-col gap-4">
                 <h2>Highlights</h2>
@@ -274,6 +276,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const { data: allRecipes } = await useAllRecipes()
+
+useSeo({
+    title: 'All Vegan Recipes',
+    description:
+        'Browse every vegan recipe on Soyboy Saajan — highlights, latest additions and the full archive, with ingredients, servings and cook times.',
+    path: '/recipes',
+    type: 'website',
+});
 
 const highlights = computed(() =>
     [...(allRecipes.value ?? [])]
