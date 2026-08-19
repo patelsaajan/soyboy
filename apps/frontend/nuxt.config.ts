@@ -30,6 +30,22 @@ export default defineNuxtConfig({
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        // Recipe copy is CMS-authored. Vue escapes it today, so there is no
+        // live XSS — but the moment rich text is rendered with v-html this is
+        // the only thing standing between a CMS compromise and script
+        // execution on the public origin.
+        'Content-Security-Policy': [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline'", // Nuxt inlines its hydration payload
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: blob:",
+          "font-src 'self' data:",
+          "connect-src 'self'",
+          "frame-ancestors 'none'",
+          "base-uri 'self'",
+          "form-action 'self'",
+          "object-src 'none'",
+        ].join('; '),
       },
     },
     '/':            { swr: 60 * 60 * 24 },      // home — revalidate daily

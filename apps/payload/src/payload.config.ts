@@ -34,6 +34,19 @@ function resolveConnectionString(): string {
   return process.env.DATABASE_URL || ''
 }
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+/**
+ * Origins allowed to make credentialed cross-origin requests. localhost is
+ * development-only — shipping it in production means anything served from
+ * localhost:4000 gets a passing CORS preflight against the live CMS.
+ */
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.PAYLOAD_URL,
+  ...(isProduction ? [] : ['http://localhost:4000', 'http://localhost:4001', 'http://localhost:3000']),
+].filter((v): v is string => Boolean(v))
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -97,10 +110,10 @@ export default buildConfig({
       },
     }),
   ],
-  cors: [
-    process.env.FRONTEND_URL || 'http://localhost:4000',
-    process.env.PAYLOAD_URL || 'http://localhost:3000',
-    'http://localhost:4000', // Local development,
-    'http://localhost:4001', // Preview mode
-  ].filter(Boolean),
+  // serverURL must be set for Payload to populate its CSRF allowlist: with both
+  // `csrf` and `serverURL` empty, extractJWT's origin check short-circuits and
+  // accepts a cookie-borne token from ANY origin.
+  serverURL: process.env.PAYLOAD_URL || 'http://localhost:3000',
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
 })
