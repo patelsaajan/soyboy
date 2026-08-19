@@ -1,188 +1,57 @@
-# Sidequest Saajan — Payload Monorepo
+# Soyboy
 
-A Turborepo monorepo for building and selling Payload CMS-powered client sites. Each client gets their own app. Shared functionality lives in plugin packages that any app can install.
+Saajan Patel's vegan recipe site. A Turborepo monorepo containing the public
+site and the CMS that backs it, both deployed to Cloudflare Workers.
 
 ## Structure
 
 ```
 apps/
-├── payload-vanilla/        # Base template — copy this when starting a new client app
-└── <client-name>/          # Client apps
+├── frontend/    # Nuxt 4 public site (soyboy.saajanpatel.co.uk)
+└── payload/     # Payload CMS 3 on Next.js (cms.soyboy.saajanpatel.co.uk)
 
 packages/
-├── plugin-vanilla/         # Base plugin template — copy this when creating a new plugin
-├── plugin-<name>/          # Feature plugins (collections, fields, hooks)
-├── ui/                     # Shared React components
-├── eslint-config/          # Shared ESLint config
-└── typescript-config/      # Shared tsconfig presets
+├── ui/                  # Shared React components (currently unused)
+├── eslint-config/       # Shared ESLint config
+└── typescript-config/   # Shared tsconfig presets
 ```
 
-### How it works
-
-- **Apps** are full Payload + Next.js sites. They own their own database, `.env`, and any site-specific config.
-- **Plugins** are TypeScript packages that export a Payload plugin function. They add collections, fields, hooks, and endpoints to whichever app installs them.
-- Apps consume plugins by adding them to `dependencies` and registering them in `payload.config.ts`.
+The frontend talks to Payload over a Cloudflare **service binding** (`BACKEND`),
+so the CMS origin never appears in the browser. Media is proxied through
+`/api/media/file/**` on the frontend for the same reason.
 
 ## Prerequisites
 
-- [pnpm](https://pnpm.io) `>= 9`
-- [Docker](https://www.docker.com) (for local Postgres)
-- Node `>= 20.9.0`
+- Node `>= 22.13.0`
+- [pnpm](https://pnpm.io) 11
+- [Docker](https://www.docker.com) (local Postgres for the CMS)
 
 ## Getting started
 
-**1. Install dependencies from the monorepo root:**
-
 ```bash
 pnpm install
+pnpm db:up          # start local Postgres
+pnpm db:migrate:fresh
+pnpm db:seed
+pnpm dev            # frontend on :4000, CMS on :3000
 ```
 
-**2. Start the database for the app you want to run:**
+Copy `.env.example` to `.env` in each app first.
 
-```bash
-cd apps/<app-name>
-docker compose up postgres -d
-```
-
-**3. Set up your `.env`:**
-
-```bash
-cp .env.example .env
-```
-
-Minimum required variables:
-
-```env
-DATABASE_URL=postgresql://postgres:payload@localhost:5432/<db-name>
-PAYLOAD_SECRET=your-random-secret
-NEXT_PUBLIC_SERVER_URL=http://localhost:3000
-```
-
-**4. Run the app:**
-
-```bash
-pnpm dev
-```
-
-Admin panel is at `http://localhost:3000/admin`.
-
-## Creating a new client app
-
-1. Copy the vanilla app:
-   ```bash
-   cp -r apps/payload-vanilla apps/<client-name>
-   ```
-
-2. Update `apps/<client-name>/package.json`:
-   ```json
-   { "name": "@soyboy/<client-name>" }
-   ```
-
-3. Update `docker-compose.yml` — change `POSTGRES_DB` to match the new app name.
-
-4. Create `.env` with a fresh `DATABASE_URL` and `PAYLOAD_SECRET`.
-
-5. Install plugins the client needs by adding them to `dependencies` and registering in `payload.config.ts`.
-
-6. Update `next.config.ts` — add any local plugins to `transpilePackages`.
-
-7. Run `pnpm install` from the monorepo root.
-
-## Creating a new plugin
-
-1. Copy the vanilla plugin:
-   ```bash
-   cp -r packages/plugin-vanilla packages/plugin-<name>
-   ```
-
-2. Update `packages/plugin-<name>/package.json`:
-   ```json
-   { "name": "@soyboy/plugin-<name>" }
-   ```
-
-3. Build your collections and logic in `src/collections/` and wire them into `src/index.ts`.
-
-4. Add the plugin to an app's `package.json`:
-   ```json
-   { "dependencies": { "@soyboy/plugin-<name>": "workspace:*" } }
-   ```
-
-5. Register it in the app's `payload.config.ts`:
-   ```ts
-   import { myPlugin } from '@soyboy/plugin-<name>'
-
-   export default buildConfig({
-     plugins: [myPlugin({})],
-   })
-   ```
-
-6. Add it to `transpilePackages` in `next.config.ts`:
-   ```ts
-   transpilePackages: ['@soyboy/plugin-<name>']
-   ```
-
-7. Run `pnpm install` from the monorepo root.
-
-## Deploying to Railway
-
-Each client app deploys as its own Railway service pointing at the monorepo root.
-
-### Prerequisites
-
-- A Railway project with a Postgres database service added
-- The monorepo pushed to GitHub and connected to Railway
-
-### Service settings
-
-**Root Directory:** `/`
-
-**Custom Build Command:**
-```
-pnpm --filter @soyboy/<app-name> build
-```
-
-**Pre-deploy Step** (click "+ Add pre-deploy step"):
-```
-pnpm --filter @soyboy/<app-name> payload migrate
-```
-
-**Custom Start Command:**
-```
-pnpm --filter @soyboy/<app-name> start
-```
-
-**Watch Paths** (so Railway only redeploys when relevant files change):
-```
-apps/<app-name>/**
-packages/plugin-<name>/**
-```
-
-### Environment variables
-
-Set these in the Railway service → Variables tab:
-
-| Variable | Value |
-|---|---|
-| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
-| `PAYLOAD_SECRET` | Any long random string |
-| `NEXT_PUBLIC_SERVER_URL` | Your Railway public URL (e.g. `https://your-app.up.railway.app`) |
-
-### Notes
-
-- `pnpm-lock.yaml` and `pnpm-workspace.yaml` must be committed — Railway uses them to install dependencies
-- The pre-deploy step runs `payload migrate` once after the build, before the new instance starts serving traffic
-- Migrations are intentionally separate from startup to prevent race conditions on scaled deployments
-
-## Common commands
+## Common tasks
 
 | Command | What it does |
-|---|---|
-| `pnpm install` | Install/link all workspace dependencies |
-| `pnpm dev` | Run the app in the current directory |
-| `pnpm run build` | Build the app |
-| `pnpm run generate:types` | Regenerate `payload-types.ts` after schema changes |
-| `docker compose up postgres -d` | Start the local Postgres container in the background |
-| `docker compose down` | Stop Postgres |
-| `docker compose down -v` | Stop Postgres and wipe all data |
-| `pnpm --filter @soyboy/<app-name> build` | Build a specific app |
-| `pnpm --filter @soyboy/<app-name> dev` | Run a specific app |
+| --- | --- |
+| `pnpm dev` | Run both apps |
+| `pnpm build` | Build both apps |
+| `pnpm lint` | ESLint across the workspace |
+| `pnpm check-types` | Type-check across the workspace |
+| `pnpm db:up` / `db:down` | Start/stop local Postgres |
+| `pnpm db:seed` | Seed recipes |
+
+## Deployment
+
+Both apps deploy to Cloudflare Workers. See `RAILWAY-TO-CLOUDFLARE.md` for the
+migration write-up and `CLOUDFLARE_BUILDS.md` for build configuration.
+
+The CMS uses Neon Postgres via Hyperdrive and R2 for media storage.

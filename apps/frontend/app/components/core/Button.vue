@@ -55,6 +55,9 @@ const props = withDefaults(defineProps<{
     icon?: string;
     iconPosition?: 'left' | 'right';
 }>(), {
+    to: undefined,
+    color: undefined,
+    icon: undefined,
     iconPosition: 'left',
 });
 

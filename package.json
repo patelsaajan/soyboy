@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,vue,md,css}\"",
     "check-types": "turbo run check-types",
     "db:up": "docker compose -f apps/payload/docker-compose.yml up -d postgres",
     "db:down": "docker compose -f apps/payload/docker-compose.yml stop postgres",
@@ -23,9 +23,5 @@
   "engines": {
     "node": ">=22.13.0"
   },
-  "packageManager": "pnpm@11.5.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "packageManager": "pnpm@11.5.0"
 }

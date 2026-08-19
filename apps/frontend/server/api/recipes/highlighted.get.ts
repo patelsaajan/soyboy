@@ -1,6 +1,9 @@
 export default defineCachedEventHandler(async (event) => {
   const res = await payloadFetch<PayloadListResponse>(event, '/api/recipes', {
     'where[highlighted][equals]': true,
+    // Defence in depth: Recipes.access.read already constrains anonymous
+    // reads to published documents.
+    'where[_status][equals]': 'published',
     limit: 4,
     depth: 1,
     sort: '-createdAt',
