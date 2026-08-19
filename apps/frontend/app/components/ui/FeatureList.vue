@@ -6,6 +6,7 @@
         <div class="w-full h-full flex gap-20 flex-col">
             <div class="grid grid-cols-12 px-4 sm:px-0">
                 <UiHoverText
+                    as="h2"
                     :text="features.title"
                     container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans col-span-12 lg:col-span-7 gap-x-4"
                 />
@@ -20,28 +21,42 @@
             <div class="bg-primary/40 p-4 sm:p-8 sm:rounded-2xl shadow-lg border-3 border-primary/40">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Feature items on the left -->
-                    <div class="flex flex-col justify-between row-span-1 gap-4">
-                        <div
+                    <div
+                        class="flex flex-col justify-between row-span-1 gap-4"
+                        role="tablist"
+                        :aria-label="features.title"
+                    >
+                        <button
                             v-for="item in features.items"
+                            :id="`feature-tab-${item.id}`"
                             :key="item.id"
-                            class="flex items-center gap-4 backdrop-blur-sm rounded-2xl px-6 py-4 transition-colors cursor-pointer"
+                            type="button"
+                            role="tab"
+                            :aria-selected="selectedItem?.id === item.id"
+                            :aria-controls="`feature-panel-${item.id}`"
+                            class="flex items-center gap-4 backdrop-blur-sm rounded-2xl px-6 py-4 transition-colors cursor-pointer text-left"
                             :class="selectedItem?.id === item.id ? 'bg-primary' : 'bg-primary/40 hover:bg-primary/60'"
                             @click="selectItem(item)"
                         >
                             <div class="flex-shrink-0 size-16 bg-primary/80 rounded-full flex items-center justify-center">
                                 <Icon
                                     :name="item.icon"
+                                    aria-hidden="true"
                                     class="size-8 text-white"
                                 />
                             </div>
                             <span class="text-white font-medium text-2xl font-sans">
                                 {{ item.label }}
                             </span>
-                        </div>
+                        </button>
                     </div>
 
                     <!-- Title card on the right -->
                     <div
+                        :id="selectedItem ? `feature-panel-${selectedItem.id}` : undefined"
+                        role="tabpanel"
+                        :aria-labelledby="selectedItem ? `feature-tab-${selectedItem.id}` : undefined"
+                        tabindex="0"
                         class="bg-background rounded-2xl p-8 shadow-lg flex flex-col overflow-hidden row-span-1"
                     >
                         <h2
@@ -65,7 +80,7 @@
                             <NuxtImg
                                 ref="cardImageRef"
                                 :src="`${selectedItem.image}`"
-                                alt="Feature Image"
+                                :alt="selectedItem.hoverLabel || selectedItem.title"
                                 class="rounded-lg object-cover w-auto aspect-square h-80"
                             />
                         </div>

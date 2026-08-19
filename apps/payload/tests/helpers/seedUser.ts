@@ -10,6 +10,18 @@ export const testUser = {
  * Seeds a test user for e2e admin tests.
  */
 export async function seedTestUser(): Promise<void> {
+  // This creates a full-admin account with a well-known default password
+  // (dev@payloadcms.com / test) against whatever DATABASE_URL is set. Running
+  // the e2e suite against staging or production would plant that account there,
+  // and the cleanup below only runs if the suite completes.
+  const databaseUrl = process.env.DATABASE_URL ?? ''
+  const isLocalDatabase = /localhost|127\.0\.0\.1|host\.docker\.internal/.test(databaseUrl)
+  if (process.env.NODE_ENV === 'production' || !isLocalDatabase) {
+    throw new Error(
+      'seedTestUser refuses to run: DATABASE_URL does not point at a local database.',
+    )
+  }
+
   const payload = await getPayload({ config })
 
   // Delete existing test user if any

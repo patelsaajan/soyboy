@@ -66,6 +66,7 @@
             <!-- Story + Countdown side by side -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
                   <UiHoverText
+                    as="h2"
                     text="How long I've been a soyboy?"
                     container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans lg:col-span-7 gap-x-4"
                 />
@@ -89,8 +90,13 @@
                     { value: Math.round(veganDays * 2.8), title: 'forest', subtitle: 'still standing', color: 'oklch(0.58 0.13 145)', unit: 'm²' },
                 ]"
             >
-                <span class="text-xs text-white/20 text-right">
-                    Stats via <a href="https://thevegancalculator.com/" target="_blank" class="underline hover:text-white/40 transition-colors">Vegan Calculator</a>
+                <span class="text-xs text-white/60 text-right">
+                    Stats via <a
+                        href="https://thevegancalculator.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="underline hover:text-white transition-colors"
+                    >Vegan Calculator<span class="sr-only"> (opens in a new tab)</span></a>
                 </span>
             </UiImpactLedger>
         </div>
@@ -123,8 +129,26 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue';
 import { gsap } from 'gsap';
-import { features } from '../../content/home';
-import { questions } from '../../content/home';
+import { features, questions } from '../../content/home';
+
+useSeo({
+    title: 'Vegan Recipes That Actually Slap',
+    description:
+        'Bold, fuss-free vegan recipes with exact ingredients, quantities and method. Plant-based cooking without the lecture.',
+    path: '/',
+    type: 'website',
+});
+
+// The FAQ copy is real Q&A content that was previously unmarked.
+useJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: questions.map(q => ({
+        '@type': 'Question',
+        name: q.question,
+        acceptedAnswer: { '@type': 'Answer', text: q.answer },
+    })),
+});
 
 const firstWord = "SOYBOY";
 const secondWord = "SAAJAN";
