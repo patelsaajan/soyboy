@@ -8,6 +8,8 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: { lang: 'en-GB' },
+      titleTemplate: '%s | Soyboy Saajan',
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -54,6 +56,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3000',
+    public: {
+      // Canonical origin for absolute URLs in meta tags, JSON-LD and sitemap.
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://soyboy.saajanpatel.co.uk',
+      siteName: 'Soyboy Saajan',
+    },
   },
 
   modules: [
