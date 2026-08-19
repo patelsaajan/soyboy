@@ -10,24 +10,24 @@
                     container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans col-span-12 lg:col-span-7 gap-x-4"
                 />
             <div class="flex flex-wrap gap-6 md:gap-12 lg:gap-20 justify-center">
-            <CoreStatisitc
+            <CoreStatistic
                 :number="years"
                 statistic="Years"
                 :padding="1"
             />
-            <CoreStatisitc
+            <CoreStatistic
                 :number=days
                 statistic="Days"
             />
-            <CoreStatisitc
+            <CoreStatistic
                 :number=hours
                 statistic="Hours"
             />
-            <CoreStatisitc
+            <CoreStatistic
                 :number=minutes
                 statistic="Minutes"
             />
-            <CoreStatisitc
+            <CoreStatistic
                 :number=seconds
                 statistic="Seconds"
             />

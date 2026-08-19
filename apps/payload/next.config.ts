@@ -7,7 +7,6 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
-  transpilePackages: [''],
   // Required by OpenNext. We drive `next build --webpack` ourselves (see the
   // cf:* scripts) with --skipNextBuild, which bypasses OpenNext's automatic
   // standalone injection — so we set it here. outputFileTracingRoot points at
