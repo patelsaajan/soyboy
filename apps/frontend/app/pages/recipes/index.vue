@@ -1,5 +1,5 @@
 <template>
-
+    <div>
     <div
         class="container mx-auto my-16 lg:my-20 px-4 lg:px-0"
     >
@@ -263,6 +263,7 @@
             </div>
         </template>
     </UDrawer>
+    </div>
 </template>
 
 <script lang="ts" setup>
