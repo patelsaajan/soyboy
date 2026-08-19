@@ -1,9 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
+import { authenticated, publishedOrAuthenticated } from '../access'
+
 export const Recipes: CollectionConfig = {
   slug: 'recipes',
   access: {
-    read: () => true,
+    read: publishedOrAuthenticated,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   admin: {
     defaultColumns: ['title', 'status', 'updatedAt'],
