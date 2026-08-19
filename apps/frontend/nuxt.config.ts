@@ -8,6 +8,8 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: { lang: 'en-GB' },
+      titleTemplate: '%s | Soyboy Saajan',
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -30,6 +32,22 @@ export default defineNuxtConfig({
         'X-Content-Type-Options': 'nosniff',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        // Recipe copy is CMS-authored. Vue escapes it today, so there is no
+        // live XSS — but the moment rich text is rendered with v-html this is
+        // the only thing standing between a CMS compromise and script
+        // execution on the public origin.
+        'Content-Security-Policy': [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline'", // Nuxt inlines its hydration payload
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: blob:",
+          "font-src 'self' data:",
+          "connect-src 'self'",
+          "frame-ancestors 'none'",
+          "base-uri 'self'",
+          "form-action 'self'",
+          "object-src 'none'",
+        ].join('; '),
       },
     },
     // Static images are content-addressed by filename and never mutate in
@@ -66,6 +84,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     payloadUrl: process.env.PAYLOAD_URL || 'http://localhost:3000',
+    public: {
+      // Canonical origin for absolute URLs in meta tags, JSON-LD and sitemap.
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://soyboy.saajanpatel.co.uk',
+      siteName: 'Soyboy Saajan',
+    },
   },
 
   // @nuxt/ui already declares @nuxt/icon and @nuxt/fonts as module dependencies

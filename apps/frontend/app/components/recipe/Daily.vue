@@ -20,6 +20,7 @@
         >
             <NuxtImg
                 :src="recipe.imgSrc"
+                :alt="recipe.title"
                 format="auto"
                 width="400"
                 height="400"
@@ -63,10 +64,10 @@
         >
             <UMarquee
                 class="cursor-pointer"
-                @click="toggleRecipe"
-                 :ui="{
+                :ui="{
                         root: 'before:from-background after:from-background'
                     }"
+                 @click="toggleRecipe"
             >
                 <span
                     v-for="n in 4"
@@ -87,13 +88,19 @@ const props = defineProps<{
     disableEntrance?: boolean;
 }>();
 
+// defineExpose must run before any top-level await, so the ref is declared here
+// and handed to useScrollEntrance below rather than being created by it.
+const elementRef = ref<HTMLElement | null>(null);
+defineExpose({ el: elementRef });
+
 const { data: recipe } = await useRecipeOfTheDay()
 
 const isOpen = ref(false);
 const recipeCard = ref<HTMLElement | null>(null);
 const isAnimating = ref(false);
 
-const { elementRef } = useScrollEntrance({
+useScrollEntrance({
+    elementRef,
     threshold: 0.5,
     onEnter: () => {
         if (props.disableEntrance) return;
@@ -156,10 +163,6 @@ function closeRecipe() {
         },
     });
 }
-
-defineExpose({
-    el: elementRef,
-});
 </script>
 
 <style scoped>

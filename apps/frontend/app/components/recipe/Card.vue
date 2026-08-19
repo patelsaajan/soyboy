@@ -1,7 +1,9 @@
 <template>
     <component
-        :is="linkable ? NuxtLink : 'div'"
+        :is="linkable ? NuxtLink : 'a'"
         :to="linkable ? recipeLink : undefined"
+        :href="linkable ? undefined : recipeLink"
+        :aria-current="!linkable && selected ? 'true' : undefined"
         :class="containerClasses"
     >
         <!-- LARGE: Horizontal with 40/60 split -->
@@ -10,6 +12,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     sizes="(max-width: 1024px) 40vw, 320px"
                     container-class="w-2/5 h-full rounded-md shrink-0"
                     class="object-cover"
@@ -36,6 +39,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     sizes="160px"
                     container-class="w-40 h-full rounded-md shrink-0"
                     class="object-cover"
@@ -62,6 +66,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     sizes="(max-width: 640px) 50vw, 300px"
                     container-class="w-full h-full rounded-md"
                     class="object-cover"
@@ -82,6 +87,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     sizes="(max-width: 640px) 50vw, 300px"
                     container-class="w-full aspect-square rounded-md"
                     class="object-cover"
@@ -106,8 +112,9 @@
                     <UiImage
                         v-if="imageSrc"
                         :src="imageSrc"
+                        :alt="recipe.title"
                         sizes="96px"
-                    container-class="w-24 h-24 rounded-md shrink-0"
+                        container-class="w-24 h-24 rounded-md shrink-0"
                         class="object-cover"
                     />
                     <div
@@ -155,8 +162,10 @@ const recipeLink = computed(() => {
 });
 
 const containerClasses = computed(() => {
-    const base = 'relative overflow-hidden cursor-pointer transition-colors duration-300 block';
-    const selectedBorder = props.selected ? 'border-primary' : 'border-white/30 hover:border-white';
+    const base = 'relative overflow-hidden cursor-pointer transition-colors duration-300 block w-full text-left';
+    const selectedBorder = props.selected
+        ? 'border-primary ring-2 ring-white ring-offset-2 ring-offset-background'
+        : 'border-white/45 hover:border-white';
 
     switch (props.size) {
         case 'large':

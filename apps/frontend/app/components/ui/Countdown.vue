@@ -5,6 +5,7 @@
     >
         <div class="flex flex-col gap-20 w-full">
             <UiHoverText
+                    as="h2"
                     v-if="title"
                     :text="title"
                     container-class="text-4xl md:text-6xl font-bold tracking-tight mb-4 font-sans col-span-12 lg:col-span-7 gap-x-4"

@@ -14,7 +14,7 @@
                     :to="`/recipes/${r.uri}`"
                 />
             </div>
-            <div class="col-span-12 lg:col-span-6 flex flex-col gap-8">
+            <article class="col-span-12 lg:col-span-6 flex flex-col gap-8">
                   <UiImage
                     ref="heroImage"
                     :src="recipeImage"
@@ -22,7 +22,7 @@
                     container-class="aspect-square w-full rounded-md lg:col-span-3"
                     class="object-cover"
                 />
-                <h2 ref="title">{{ recipe.title }}</h2>
+                <h1 ref="title">{{ recipe.title }}</h1>
                 <div ref="pills" class="flex gap-3">
                     <RecipeMeta :recipe="recipe" />
                 </div>
@@ -32,6 +32,7 @@
                 <div ref="stepsContainer" class="flex flex-col gap-8 pt-2">
                     <div
                         v-for="(step, index) in recipe.method"
+                        :id="`step-${index + 1}`"
                         :key="index"
                         class="flex flex-col gap-2"
                     >
@@ -90,7 +91,7 @@
                         </CoreButton>
                     </div>
                 </div>
-            </div>
+            </article>
             <div ref="rightColumn" class="hidden lg:flex col-span-3 flex-col gap-6 sticky top-20 self-start">
                 <div class="text-xl font-sans">
                     Nutritional Information (per 100g)
@@ -135,6 +136,105 @@ if (error.value || !recipeData.value) {
 
 const recipe = recipeData as Ref<Recipe>
 const recipeImage = computed(() => recipe.value.imgSrc);
+
+useSeo({
+    title: recipe.value.title,
+    description: recipe.value.description,
+    path: `/recipes/${recipe.value.uri}`,
+    image: recipe.value.imgSrc,
+    type: 'article',
+});
+
+const { public: { siteUrl } } = useRuntimeConfig();
+const origin = String(siteUrl).replace(/\/$/, '');
+
+/** "1 hr 15 minutes" -> "PT1H15M". Undefined when nothing parses. */
+function toIsoDuration(value?: string): string | undefined {
+    if (!value) return undefined;
+    const hours = /(\d+)\s*(h|hr|hour)/i.exec(value);
+    const minutes = /(\d+)\s*(m|min|minute)/i.exec(value);
+    if (!hours && !minutes) return undefined;
+    return `PT${hours ? `${hours[1]}H` : ''}${minutes ? `${minutes[1]}M` : ''}`;
+}
+
+// Maps the free-text nutrition rows the CMS stores onto schema.org's fixed
+// property names. Unrecognised rows are dropped rather than guessed at.
+const NUTRITION_KEYS: Record<string, string> = {
+    calories: 'calories',
+    energy: 'calories',
+    protein: 'proteinContent',
+    fat: 'fatContent',
+    'saturated fat': 'saturatedFatContent',
+    carbohydrates: 'carbohydrateContent',
+    carbs: 'carbohydrateContent',
+    fibre: 'fiberContent',
+    fiber: 'fiberContent',
+    sugar: 'sugarContent',
+    sugars: 'sugarContent',
+    salt: 'sodiumContent',
+    sodium: 'sodiumContent',
+};
+
+const nutritionLd = computed(() => {
+    const out: Record<string, string> = { '@type': 'NutritionInformation', servingSize: '100 g' };
+    for (const row of recipe.value.nutritional ?? []) {
+        const key = NUTRITION_KEYS[row.item.trim().toLowerCase()];
+        if (key) out[key] = row.value;
+    }
+    return Object.keys(out).length > 2 ? out : undefined;
+});
+
+// No aggregateRating: there is no rating data in the CMS, and inventing it
+// violates Google's structured-data policy.
+useJsonLd(() => {
+    const url = `${origin}/recipes/${recipe.value.uri}`;
+    const duration = toIsoDuration(recipe.value.time);
+    return [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Recipe',
+            '@id': `${url}#recipe`,
+            name: recipe.value.title,
+            url,
+            image: recipe.value.imgSrc ? [`${origin}${recipe.value.imgSrc}`] : undefined,
+            description: recipe.value.description,
+            datePublished: recipe.value.date,
+            author: { '@type': 'Person', name: 'Saajan Patel', url: 'https://saajanpatel.co.uk' },
+            publisher: { '@id': `${origin}/#organization` },
+            recipeCuisine: recipe.value.cuisine || undefined,
+            keywords: ['vegan', 'plant-based', recipe.value.cuisine].filter(Boolean).join(', '),
+            suitableForDiet: ['https://schema.org/VeganDiet', 'https://schema.org/VegetarianDiet'],
+            recipeYield: recipe.value.serves ? `${recipe.value.serves} servings` : undefined,
+            cookTime: duration,
+            totalTime: duration,
+            recipeIngredient: recipe.value.ingredients.map(i =>
+                [i.quantity || '', i.unit || '', i.item].filter(Boolean).join(' ').trim(),
+            ),
+            recipeInstructions: recipe.value.method.map((step, index) => ({
+                '@type': 'HowToStep',
+                position: index + 1,
+                name: step.title,
+                text: step.text,
+                url: `${url}#step-${index + 1}`,
+            })),
+            nutrition: nutritionLd.value,
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+                { '@type': 'ListItem', position: 2, name: 'Recipes', item: `${origin}/recipes` },
+                {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: recipe.value.title,
+                    item: `${origin}/recipes/${recipe.value.uri}`,
+                },
+            ],
+        },
+    ];
+});
 
 const relatedRecipes = computed(() =>
     (allRecipes.value ?? []).filter(r => r.uri !== slug).slice(0, 2)
