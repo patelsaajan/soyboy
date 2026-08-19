@@ -8,7 +8,7 @@ export const footerSections: FooterSection[] = [
             { label: 'Lentil Bolognese', to: '/recipes/lentil-bolognese' },
             { label: 'Gochujang Satay Sauce', to: '/recipes/korean-satay-sauce' },
             { label: 'Aglio e Olio', to: '/recipes/aglio-e-olio' },
-            { label: 'Spicy Beans', to: '/recipes/baked-beans' },
+            { label: 'Spicy Beans', to: '/recipes/spicy-beans' },
             { label: 'Infused Tofu', to: '/recipes/infused-tofu' },
         ],
     },
