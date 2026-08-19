@@ -13,6 +13,16 @@
 
             <h1 class="text-[2rem]">Vegan Recipes</h1>
 
+            <p v-if="allRecipesError" role="alert" class="text-white/80">
+                Sorry, recipes couldn't be loaded right now. Please try again shortly.
+            </p>
+
+            <!-- Announces sidebar preview swaps, which are otherwise silent to
+                 assistive tech. -->
+            <p class="sr-only" aria-live="polite">
+                {{ selectedRecipe ? `Now previewing ${selectedRecipe.title}` : '' }}
+            </p>
+
             <!-- TOP RECIPES -->
             <div ref="topRecipesSection" class="flex flex-col gap-4">
                 <h2>Highlights</h2>
@@ -25,7 +35,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </div>
                 <!-- Desktop: 2 column regular cards -->
@@ -37,7 +47,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </div>
             </div>
@@ -53,7 +63,7 @@
                         :recipe="featuredRecent!"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === featuredRecent!.uri"
-                        @click="selectRecipe(featuredRecent!)"
+                        @click.prevent="selectRecipe(featuredRecent!)"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
@@ -64,7 +74,7 @@
                             :recipe="r"
                             :linkable="false"
                             :selected="selectedRecipe?.uri === r.uri"
-                            @click="selectRecipe(r)"
+                            @click.prevent="selectRecipe(r)"
                         />
                     </div>
                 </div>
@@ -76,7 +86,7 @@
                         :recipe="featuredRecent!"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === featuredRecent!.uri"
-                        @click="selectRecipe(featuredRecent!)"
+                        @click.prevent="selectRecipe(featuredRecent!)"
                     />
                     <div class="grid grid-cols-2 gap-4">
                         <RecipeCard
@@ -87,7 +97,7 @@
                             :recipe="r"
                             :linkable="false"
                             :selected="selectedRecipe?.uri === r.uri"
-                            @click="selectRecipe(r)"
+                            @click.prevent="selectRecipe(r)"
                         />
                     </div>
                 </div>
@@ -107,7 +117,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </TransitionGroup>
                 <!-- Desktop: 4 column small cards -->
@@ -120,7 +130,7 @@
                         :recipe="r"
                         :linkable="false"
                         :selected="selectedRecipe?.uri === r.uri"
-                        @click="selectRecipe(r)"
+                        @click.prevent="selectRecipe(r)"
                     />
                 </TransitionGroup>
             </div>
@@ -153,6 +163,7 @@
                     <UiImage
                         :key="selectedRecipe.uri"
                         :src="selectedRecipe.imgSrc"
+                        :alt="selectedRecipe.title"
                         container-class="aspect-square w-full rounded-md"
                         class="object-cover"
                     />
@@ -233,6 +244,7 @@
                     <UiImage
                         :key="`drawer-${selectedRecipe.uri}`"
                         :src="selectedRecipe.imgSrc"
+                        :alt="selectedRecipe.title"
                         container-class="aspect-square w-full rounded-md"
                         class="object-cover"
                     />
@@ -275,7 +287,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const { data: allRecipes } = await useAllRecipes()
+const { data: allRecipes, error: allRecipesError } = await useAllRecipes()
 
 useSeo({
     title: 'All Vegan Recipes',

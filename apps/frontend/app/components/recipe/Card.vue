@@ -1,7 +1,9 @@
 <template>
     <component
-        :is="linkable ? NuxtLink : 'div'"
+        :is="linkable ? NuxtLink : 'a'"
         :to="linkable ? recipeLink : undefined"
+        :href="linkable ? undefined : recipeLink"
+        :aria-current="!linkable && selected ? 'true' : undefined"
         :class="containerClasses"
     >
         <!-- LARGE: Horizontal with 40/60 split -->
@@ -10,6 +12,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     container-class="w-2/5 h-full rounded-md shrink-0"
                     class="object-cover"
                 />
@@ -18,7 +21,7 @@
                     class="w-2/5 h-full rounded-md bg-primary shrink-0"
                 />
                 <div class="flex flex-col justify-center gap-4 py-4 w-3/5">
-                    <NuxtLink :to="recipeLink" class="font-bold text-white text-2xl hover:text-primary transition-colors" @click.stop>{{ recipe.title }}</NuxtLink>
+                    <span class="font-bold text-white text-2xl">{{ recipe.title }}</span>
                     <p v-if="recipe.description" class="text-white/60 text-sm line-clamp-4">
                         {{ recipe.description }}
                     </p>
@@ -35,6 +38,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     container-class="w-40 h-full rounded-md shrink-0"
                     class="object-cover"
                 />
@@ -43,7 +47,7 @@
                     class="w-40 h-full rounded-md bg-primary shrink-0"
                 />
                 <div class="flex flex-col justify-center gap-3 py-2">
-                    <NuxtLink :to="recipeLink" class="font-bold text-white text-lg hover:text-primary transition-colors" @click.stop>{{ recipe.title }}</NuxtLink>
+                    <span class="font-bold text-white text-lg">{{ recipe.title }}</span>
                     <p v-if="recipe.description" class="text-white/60 text-sm! line-clamp-3">
                         {{ recipe.description }}
                     </p>
@@ -60,6 +64,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     container-class="w-full h-full rounded-md"
                     class="object-cover"
                 />
@@ -68,7 +73,7 @@
                     class="w-full h-full bg-primary rounded-md"
                 />
                 <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent rounded-b-md p-3 pt-8">
-                    <NuxtLink :to="recipeLink" class="font-bold text-white text-base hover:text-primary transition-colors" @click.stop>{{ recipe.title }}</NuxtLink>
+                    <span class="font-bold text-white text-base">{{ recipe.title }}</span>
                 </div>
             </div>
         </template>
@@ -79,6 +84,7 @@
                 <UiImage
                     v-if="imageSrc"
                     :src="imageSrc"
+                    :alt="recipe.title"
                     container-class="w-full aspect-square rounded-md"
                     class="object-cover"
                 />
@@ -87,7 +93,7 @@
                     class="w-full aspect-video rounded-md bg-primary"
                 />
                 <div class="flex flex-col gap-2">
-                    <NuxtLink :to="recipeLink" class="font-bold text-white hover:text-primary transition-colors" @click.stop>{{ recipe.title }}</NuxtLink>
+                    <span class="font-bold text-white">{{ recipe.title }}</span>
                     <div class="flex gap-4 flex-wrap">
                         <RecipeMeta :recipe="recipe" />
                     </div>
@@ -102,6 +108,7 @@
                     <UiImage
                         v-if="imageSrc"
                         :src="imageSrc"
+                        :alt="recipe.title"
                         container-class="w-24 h-24 rounded-md shrink-0"
                         class="object-cover"
                     />
@@ -110,7 +117,7 @@
                         class="w-24 h-24 rounded-md bg-primary shrink-0"
                     />
                     <div class="flex flex-col justify-center gap-2">
-                        <NuxtLink :to="recipeLink" class="font-bold text-white hover:text-primary transition-colors" @click.stop>{{ recipe.title }}</NuxtLink>
+                        <span class="font-bold text-white">{{ recipe.title }}</span>
                         <div class="flex flex-row flex-wrap gap-2">
                             <RecipeMeta :recipe="recipe" />
                         </div>
@@ -150,8 +157,10 @@ const recipeLink = computed(() => {
 });
 
 const containerClasses = computed(() => {
-    const base = 'relative overflow-hidden cursor-pointer transition-colors duration-300 block';
-    const selectedBorder = props.selected ? 'border-primary' : 'border-white/30 hover:border-white';
+    const base = 'relative overflow-hidden cursor-pointer transition-colors duration-300 block w-full text-left';
+    const selectedBorder = props.selected
+        ? 'border-primary ring-2 ring-white ring-offset-2 ring-offset-background'
+        : 'border-white/45 hover:border-white';
 
     switch (props.size) {
         case 'large':
