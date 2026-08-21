@@ -1,5 +1,8 @@
 {
-  "$schema": "https://turborepo.dev/schema.json",
+  // Version-pinned schema, written by `@turbo/codemod migrate`. It tracks the
+  // turbo devDependency, so bump both together — a stale host here validates
+  // against the wrong version's schema rather than failing loudly.
+  "$schema": "https://v2-10-11.turborepo.dev/schema.json",
   "ui": "tui",
   "tasks": {
     "build": {
