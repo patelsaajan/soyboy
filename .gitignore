@@ -47,3 +47,7 @@ apps/*/node_modules
 .dev.vars
 .dev.vars.*
 .wrangler/
+
+# Per-machine Claude Code settings (the skill and CLAUDE.md are committed)
+.claude/settings.local.json
+.claude/worktrees/

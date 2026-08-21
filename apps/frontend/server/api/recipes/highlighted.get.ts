@@ -1,4 +1,4 @@
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const res = await payloadFetch<PayloadListResponse>(event, '/api/recipes', {
     'where[highlighted][equals]': true,
     // Defence in depth: Recipes.access.read already constrains anonymous
@@ -9,4 +9,4 @@ export default defineCachedEventHandler(async (event) => {
     sort: '-createdAt',
   })
   return res.docs.map(doc => mapRecipe(doc))
-}, { maxAge: 60 * 15, name: 'recipes-highlighted', getKey: () => 'highlighted' })
+})

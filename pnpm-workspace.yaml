@@ -1,6 +1,28 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# Hold a newly published version back for 24h before it becomes installable.
+# Supply-chain compromises are almost always caught within hours of publish, so
+# never being first to install a release is most of the defence. If `pnpm add`
+# appears to succeed without installing, this is usually why — pin an older
+# version or wait it out.
+minimumReleaseAge: 1440
+
+# Refuse transitive dependencies that resolve outside the registry (git, tarball
+# or file URLs arriving via someone else's package).
+blockExoticSubdeps: true
+
+# pnpm blocks dependency lifecycle scripts by default. Each package below is a
+# thin wrapper whose real payload is a platform-specific native binary that an
+# install script unpacks — skip the script and the package is left as a stub
+# with nothing behind it. `workerd` is the one that matters for Cloudflare: its
+# postinstall copies the ~115MB Workers runtime into place, and without it
+# anything that executes a Worker locally (wrangler dev, the OpenNext preview)
+# fails. See docs/cloudflare-payload-stack.md → Native dependencies.
+#
+# If an install prints "Ignored build scripts: workerd", this list did not
+# apply — fix it here, or run `pnpm approve-builds` and reinstall.
 allowBuilds:
   '@parcel/watcher': false
   '@swc/core': false
@@ -10,5 +32,10 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: false
   workerd: true
+
+# OpenNext's esbuild pass does not mark `cloudflare:sockets` external, so the
+# dynamic import that lets the Postgres driver use workerd's TCP sockets gets
+# mangled and the deployed Worker cannot reach the database. One-line patch;
+# re-check on every @opennextjs/cloudflare bump.
 patchedDependencies:
   '@opennextjs/cloudflare@1.20.1': patches/@opennextjs__cloudflare@1.20.1.patch

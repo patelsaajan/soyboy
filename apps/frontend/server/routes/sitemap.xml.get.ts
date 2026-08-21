@@ -1,8 +1,15 @@
+import { STATIC_PAGE_PATHS, recipePagePath } from '@soyboy/shared'
+
 /**
  * Hand-rolled rather than via @nuxtjs/sitemap: no build-time Payload dependency
  * and nothing extra to resolve on Workers.
+ *
+ * Paths come from the shared contract so a recipe's sitemap entry, its page URL
+ * and the URL the CMS purges are all the same string. A sitemap listing a URL
+ * the purge does not know about is how a renamed recipe ends up advertised at a
+ * stale address for a day.
  */
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const { public: { siteUrl } } = useRuntimeConfig(event)
   const origin = String(siteUrl).replace(/\/$/, '')
 
@@ -17,12 +24,16 @@ export default defineCachedEventHandler(async (event) => {
       ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c] as string))
 
   const entries = [
-    { loc: `${origin}/`, changefreq: 'weekly', priority: '1.0', lastmod: undefined as string | undefined },
-    { loc: `${origin}/recipes`, changefreq: 'weekly', priority: '0.9', lastmod: undefined as string | undefined },
+    ...STATIC_PAGE_PATHS.map((path, index) => ({
+      loc: `${origin}${path}`,
+      changefreq: 'weekly',
+      priority: index === 0 ? '1.0' : '0.9',
+      lastmod: undefined as string | undefined,
+    })),
     ...res.docs
       .filter(doc => doc.slug)
       .map(doc => ({
-        loc: `${origin}/recipes/${doc.slug}`,
+        loc: `${origin}${recipePagePath(doc.slug)}`,
         changefreq: 'monthly',
         priority: '0.8',
         lastmod: doc.updatedAt,
@@ -44,7 +55,8 @@ export default defineCachedEventHandler(async (event) => {
     '',
   ].join('\n')
 
+  // The edge-cache plugin owns cache-control for this route; setting it here
+  // too would be a second source of truth for the same header.
   setResponseHeader(event, 'content-type', 'application/xml; charset=utf-8')
-  setResponseHeader(event, 'cache-control', 'public, max-age=3600')
   return body
-}, { maxAge: 60 * 60, name: 'sitemap', getKey: () => 'sitemap' })
+})

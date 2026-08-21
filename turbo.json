@@ -4,7 +4,10 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      // .env* files change what a build produces, so they belong in the hash —
+      // as do the variables that override them.
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["DATABASE_URL", "PAYLOAD_SECRET", "NUXT_PUBLIC_SITE_URL", "PAYLOAD_URL"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -18,7 +21,22 @@
       "outputs": []
     },
     "check-types": {
-      "dependsOn": ["^build"],
+      // ^check-types, not ^build: @soyboy/shared publishes TypeScript source
+      // rather than compiled output, so a consumer can be type-checked as soon
+      // as its dependencies have been — no build step in between.
+      "dependsOn": ["^check-types"],
+      "outputs": []
+    },
+    // Needs a database: apps/payload's integration tests boot Payload against
+    // DATABASE_URL, and refuse a non-local one. Run `pnpm db:up` first. The
+    // frontend's tests are pure and need nothing.
+    //
+    // `env` is required, not decoration: turbo 2 runs tasks in strict
+    // environment mode, so an inline `DATABASE_URL=... pnpm test` is stripped
+    // before the task sees it and apps/payload/.env wins instead — which, in
+    // this repo, means production.
+    "test": {
+      "env": ["DATABASE_URL", "PAYLOAD_SECRET"],
       "outputs": []
     },
     "dev": {

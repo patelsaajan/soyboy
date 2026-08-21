@@ -17,14 +17,15 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "cf:build": "cross-env CI=true NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build && cross-env CI=true opennextjs-cloudflare build --skipNextBuild",
     "cf:preview": "pnpm cf:build && opennextjs-cloudflare preview",
-    "cf:deploy": "pnpm cf:build && opennextjs-cloudflare deploy",
+    "cf:deploy": "node scripts/confirm.mjs deploy && pnpm cf:build && opennextjs-cloudflare deploy",
     "cf:ci:build": "pnpm generate:importmap && pnpm cf:build",
     "cf:ci:deploy": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation payload migrate && wrangler deploy",
-    "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx ./src/seed/index.ts",
+    "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed/run.ts",
     "db:clear-dev-marker": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation tsx ./src/seed/clear-dev-migration.ts",
-    "test": "pnpm run test:int && pnpm run test:e2e",
+    "test": "pnpm run test:int",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
+    "seed:prod": "bash scripts/seed-prod.sh"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.1",
@@ -33,6 +34,7 @@
     "@payloadcms/richtext-lexical": "3.84.1",
     "@payloadcms/storage-s3": "^3.84.1",
     "@payloadcms/ui": "3.84.1",
+    "@soyboy/shared": "workspace:*",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
@@ -40,7 +42,8 @@
     "payload": "3.84.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sharp": "0.34.2"
+    "sharp": "0.34.2",
+    "zod": "^4.4.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",

@@ -1,3 +1,5 @@
+import { SITEMAP_PATH } from '@soyboy/shared'
+
 export default defineEventHandler((event) => {
   const { public: { siteUrl } } = useRuntimeConfig(event)
   const origin = String(siteUrl).replace(/\/$/, '')
@@ -10,7 +12,7 @@ export default defineEventHandler((event) => {
     'Allow: /',
     'Disallow: /api/',
     '',
-    `Sitemap: ${origin}/sitemap.xml`,
+    `Sitemap: ${origin}${SITEMAP_PATH}`,
     '',
   ].join('\n')
 })

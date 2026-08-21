@@ -187,7 +187,10 @@ export interface Recipe {
    * Show in the Highlights section on the recipe archive page
    */
   highlighted?: boolean | null;
-  slug?: string | null;
+  /**
+   * The public URL for this recipe: /recipes/<slug>. Filled in from the title on first save. Changing it moves the page and breaks every existing link to it.
+   */
+  slug: string;
   cuisine?: string | null;
   /**
    * e.g. "30 minutes"

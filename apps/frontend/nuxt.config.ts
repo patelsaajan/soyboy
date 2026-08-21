@@ -21,8 +21,10 @@ export default defineNuxtConfig({
     preset: 'cloudflare_module',
   },
 
-  // Stale-while-revalidate: serve cached HTML instantly and revalidate in the
-  // background, so most page views skip a full SSR render.
+  // Cache-control for public routes is set by server/plugins/edge-cache.ts, which
+  // is also what stores the response in Cloudflare's cache. Route rules here
+  // carry only what is true regardless of caching: security headers, and the
+  // crawler directive on the JSON endpoints.
   routeRules: {
     // Baseline security headers on every response.
     '/**': {
@@ -50,21 +52,17 @@ export default defineNuxtConfig({
         ].join('; '),
       },
     },
-    // Static images are content-addressed by filename and never mutate in
-    // place; without this they inherit Workers' default
-    // `max-age=0, must-revalidate` and pay a round-trip on every page view.
+    // Files under public/ are served by the ASSETS binding before the Worker
+    // runs, so the edge-cache plugin never sees them. Nitro compiles these rules
+    // into .output/public/_headers, which is what actually applies to them —
+    // which is also why their cache-control belongs here rather than in a
+    // hand-written _headers file that would duplicate half of it.
     '/imgs/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    // JSON endpoints are cached server-side by defineCachedEventHandler but had
-    // no client or edge caching at all.
-    '/api/recipes/**': {
-      headers: {
-        'cache-control': 'public, max-age=60, s-maxage=600, stale-while-revalidate=86400',
-        'X-Robots-Tag': 'noindex, nofollow',
-      },
-    },
-    '/':            { swr: 60 * 60 * 24 },      // home — revalidate daily
-    '/recipes':     { swr: 60 * 60 * 24 * 7 },  // recipes index — weekly
-    '/recipes/**':  { swr: 60 * 60 * 24 * 7 },  // recipe pages — weekly
+    '/favicon.svg': { headers: { 'cache-control': 'public, max-age=604800' } },
+    '/favicon.ico': { headers: { 'cache-control': 'public, max-age=604800' } },
+    // The JSON endpoints exist to hydrate pages, not to be indexed in their own
+    // right; without this, search results carry raw API payloads.
+    '/api/recipes/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
 
   // Image optimization via Cloudflare Transformations (resize + WebP/AVIF at the
