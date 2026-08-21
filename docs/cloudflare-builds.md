@@ -28,8 +28,10 @@ Set per Worker under: **Workers & Pages → <worker> → Settings → Builds**.
 | `DATABASE_URL` | Neon **direct** connection string (no `-pooler`) |
 | `PAYLOAD_SECRET` | same value as the runtime `wrangler secret` |
 
-- `cf:ci:build` = `generate:importmap` → Turbopack build → OpenNext bundle.
-- `cf:ci:deploy` = `payload migrate` (NODE_ENV=production) → `wrangler deploy`.
+- `cf:ci:build` = `cf:build` = `generate:importmap` → `next build --turbopack` → OpenNext bundle.
+- `cf:ci:deploy` = `cf:migrate` (`NODE_ENV=production`, confirmation pre-supplied
+  via `CONFIRM=migrate`) → `wrangler deploy`. Migrations run before the new code
+  goes live, so it never meets an older schema; `payload migrate` is idempotent.
 
 ## Frontend — `soyboy-frontend`
 
