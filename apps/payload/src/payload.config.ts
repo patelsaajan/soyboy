@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 import { z } from 'zod'
 import path from 'path'
 
+import { devEmailAdapter } from './lib/devEmailAdapter'
 import { isLocalDatabase } from './lib/localDatabase'
 
 import { Users } from './collections/Users'
@@ -144,6 +145,13 @@ const s3Enabled = Boolean(env.S3_BUCKET_NAME)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    components: {
+      graphics: {
+        // Only the Login and Verify views render `graphics.Logo`, so swapping it
+        // brands the auth screens without reaching the nav or any other view.
+        Logo: '@/components/AdminLogo#AdminLogo',
+      },
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -164,6 +172,12 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor(),
+  // Local dev only. Prints the full body of every outgoing email — currently
+  // just the forgot-password flow on `users` — so the reset link is readable in
+  // the terminal. In production this stays undefined and Payload falls back to
+  // its own console adapter, which logs the recipient and subject and nothing
+  // else; there is no real transport configured yet either way.
+  email: isProduction ? undefined : devEmailAdapter,
   // The frontend consumes REST over the service binding; GraphQL is unused, so
   // disable it to shrink the public attack surface (and the bundle).
   graphQL: { disable: true },

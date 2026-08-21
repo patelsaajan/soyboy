@@ -17,6 +17,35 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  // Non-secret runtime config.
+  //
+  // Everything else this Worker needs is a credential and must be set with
+  // `wrangler secret put <NAME>`, never committed here:
+  //   PAYLOAD_SECRET
+  //   CF_CACHE_PURGE_TOKEN
+  //   S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY
+  //
+  // These are secrets on this Worker rather than vars, unlike the sibling
+  // repos where the non-secret half (PAYLOAD_URL, FRONTEND_URL, S3_BUCKET_NAME,
+  // S3_REGION, S3_ENDPOINT_URL) lives in this block: they were set as secrets
+  // when the Worker was first deployed, and a var and a secret of the same name
+  // conflict on deploy. Moving them means deleting the secret in the same
+  // change — worth doing, but not silently.
+  //
+  //   wrangler secret put PAYLOAD_SECRET
+  //   wrangler secret put CF_CACHE_PURGE_TOKEN
+  "vars": {
+    // The zone that serves the public site, for purge-on-publish. Not a secret
+    // — the token that goes with it is, and must be scoped to
+    // Zone -> Cache Purge -> Purge on this zone alone and nothing else.
+    //
+    // Find it on the zone's dashboard overview (saajanpatel.co.uk), then paste
+    // it below. Until BOTH this and CF_CACHE_PURGE_TOKEN are set, the purge
+    // hook no-ops and content changes wait out the edge TTL — a day — instead
+    // of appearing in seconds. See docs/cloudflare-payload-stack.md -> Edge
+    // caching and purge-on-publish.
+    "CF_ZONE_ID": "4cd23c61040cbc255c1b88be7a81a985"
+  },
   // Service binding to the Nuxt frontend Worker — lets Payload call the frontend
   // worker-to-worker over Cloudflare's internal network (no public hop, no
   // egress) via env.FRONTEND.fetch(). The reciprocal BACKEND binding lives in

@@ -1,0 +1,297 @@
+// ---------------------------------------------------------------------------
+// Soyboy branding for the admin authentication views.
+//
+// Everything below is scoped to the auth screens. The collection, document and
+// dashboard views deliberately keep Payload's stock theme, so upstream changes
+// to them keep working without us having to chase them.
+//
+// The scope is a `:root:has()` rather than a plain descendant selector because
+// two things that belong to these screens live outside the view's own subtree:
+// the page background (the minimal template sets `background-color` from
+// `--theme-bg-color`, a variable Payload never defines, so `html` is what
+// actually paints) and the toast portal, which is a sibling of the view and is
+// where a failed login surfaces. Where `:has()` is unsupported the screens fall
+// back to Payload's default appearance, which is what they look like today.
+//
+// The class list is what Payload actually emits, not a guess: `login`,
+// `forgot-password` and `verify` reach the minimal template's <section> through
+// getRouteData's `templateClassName`, while `create-first-user` and
+// `reset-password__wrap` are inner divs — getRouteData has no base class
+// registered for those two routes.
+// ---------------------------------------------------------------------------
+
+$auth: ':root:has(.login, .forgot-password, .verify, .create-first-user, .reset-password__wrap)';
+
+// Payload's elevation ramp re-cut from the site palette: navy at 0, cream from
+// 800 up (800 is what `--theme-text` resolves to). The middle stops are the
+// borders, placeholders and muted text the auth fields read from, so they are
+// spaced for legibility rather than evenly — 400 is the input placeholder and
+// lands at 4.8:1 on the navy.
+$elevation-ramp: (
+  0: 0,
+  50: 5,
+  100: 10,
+  150: 18,
+  200: 24,
+  250: 30,
+  300: 36,
+  350: 44,
+  400: 52,
+  450: 60,
+  500: 66,
+  550: 72,
+  600: 78,
+  650: 83,
+  700: 88,
+  750: 94,
+  800: 100,
+  850: 100,
+  900: 100,
+  950: 100,
+  1000: 100,
+);
+
+// Payload mirrors its status ramps for dark mode (`--theme-x-N` becomes
+// `--color-x-(1000 - N)`). These screens are dark whatever the panel's theme
+// preference is, so apply that mirroring unconditionally — otherwise a light
+// preference puts a pale toast and a pale invalid-field fill on a navy page.
+$mirrored-steps:
+  50, 100, 150, 200, 250, 300, 350, 400, 450, 550, 600, 650, 700, 750, 800, 850, 900, 950;
+
+// Self-hosted rather than pulled from Google. This app serves the admin under
+// `default-src 'self'` with no font-src and no CDN in style-src (next.config.mjs),
+// so an @import to fonts.googleapis.com would be blocked twice over — the
+// stylesheet first, then the woff2. Latin subsets only, with the unicode-range
+// Google publishes for them, so a non-latin admin locale falls through to the
+// stack below instead of rendering tofu.
+@font-face {
+  font-family: 'Bungee';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/bungee-latin-400.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-var.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+#{$auth} {
+  // Mirrors apps/frontend/app/assets/css/main.css. Declared once so a brand
+  // change is a single edit here, and every rule below goes through them.
+  --soyboy-red: #d20a2e;
+  --soyboy-cream: #f0ecd9;
+  --soyboy-navy: #111520;
+  --soyboy-surface: color-mix(in srgb, white 5%, var(--soyboy-navy));
+  // White measures 5.5:1 on the red, cream only 4.6:1 — the button is the one
+  // place text sits on a red fill, so it gets the safer of the two.
+  --soyboy-ink-on-red: #ffffff;
+
+  --font-body: 'Nunito', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Bungee', 'Arial Black', 'Helvetica Neue', sans-serif;
+
+  @each $step, $pct in $elevation-ramp {
+    --theme-elevation-#{$step}: color-mix(
+      in srgb,
+      var(--soyboy-cream) #{$pct}#{'%'},
+      var(--soyboy-navy)
+    );
+  }
+
+  @each $name in error, success, warning {
+    @each $step in $mirrored-steps {
+      --theme-#{$name}-#{$step}: var(--color-#{$name}-#{1000 - $step});
+    }
+  }
+
+  // Payload leaves the 500 step out of its dark mirroring, which strands the
+  // "required" asterisk at 4.4:1 on this ground. One step lighter clears AA.
+  --theme-error-500: var(--color-error-400);
+
+  --theme-bg: var(--soyboy-navy);
+  --theme-text: var(--soyboy-cream);
+  --theme-input-bg: var(--soyboy-surface);
+  // The site's own ring: 3px of near-white, which measures 15.4:1 on the navy.
+  --accessibility-outline: 3px solid var(--soyboy-cream);
+  --accessibility-outline-offset: 3px;
+
+  // Form controls, autofill and scrollbars need to know the ground is dark,
+  // otherwise a panel set to the light theme paints Chrome's pale autofill fill
+  // straight over the cream-on-navy inputs.
+  color-scheme: dark;
+
+  .template-minimal {
+    // One soft bloom of brand red behind the card, echoing the site's hero.
+    // Kept low so the cream wordmark sitting on top stays well past 13:1.
+    background-image: radial-gradient(
+      70% 55% at 50% 0%,
+      color-mix(in srgb, var(--soyboy-red) 20%, transparent),
+      transparent 70%
+    );
+    background-repeat: no-repeat;
+  }
+
+  // -------------------------------------------------------------------------
+  // Wordmark (src/components/AdminLogo.tsx)
+  // -------------------------------------------------------------------------
+
+  .login__brand,
+  .verify__brand {
+    margin-bottom: calc(var(--base) * 1.6);
+  }
+
+  .soyboy-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--base) * 0.4);
+    text-align: center;
+  }
+
+  .soyboy-brand__word {
+    font-family: var(--font-display);
+    font-size: clamp(calc(var(--base) * 1.8), 9vw, calc(var(--base) * 2.6));
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--soyboy-cream);
+  }
+
+  .soyboy-brand__rule {
+    width: calc(var(--base) * 3);
+    height: 4px;
+    border-radius: 999px;
+    background-color: var(--soyboy-red);
+  }
+
+  .soyboy-brand__tag {
+    font-size: calc(var(--base) * 0.55);
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--theme-elevation-600);
+  }
+
+  // -------------------------------------------------------------------------
+  // Headings — the forgot/reset views (.form-header) and create-first-user,
+  // which renders a bare h1 + p rather than a FormHeader.
+  // -------------------------------------------------------------------------
+
+  .form-header h1,
+  .create-first-user > h1 {
+    font-family: var(--font-display);
+    font-size: clamp(calc(var(--base) * 1.1), 6vw, calc(var(--base) * 1.5));
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--soyboy-cream);
+  }
+
+  .form-header p,
+  .create-first-user > p {
+    color: var(--theme-elevation-600);
+  }
+
+  // -------------------------------------------------------------------------
+  // Fields
+  // -------------------------------------------------------------------------
+
+  label.field-label:not(.unstyled) {
+    font-size: calc(var(--base) * 0.55);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--theme-elevation-600);
+  }
+
+  .field-type input {
+    border-radius: var(--style-radius-l);
+    height: calc(var(--base) * 2.2);
+
+    // The outline is still the focus indicator; the red edge is the affordance
+    // that goes with it. Red on the surface measures 3.3:1, past the 3:1 a
+    // non-text boundary needs.
+    &:focus,
+    &:focus-within,
+    &:active {
+      border-color: var(--soyboy-red);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Buttons — the site's pill with a 3px edge (see CoreButton.vue), which
+  // swaps fill and text colour on hover.
+  // -------------------------------------------------------------------------
+
+  .btn {
+    --btn-font-weight: 400;
+    font-family: var(--font-display);
+    font-size: calc(var(--base) * 0.7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+  }
+
+  .btn--size-large {
+    --btn-padding-block-start: calc(var(--base) * 0.6);
+    --btn-padding-block-end: calc(var(--base) * 0.6);
+    --btn-padding-inline-start: calc(var(--base) * 1.6);
+    --btn-padding-inline-end: calc(var(--base) * 1.6);
+  }
+
+  .btn--style-primary {
+    --color: var(--soyboy-ink-on-red);
+    --bg-color: var(--soyboy-red);
+    --btn-border: 3px solid var(--soyboy-red);
+    --hover-color: var(--soyboy-red);
+    --hover-bg: var(--soyboy-cream);
+    --hover-btn-border: 3px solid var(--soyboy-cream);
+
+    &.btn--disabled {
+      --color: var(--theme-elevation-600);
+      --bg-color: var(--theme-elevation-100);
+      --btn-border: 3px solid var(--theme-elevation-200);
+      --hover-color: var(--color);
+      --hover-bg: var(--bg-color);
+      --hover-btn-border: var(--btn-border);
+    }
+  }
+
+  .btn--style-secondary {
+    --color: var(--soyboy-cream);
+    --bg-color: transparent;
+    --btn-border: 3px solid var(--soyboy-cream);
+    --hover-color: var(--soyboy-navy);
+    --hover-bg: var(--soyboy-cream);
+    --hover-btn-border: 3px solid var(--soyboy-cream);
+  }
+
+  // -------------------------------------------------------------------------
+  // Links — "Forgot your password?", "Back to login", "Back to dashboard".
+  // Brand red as link text is only 3.3:1 on the navy, so it carries the
+  // underline instead and the text itself stays cream.
+  // -------------------------------------------------------------------------
+
+  .template-minimal a:not(.btn) {
+    color: var(--soyboy-cream);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--soyboy-red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+
+    &:hover {
+      text-decoration-thickness: 3px;
+    }
+  }
+}

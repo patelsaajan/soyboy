@@ -20,6 +20,12 @@
     "directory": "./.output/public",
     "binding": "ASSETS"
   },
+  // No vars and no secrets. The edge cache (server/plugins/edge-cache.ts) reads
+  // nothing from the environment — it uses `caches.default` and the shared
+  // contract in packages/shared — and the CMS is reached through the binding
+  // below rather than a configured URL. The purge credentials live on
+  // soyboy-payload, which is what does the purging.
+  //
   // Service binding to the Payload backend Worker. Lets the Nuxt server call
   // Payload worker-to-worker (no public internet hop, lower latency, no egress)
   // via env.BACKEND.fetch(...). The soyboy-payload Worker must be deployed for
