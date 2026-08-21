@@ -7,10 +7,15 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
-  // Required by OpenNext. We drive `next build --webpack` ourselves (see the
+  // Required by OpenNext. We drive `next build --turbopack` ourselves (see the
   // cf:* scripts) with --skipNextBuild, which bypasses OpenNext's automatic
   // standalone injection — so we set it here. outputFileTracingRoot points at
   // the monorepo root so file tracing resolves workspace deps correctly.
+  //
+  // The --turbopack flag is passed explicitly rather than relying on Next 16's
+  // default: a webpack build ignores serverExternalPackages below and inlines
+  // the pg-cloudflare stub, and that failure appears only in the deployed
+  // Worker, which builds and starts cleanly and then cannot reach the database.
   output: 'standalone',
   outputFileTracingRoot: path.resolve(dirname, '../..'),
   // sharp: native binary, can't run on Workers (kept external so build passes).

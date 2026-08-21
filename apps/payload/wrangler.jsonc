@@ -38,7 +38,7 @@
       "id": "eb2a5245edf84b6b943aac5e9089ff2a",
       // localConnectionString lets `wrangler dev` hit local Postgres directly
       // instead of the remote Hyperdrive config (swap for Neon to dev against it).
-      "localConnectionString": "postgresql://postgres:payload@localhost:5432/payload-vanilla"
+      "localConnectionString": "postgresql://postgres:payload@localhost:5432/payload-soyboy"
     }
   ]
 }

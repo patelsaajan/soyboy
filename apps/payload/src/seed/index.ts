@@ -1,9 +1,7 @@
-import 'dotenv/config'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { getPayload } from 'payload'
-import config from '../payload.config.js'
+import type { Payload } from 'payload'
 import { recipes } from './recipes/index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -21,7 +19,7 @@ function parseCookTime(time: string): number {
   return match ? parseInt(match[0], 10) : 0
 }
 
-async function getOrUploadImage(payload: Awaited<ReturnType<typeof getPayload>>, imgSrc: string, altText: string) {
+async function getOrUploadImage(payload: Payload, imgSrc: string, altText: string) {
   const existing = await payload.find({
     collection: 'media',
     where: { filename: { equals: imgSrc } },
@@ -31,7 +29,7 @@ async function getOrUploadImage(payload: Awaited<ReturnType<typeof getPayload>>,
 
   const imagePath = path.join(IMGS_DIR, imgSrc)
   if (!fs.existsSync(imagePath)) {
-    console.warn(`  Image not found: ${imgSrc}`)
+    payload.logger.warn(`  Image not found: ${imgSrc}`)
     return null
   }
 
@@ -46,10 +44,18 @@ async function getOrUploadImage(payload: Awaited<ReturnType<typeof getPayload>>,
   })
 }
 
-async function seed() {
-  const payload = await getPayload({ config })
-
-  console.log('Seeding recipes...')
+/**
+ * Idempotent by design: every recipe is looked up by slug first, so a second run
+ * updates rather than duplicates. That is what makes it safe to point at a
+ * database that already has content — the destructive path is `--force` in
+ * scripts/seed-prod.sh, and it is deliberately somewhere else.
+ *
+ * Running it is `run.ts`, which guards the target before this function is
+ * reached. Keeping the two apart is what stops `tsx src/seed/index.ts` from
+ * being a way around the guard.
+ */
+export async function seed(payload: Payload): Promise<void> {
+  payload.logger.info('Seeding recipes...')
 
   for (const recipe of recipes) {
     const existing = await payload.find({
@@ -72,7 +78,7 @@ async function seed() {
           _status: 'published',
         },
       })
-      console.log(`  Updated "${recipe.title}"`)
+      payload.logger.info(`  Updated "${recipe.title}"`)
       continue
     }
 
@@ -112,14 +118,8 @@ async function seed() {
       },
     })
 
-    console.log(`  Created "${recipe.title}"`)
+    payload.logger.info(`  Created "${recipe.title}"`)
   }
 
-  console.log('Done.')
-  process.exit(0)
+  payload.logger.info('Done.')
 }
-
-seed().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})

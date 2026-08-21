@@ -93,7 +93,10 @@ export type PayloadSuggestion  = { id?: string; title: string; text: string }
  */
 export type PayloadRecipeDoc = {
   id: number | string
-  slug?: string | null
+  // Required in the CMS (apps/payload/src/fields/slug.ts), so it is required
+  // here. A recipe reachable only by numeric id would be a page the purge hook
+  // cannot name — cached for a day with no way to refresh it early.
+  slug: string
   highlighted?: boolean | null
   cuisine?: string | null
   time?: string | null
@@ -152,7 +155,7 @@ export function mapRecipe(doc: PayloadRecipeDoc): Recipe {
     serves: doc.servings ?? 0,
     description: doc.description,
     imgSrc: heroUrl ?? (doc.imgSrc ? `/imgs/food/${doc.imgSrc}` : ''),
-    uri: doc.slug ?? String(doc.id),
+    uri: doc.slug,
     intro: doc.intro ?? '',
     ingredients: (doc.ingredients ?? []).map((i) => ({
       quantity: parseFloat(i.quantity) || 0,

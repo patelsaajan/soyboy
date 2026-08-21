@@ -40,13 +40,30 @@ npx wrangler secret put FRONTEND_URL
 npx wrangler secret put PAYLOAD_URL
 ```
 
+### 3. Cache-purge credentials
+
+Without these the purge hook no-ops and every content change waits out the edge
+TTL — a day — instead of appearing in seconds.
+
+```sh
+npx wrangler secret put CF_ZONE_ID              # zone dashboard → overview
+npx wrangler secret put CF_CACHE_PURGE_TOKEN
+```
+
+The token needs exactly one permission: **Zone → Cache Purge → Purge**, scoped
+to this zone. Nothing else.
+
+`FRONTEND_URL` is doing double duty here: it is the CORS/CSRF allowlist *and*
+the origin the purge builds its URLs against. If it is wrong, purges miss
+silently.
+
 ## Migrate data (cutover)
 
 ```sh
 # Database: Railway -> Neon
 SOURCE_DATABASE_URL="postgresql://.../railway" \
 TARGET_DATABASE_URL="postgresql://.../neon?sslmode=require" \
-./scripts/migrate-db-to-neon.sh
+apps/payload/scripts/migrate-db-to-neon.sh
 
 # Confirm schema is in sync
 DATABASE_URL="postgresql://.../neon?sslmode=require" \
@@ -55,7 +72,7 @@ DATABASE_URL="postgresql://.../neon?sslmode=require" \
 # Media: old storage -> R2
 SOURCE_URI="s3://old-bucket" R2_BUCKET="soyboy-media" \
 R2_ENDPOINT="https://<account>.r2.cloudflarestorage.com" \
-  ./scripts/sync-media-to-r2.sh
+  apps/payload/scripts/sync-media-to-r2.sh
 ```
 
 ## Build & deploy
@@ -68,9 +85,14 @@ pnpm --filter @soyboy/payload cf:preview
 pnpm --filter @soyboy/payload cf:deploy
 ```
 
-`cf:build` runs `next build` (Turbopack) then `opennextjs-cloudflare build`.
-Turbopack is required: the webpack build mangles `pg-cloudflare`'s
-`import('cloudflare:sockets')`, breaking the Postgres driver at runtime.
+`cf:build` runs `next build --turbopack` then `opennextjs-cloudflare build`. The
+flag is explicit rather than left to Next 16's default: a webpack build ignores
+`serverExternalPackages` and inlines the `pg-cloudflare` stub, breaking the
+Postgres driver at runtime — and only in the deployed Worker, which builds and
+starts cleanly and then cannot reach the database.
+
+`cf:deploy` also runs `cf:migrate` between the build and the deploy, so a deploy
+from a laptop applies migrations exactly as CI does.
 
 ## Git-connected builds (auto-deploy on push)
 
@@ -83,15 +105,25 @@ Builds). Connect the GitHub repo, then set:
 | **Build command** | `pnpm cf:ci:build` |
 | **Deploy command** | `pnpm cf:ci:deploy` |
 | **Build cache** | **On** |
-| **Build watch path** | `apps/payload/*` (only rebuild when the app changes) |
+| **Build watch path** | **leave blank** |
 
-Note: with a watch path set, an *empty* commit won't trigger a build — the push
-must change a file under the watch path.
+Watch paths are evaluated *relative to the root directory*, so `apps/payload/…`
+becomes `apps/payload/apps/payload/…` and matches nothing — this silently
+blocked builds during setup. `pnpm-lock.yaml`, `patches/` and `packages/shared`
+also live outside each app's root directory, so a scoped watch path could not
+watch them anyway. See [cloudflare-builds.md](cloudflare-builds.md).
 
-- `cf:ci:build` = `generate:importmap` (regenerates the admin import map) → `cf:build`.
-- `cf:ci:deploy` = `payload migrate` (applies pending migrations to Neon) →
-  `wrangler deploy`. Migrations run before the new Worker goes live, so the code
-  never hits an old schema. `payload migrate` is idempotent — safe every deploy.
+- `cf:ci:build` = `cf:build` = `generate:importmap` (regenerates the admin import
+  map) → `next build --turbopack` → OpenNext bundle.
+- `cf:ci:deploy` = `cf:migrate` (applies pending migrations to Neon under
+  `NODE_ENV=production`) → `wrangler deploy`. Migrations run before the new
+  Worker goes live, so the code never hits an old schema. `payload migrate` is
+  idempotent — safe every deploy.
+
+`cf:migrate` is confirmation-gated by `scripts/confirm.mjs`, which **fails closed
+without a TTY**. `cf:ci:deploy` therefore supplies `CONFIRM=migrate` explicitly
+rather than relying on the builder exporting `CI=true` — if that assumption were
+ever wrong, every deploy would break.
 
 **Root directory (not `--filter`):** `wrangler deploy` finds `wrangler.jsonc` by
 CWD, and the `main`/`assets` paths inside it are relative — both resolve only
@@ -117,6 +149,9 @@ connects to Neon, so set these as **build** vars (separate from the runtime
 2. Update the frontend's `PAYLOAD_URL` to the new endpoint. The frontend also has
    a `BACKEND` service binding to this Worker for worker-to-worker calls.
 3. Smoke test: admin login, recipe CRUD, image upload (lands in R2), API reads.
+   Then confirm the purge is live — edit a recipe, save, and watch for
+   `frontend cache purged: N URLs` in `npx wrangler tail soyboy-payload`. A purge
+   you have not watched work is a purge that does not work.
 4. **Re-enable the daily recipe cron** via Cron Triggers (currently disabled in
    `payload.config.ts` — the `jobs.autoRun` block). Add a `triggers.crons` entry
    in `wrangler.jsonc` + a scheduled handler that runs the rotate logic.

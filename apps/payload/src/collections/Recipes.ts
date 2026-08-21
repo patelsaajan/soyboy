@@ -1,6 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated, publishedOrAuthenticated } from '../access'
+import { slugField } from '../fields/slug'
+import { publishHooks } from '../hooks/onPublish'
 
 export const Recipes: CollectionConfig = {
   slug: 'recipes',
@@ -22,26 +24,11 @@ export const Recipes: CollectionConfig = {
       defaultValue: false,
       admin: { position: 'sidebar', description: 'Show in the Highlights section on the recipe archive page' },
     },
-    {
-      name: 'slug',
-      type: 'text',
-      admin: { position: 'sidebar' },
-      hooks: {
-        beforeValidate: [
-          ({ data, value }) => {
-            if (!value && data?.title) {
-              return (data.title as string)
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '')
-            }
-            return value
-          },
-        ],
-      },
-      index: true,
-      unique: true,
-    },
+    slugField({
+      from: 'title',
+      description:
+        'The public URL for this recipe: /recipes/<slug>. Filled in from the title on first save. Changing it moves the page and breaks every existing link to it.',
+    }),
     {
       name: 'cuisine',
       type: 'text',
@@ -169,4 +156,7 @@ export const Recipes: CollectionConfig = {
   versions: {
     drafts: true,
   },
+  // Publishing a recipe has to reach the frontend's cache, or the change sits
+  // behind the edge TTL. See hooks/onPublish.ts.
+  hooks: publishHooks,
 }
