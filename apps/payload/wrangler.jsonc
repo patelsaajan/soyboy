@@ -44,7 +44,7 @@
     // hook no-ops and content changes wait out the edge TTL — a day — instead
     // of appearing in seconds. See docs/cloudflare-payload-stack.md -> Edge
     // caching and purge-on-publish.
-    "CF_ZONE_ID": "REPLACE_WITH_ZONE_ID"
+    "CF_ZONE_ID": "4cd23c61040cbc255c1b88be7a81a985"
   },
   // Service binding to the Nuxt frontend Worker — lets Payload call the frontend
   // worker-to-worker over Cloudflare's internal network (no public hop, no
