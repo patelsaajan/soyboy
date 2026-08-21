@@ -12,3 +12,13 @@ allowBuilds:
   workerd: true
 patchedDependencies:
   '@opennextjs/cloudflare@1.20.1': patches/@opennextjs__cloudflare@1.20.1.patch
+  # Payload's Pill renders `disabled={!isHydrated}`, so every pill button ships
+  # `disabled` in the SSR HTML and drops it on mount. Browsers that restore
+  # cached form-control state across a reload (Firefox and its forks, see
+  # bugzilla 654072) re-enable those buttons before React runs, so hydration
+  # reads `disabled=null` from the DOM against a client render of `true` and
+  # logs an attribute mismatch for every pill in the list view. The patch adds
+  # `suppressHydrationWarning` to the pill element — upstream behaviour is
+  # unchanged, only the dev-only warning goes away. Drop this when Payload
+  # stops driving a DOM attribute off hydration state.
+  '@payloadcms/ui@3.84.1': patches/@payloadcms__ui@3.84.1.patch
