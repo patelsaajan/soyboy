@@ -204,6 +204,16 @@ Plus two runtime rules:
   and the deployed admin warns that `S3ClientUploadHandler` is missing.
 - **`serverURL` must be in the `csrf` list**, or every admin edit fails with
   "You are not allowed to perform this action".
+- **`PAYLOAD_URL` and `FRONTEND_URL` are build-time *and* runtime values**, set as
+  plain vars in both places — never as secrets, which Workers Builds cannot read.
+  `serverURL` is baked into the admin's client bundle by `next build`, so a
+  runtime-only value ships an admin pointing at `http://localhost:3000`: images
+  blocked by the CSP (`img-src` allows `https:`, not `http:`), saves rejected as
+  "You are not allowed to perform this action", and — because `FRONTEND_URL` is
+  the purge hook's origin list — purge-on-publish silently off. `payload.config.ts`
+  throws in production rather than let this ship again. **Diagnose it in one
+  command:** `curl -s https://cms.soyboy.saajanpatel.co.uk/admin/login | grep -o
+  'serverURL[^,]*'`.
 - **Every recipe needs a slug** (`src/fields/slug.ts`). A recipe reachable only
   by numeric id is a page the purge hook cannot name. Slugs are derived on first
   save and never auto-updated — retitling must not move a published URL.

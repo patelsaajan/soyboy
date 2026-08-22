@@ -25,12 +25,25 @@
   //   CF_CACHE_PURGE_TOKEN
   //   S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY
   //
-  // These are secrets on this Worker rather than vars, unlike the sibling
-  // repos where the non-secret half (PAYLOAD_URL, FRONTEND_URL, S3_BUCKET_NAME,
-  // S3_REGION, S3_ENDPOINT_URL) lives in this block: they were set as secrets
-  // when the Worker was first deployed, and a var and a secret of the same name
-  // conflict on deploy. Moving them means deleting the secret in the same
-  // change — worth doing, but not silently.
+  // PAYLOAD_URL and FRONTEND_URL are NOT in that list. They are public URLs,
+  // and setting them as secrets is what broke the admin panel: `serverURL` is
+  // serialised into the admin's client bundle by `next build`, and Workers
+  // Builds cannot read `wrangler secret` values, so a runtime-only value still
+  // reaches the browser as http://localhost:3000 — admin images blocked by the
+  // CSP, every save rejected as "You are not allowed to perform this action",
+  // and an empty FRONTEND_URL silently disabling purge-on-publish.
+  //
+  // They must be plain vars, set in BOTH scopes on this Worker:
+  //   Settings -> Builds -> Variables      (build time — bakes serverURL)
+  //   Settings -> Variables & Secrets      (runtime — csrf, cors, purge origins)
+  // payload.config.ts refuses to build in production without them.
+  //
+  // They are deliberately not declared in the block below: a var and a secret
+  // of the same name conflict on deploy, so moving them here means deleting any
+  // leftover secret of that name in the same change. Worth doing — the sibling
+  // repos keep their non-secret half here — but not silently. The same applies
+  // to S3_BUCKET_NAME, S3_REGION and S3_ENDPOINT_URL, which are also non-secret
+  // and also still set outside this file.
   //
   //   wrangler secret put PAYLOAD_SECRET
   //   wrangler secret put CF_CACHE_PURGE_TOKEN

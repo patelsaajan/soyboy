@@ -120,6 +120,34 @@ if (!connectionString) {
 // from localhost:4000 gets a passing CORS preflight against the live CMS.
 const isProduction = process.env.NODE_ENV === 'production'
 
+// Required in production, and required at *build* time as well as at runtime.
+//
+// `serverURL` is serialised into the admin's client bundle by `next build`, and
+// Workers Builds does not expose `wrangler secret` values to the build step — so
+// a value that exists only as a runtime secret is still `http://localhost:3000`
+// by the time the browser sees it. This shipped: every save failed CSRF ("You
+// are not allowed to perform this action") because the admin's real origin was
+// not in the `csrf` list, and every image was blocked by the admin CSP, which
+// allows `https:` but not `http:`. Nothing failed loudly — the panel simply
+// stopped working, and the only visible trace was `serverURL` in the HTML the
+// login page ships.
+//
+// Both must therefore be set as Workers Builds *variables* and as runtime vars.
+// See docs/cloudflare-builds.md.
+if (isProduction && (!env.PAYLOAD_URL || !env.FRONTEND_URL)) {
+  const missing = [
+    !env.PAYLOAD_URL ? 'PAYLOAD_URL' : null,
+    !env.FRONTEND_URL ? 'FRONTEND_URL' : null,
+  ].filter(Boolean)
+  throw new Error(
+    `${missing.join(' and ')} must be set in production. serverURL is baked into ` +
+      'the admin client bundle at next build, so a build without PAYLOAD_URL ships an ' +
+      'admin panel pointing at http://localhost:3000 — every save fails CSRF and every ' +
+      'image is blocked by the CSP. Set both as Workers Builds variables AND as runtime ' +
+      'vars on soyboy-payload.',
+  )
+}
+
 const allowedOrigins = [
   env.FRONTEND_URL,
   env.PAYLOAD_URL,
@@ -131,7 +159,9 @@ const allowedOrigins = [
 
 // serverURL must be set for Payload to populate its CSRF allowlist: with both
 // `csrf` and `serverURL` empty, extractJWT's origin check short-circuits and
-// accepts a cookie-borne token from ANY origin.
+// accepts a cookie-borne token from ANY origin. The fallback below is therefore
+// a real defence, not a convenience — but it is a *development* one, and the
+// guard above is what stops it reaching production.
 const serverURL = env.PAYLOAD_URL || 'http://localhost:3000'
 
 // The admin panel's own origin must be CSRF-trusted: browsers send an Origin

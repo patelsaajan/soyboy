@@ -27,6 +27,17 @@ Set per Worker under: **Workers & Pages → <worker> → Settings → Builds**.
 |---|---|
 | `DATABASE_URL` | Neon **direct** connection string (no `-pooler`) |
 | `PAYLOAD_SECRET` | same value as the runtime `wrangler secret` |
+| `PAYLOAD_URL` | `https://cms.soyboy.saajanpatel.co.uk` |
+| `FRONTEND_URL` | `https://soyboy.saajanpatel.co.uk` |
+
+`PAYLOAD_URL` and `FRONTEND_URL` are needed **here as well as at runtime**, and
+`payload.config.ts` now refuses to build in production without them. `serverURL`
+is baked into the admin's client bundle by `next build`, and Workers Builds
+cannot see `wrangler secret` values — so a runtime-only value ships an admin
+panel that points at `http://localhost:3000`, whose images the CSP blocks and
+whose saves fail CSRF. They are public URLs, so set them as plain **vars** in
+both places; a var and a secret of the same name collide on deploy, so delete any
+leftover secret of that name first.
 
 - `cf:ci:build` = `cf:build` = `generate:importmap` → `next build --turbopack` → OpenNext bundle.
 - `cf:ci:deploy` = `cf:migrate` (`NODE_ENV=production`, confirmation pre-supplied

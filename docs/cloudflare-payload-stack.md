@@ -137,6 +137,22 @@ broken admin panel. Two rules encoded there:
 
 - **`PAYLOAD_SECRET` must exist at build time**, not just runtime — the config is
   imported during `next build`.
+- **`PAYLOAD_URL` and `FRONTEND_URL` must exist at build time *and* at runtime,
+  and are required outright in production.** This is the one that is easy to get
+  wrong, because the two halves fail differently and neither is loud:
+
+  `serverURL` is serialised into the admin's **client bundle** by `next build`,
+  and Workers Builds does not expose `wrangler secret` values to the build step.
+  So a value held only as a runtime secret is still `http://localhost:3000` by
+  the time the browser parses it — every image in the admin is blocked by the CSP
+  (`img-src` allows `https:`, not `http:`). Meanwhile `csrf` and `cors` are
+  evaluated *in* the Worker, so a missing runtime value drops the auth cookie on
+  every mutating request and the admin reports **"You are not allowed to perform
+  this action"** on save. `FRONTEND_URL` also feeds the purge hook's origin list,
+  so an empty one silently disables purge-on-publish.
+
+  Because they are public URLs rather than credentials, set them as plain
+  **vars** in both places — never as secrets, which cannot reach the build.
 - **The `S3_*` group is all-five-or-none.** A partial set silently falls back to
   local disk, and on Workers that means uploads that appear to save and then
   cannot be read back.
@@ -461,5 +477,6 @@ should match them.
 | Deploys stall at `payload migrate` | A dev push left `batch = -1` | Never dev-push a remote database |
 | Uploads save but 404 on read | Partial `S3_*` config fell back to local disk | All five or none, enforced by zod |
 | Admin edits rejected as "not allowed" | `serverURL` missing from the CSRF list | Keep `csrf` = origins + `serverURL` |
+| Admin images blocked by CSP, saves rejected as "not allowed" | `PAYLOAD_URL`/`FRONTEND_URL` unset, so `serverURL` baked as `http://localhost:3000` | Required in production; set as build **and** runtime vars, never secrets |
 | Content changes not appearing | Cache in Nitro storage, unpurgeable | One cache layer, in `caches.default`, purged on publish |
 | Site renders unstyled, `/_nuxt/*.css` blocked for MIME type `""` | Day-old cached HTML naming asset hashes a deploy had replaced | Purge the edge cache on deploy as well as on publish |
