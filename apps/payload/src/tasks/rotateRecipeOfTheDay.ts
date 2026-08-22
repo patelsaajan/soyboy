@@ -1,33 +1,36 @@
 import type { TaskConfig } from 'payload'
 
+import { rotateRecipeOfTheDay } from '../lib/rotateRecipeOfTheDay'
+
+/**
+ * The rotation as a Payload job.
+ *
+ * On Workers nothing runs this on a timer — `jobs.autoRun` needs a persistent
+ * process, and the Cron Trigger goes through `/cron/rotate-recipe-of-the-day`
+ * instead. The task stays registered because it is still the way to rotate
+ * *now*: from the admin UI, or `pnpm payload jobs:run --queue default` against a
+ * local database.
+ *
+ * `schedule` is left in for the same reason — it documents the intended cadence
+ * and is what a Node deployment of this config would use. It must stay in step
+ * with `triggers.crons` in `apps/payload/wrangler.jsonc`, which is what actually
+ * fires in production.
+ */
 export const rotateRecipeOfTheDayTask: TaskConfig = {
   slug: 'rotate-recipe-of-the-day',
   label: 'Rotate Recipe of the Day',
   schedule: [{ cron: '0 0 * * *', queue: 'default' }],
   handler: async ({ req }) => {
-    const result = await req.payload.find({
-      collection: 'recipes',
-      where: { _status: { equals: 'published' } },
-      limit: 0,
-      depth: 0,
-    })
+    const result = await rotateRecipeOfTheDay(req.payload)
 
-    if (!result.docs.length) {
-      return { output: {} }
+    if (result.rotated) {
+      req.payload.logger.info(
+        `Recipe of the day rotated to: ${result.slug} (from ${result.candidates} candidates)`,
+      )
+    } else {
+      req.payload.logger.warn(`Recipe of the day not rotated: ${result.reason}`)
     }
 
-    const randomIndex = Math.floor(Math.random() * result.docs.length)
-    const picked = result.docs[randomIndex]!
-
-    await req.payload.updateGlobal({
-      slug: 'recipe-of-the-day',
-      data: {
-        recipe: picked.id,
-        lastRotated: new Date().toISOString(),
-      },
-    })
-
-    req.payload.logger.info(`Recipe of the day rotated to: ${picked.slug}`)
     return { output: {} }
   },
 }

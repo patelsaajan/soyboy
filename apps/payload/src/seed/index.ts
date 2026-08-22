@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type { Payload } from 'payload'
+import { rotateRecipeOfTheDay } from '../lib/rotateRecipeOfTheDay'
 import { recipes } from './recipes/index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -121,5 +122,34 @@ export async function seed(payload: Payload): Promise<void> {
     payload.logger.info(`  Created "${recipe.title}"`)
   }
 
+  await seedRecipeOfTheDay(payload)
+
   payload.logger.info('Done.')
+}
+
+/**
+ * Give the `recipe-of-the-day` global a value.
+ *
+ * Without this a freshly seeded database has an empty global, `/api/recipes/daily`
+ * answers `null`, and the home page renders the Recipe of the Day strip with no
+ * card behind it — a feature that looks broken rather than absent. The cron only
+ * fires at midnight, so nothing else would fill it in on the first day.
+ *
+ * Skipped when the global already points somewhere, so re-running the seed does
+ * not stomp on whatever the rotation last chose.
+ */
+async function seedRecipeOfTheDay(payload: Payload): Promise<void> {
+  const current = await payload.findGlobal({ slug: 'recipe-of-the-day', depth: 0 })
+  if (current?.recipe) {
+    payload.logger.info('Recipe of the day already set — leaving it alone.')
+    return
+  }
+
+  const result = await rotateRecipeOfTheDay(payload)
+
+  payload.logger.info(
+    result.rotated
+      ? `Recipe of the day set to "${result.slug}"`
+      : `Recipe of the day not set: ${result.reason}`,
+  )
 }

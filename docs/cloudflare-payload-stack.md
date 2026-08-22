@@ -215,6 +215,80 @@ been in exactly that state.
 user, takes a typed confirmation, clears the purge credentials so one seed does
 not fire hundreds of purges, and pins `NODE_ENV=production`.
 
+### Recipe of the day
+
+The one scheduled job on the stack, and the one place a Cron Trigger touches
+Payload. It rotates the `recipe-of-the-day` global to a random published recipe
+at **00:00 UTC**.
+
+```
+Cron Trigger (triggers.crons, wrangler.jsonc)
+  └─▶ scheduled()            apps/payload/worker.ts
+        └─▶ handler.fetch()  POST /cron/rotate-recipe-of-the-day
+              └─▶ rotateRecipeOfTheDay()   src/lib/rotateRecipeOfTheDay.ts
+                    └─▶ updateGlobal → purgeGlobalAfterChange → zone purge
+```
+
+Four things about that chain are load-bearing:
+
+- **`jobs.autoRun` cannot be the mechanism.** Payload's scheduler needs a process
+  that stays alive between requests; Workers has none. The `schedule` on
+  `src/tasks/rotateRecipeOfTheDay.ts` documents the cadence and is what a Node
+  deployment would use — it fires nothing here. **`triggers.crons` is the real
+  schedule, and the two have to be changed together.**
+
+- **`wrangler.jsonc` points `main` at `worker.ts`, not `.open-next/worker.js`.** A
+  Cron Trigger needs a `scheduled` export on the *same* default export as
+  `fetch`, and OpenNext regenerates its worker on every build, so it gets wrapped
+  rather than edited. The wrapper must keep re-exporting the Durable Object
+  classes (`export *`) — wrangler resolves DO bindings against the entry
+  module's exports, and dropping them breaks the deploy at startup.
+
+- **The scheduled handler goes back in through `fetch` instead of calling
+  `getPayload()` directly.** `payload.config.ts` resolves its connection string
+  from the Hyperdrive binding via `getCloudflareContext()`, and that context is
+  established by OpenNext's *request* wrapper. A handler that reached for Payload
+  outside a request would find no context, fall through to `DATABASE_URL` (unset
+  on the Worker) and throw — at midnight, where nobody is watching. Routing
+  through `handler.fetch` means the cron exercises the same path as every other
+  request.
+
+- **The route is public, so it authenticates the trigger.** The Worker answers on
+  `cms.soyboy.saajanpatel.co.uk`, so `POST /cron/rotate-recipe-of-the-day` takes
+  a bearer `CRON_SECRET` (a Worker secret, `openssl rand -hex 32`) and compares
+  it in constant time. A Worker with no `CRON_SECRET` answers **503** rather than
+  leaving an unauthenticated endpoint that rewrites site content, and the
+  scheduled handler throws instead of calling an endpoint it cannot authenticate
+  to — so a missing secret shows up as a red cron run, not as a silent no-op.
+
+The rotation excludes the current pick whenever there is anything else to choose
+from. A uniform draw over the whole set lands on yesterday's recipe about 1-in-N
+times, and a "recipe of the day" that visibly did not change reads as a broken
+cron — which is the exact failure this is meant to make impossible to have
+quietly.
+
+`RecipeOfTheDay` spreads `publishGlobalHooks`, so writing the global purges `/`
+and `/api/recipes/daily`. Without that the site would serve yesterday's pick for
+the rest of the edge TTL with the cron already moved on.
+
+The seed sets the global too (`seedRecipeOfTheDay`), skipping it when one is
+already set. A fresh database otherwise has an empty global until the first
+midnight, and the home page renders the Recipe of the Day strip with no card
+behind it.
+
+**Rotate on demand:** the admin UI's Jobs view, or `pnpm payload jobs:run --queue
+default` against a local database. Both go through the registered task, which is
+why it stays registered.
+
+**Watch it run:**
+
+```bash
+npx wrangler tail soyboy-payload --format pretty
+# force one without waiting for midnight:
+curl -X POST https://cms.soyboy.saajanpatel.co.uk/cron/rotate-recipe-of-the-day \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
+
 ## The frontend Worker
 
 Nuxt 4 on Nitro, `cloudflare_module` preset. Requests for `public/` and
@@ -416,6 +490,8 @@ should match them.
 | Local Postgres port | 5429 (bms), 5439 (starter) | 5432 | Each project needs its own; these three collide otherwise |
 | S3 bucket env var | `S3_BUCKET` | `S3_BUCKET_NAME` | Already deployed under this name; renaming means re-setting a live Worker secret for no gain |
 | Rich text | Lexical, serialised in the frontend | Plain text/textarea fields | The content model never needed it |
+| Worker entry | `.open-next/worker.js` directly | `worker.ts` wrapping it | Only soyboy has a scheduled job (recipe of the day), and a Cron Trigger needs a `scheduled` export beside `fetch`. Not an infrastructure fix to port — the siblings have nothing to schedule |
+| Cron Triggers | None | `0 0 * * *` on `soyboy-payload` | Same reason |
 
 ## Production incidents, and the rules they set
 

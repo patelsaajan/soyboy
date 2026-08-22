@@ -86,7 +86,8 @@ Browser ──► frontend Worker (React SPA + tiny API proxy)     soyboy.exampl
   `serverExternalPackages: ['pg', 'pg-cloudflare']` to `next.config.ts`.
   Without both, the Postgres driver dies at runtime (see Gotchas #2).
 - Keep any Payload jobs/tasks *registered* but remove `jobs.autoRun` (Workers
-  has no persistent scheduler — re-add later via Cron Triggers).
+  has no persistent scheduler). A Cron Trigger drives them instead — see
+  *Recipe of the day* in `docs/cloudflare-payload-stack.md`.
 - Verify `pnpm cf:build` ends with `Worker saved in .open-next/worker.js`, and
   grep the bundle to confirm `cloudflare:sockets` survived:
   `grep -c "cloudflare:sockets" .open-next/server-functions/default/*/handler.mjs`
@@ -235,8 +236,9 @@ confirm only that app rebuilds, and that a new deployment version appears.
 
 **You do:**
 1. Watch the Cloudflare setup for a few days (observability is on).
-2. Re-enable scheduled jobs via **Cron Triggers** (`triggers.crons` in the
-   payload `wrangler.jsonc` + a scheduled handler that runs the task).
+2. Re-enable scheduled jobs via **Cron Triggers** — done. `triggers.crons` in the
+   payload `wrangler.jsonc` drives `scheduled` in `apps/payload/worker.ts`. See
+   *Recipe of the day* in `docs/cloudflare-payload-stack.md`.
 3. **Delete the Railway services** — done.
 
 ---

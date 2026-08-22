@@ -39,6 +39,12 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    // The Worker entry imports `.open-next/worker.js`, which only exists after
+    // `opennextjs-cloudflare build`. CI runs `pnpm check-types` on a fresh
+    // checkout, so type-checking it there would fail on a missing build
+    // artifact. It is kept to wiring for exactly this reason — the logic behind
+    // it lives in `src/lib/scheduledRotation.ts`, which is checked.
+    "worker.ts"
   ]
 }
