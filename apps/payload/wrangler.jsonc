@@ -1,7 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "soyboy-payload",
-  "main": ".open-next/worker.js",
+  // Not `.open-next/worker.js` directly: a Cron Trigger needs a `scheduled`
+  // export sitting on the same default export as `fetch`, and OpenNext
+  // regenerates its worker on every build. `worker.ts` wraps it — see the file
+  // for what it must keep re-exporting.
+  "main": "worker.ts",
   "compatibility_date": "2026-04-01",
   "compatibility_flags": ["nodejs_compat"],
   // Single front door: the CMS is only reachable at its custom domain
@@ -13,6 +17,20 @@
   "placement": { "mode": "smart" },
   // Persisted logs + metrics in the dashboard (not just live tail).
   "observability": { "enabled": true },
+  // Recipe of the day, rotated at 00:00 UTC. This — not `jobs.autoRun` — is what
+  // fires the rotation in production: Payload's scheduler needs a process that
+  // stays alive between requests, and Workers has none. The cron drives
+  // `scheduled` in worker.ts, which POSTs `/cron/rotate-recipe-of-the-day`.
+  //
+  // Keep in step with the `schedule` on `src/tasks/rotateRecipeOfTheDay.ts`,
+  // which documents the same cadence for the job runner.
+  //
+  // Needs `wrangler secret put CRON_SECRET` on this Worker — the route rejects
+  // the trigger without it, and the scheduled handler throws rather than call an
+  // endpoint it cannot authenticate to.
+  "triggers": {
+    "crons": ["0 0 * * *"]
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -23,6 +41,7 @@
   // `wrangler secret put <NAME>`, never committed here:
   //   PAYLOAD_SECRET
   //   CF_CACHE_PURGE_TOKEN
+  //   CRON_SECRET
   //   S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY
   //
   // These are secrets on this Worker rather than vars, unlike the sibling
@@ -34,6 +53,7 @@
   //
   //   wrangler secret put PAYLOAD_SECRET
   //   wrangler secret put CF_CACHE_PURGE_TOKEN
+  //   wrangler secret put CRON_SECRET
   "vars": {
     // The zone that serves the public site, for purge-on-publish. Not a secret
     // — the token that goes with it is, and must be scoped to

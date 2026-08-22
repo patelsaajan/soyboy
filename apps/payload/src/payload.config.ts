@@ -161,10 +161,16 @@ export default buildConfig({
   },
   collections: [Users, Media, Recipes],
   globals: [RecipeOfTheDay],
-  // The task stays registered (so its slug is typed and a Cloudflare Cron
-  // Trigger can invoke it later), but autoRun is intentionally omitted:
-  // Payload's autoRun scheduler needs a persistent process, which Workers
-  // doesn't have. Nothing runs this until a Cron Trigger hits the jobs endpoint.
+  // `autoRun` is intentionally omitted: Payload's scheduler needs a process that
+  // stays alive between requests, and Workers has none — leaving the `schedule`
+  // on the task to do the work is what left the recipe of the day frozen on
+  // whatever it was seeded with.
+  //
+  // A Cloudflare Cron Trigger drives it instead (`triggers.crons` in
+  // wrangler.jsonc -> `scheduled` in worker.ts -> POST
+  // /cron/rotate-recipe-of-the-day). The task stays registered because it is
+  // still how you rotate on demand — from the admin UI, or `payload jobs:run`
+  // against a local database.
   jobs: {
     tasks: [rotateRecipeOfTheDayTask],
     access: {

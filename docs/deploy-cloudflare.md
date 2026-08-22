@@ -152,9 +152,11 @@ connects to Neon, so set these as **build** vars (separate from the runtime
    Then confirm the purge is live — edit a recipe, save, and watch for
    `frontend cache purged: N URLs` in `npx wrangler tail soyboy-payload`. A purge
    you have not watched work is a purge that does not work.
-4. **Re-enable the daily recipe cron** via Cron Triggers (currently disabled in
-   `payload.config.ts` — the `jobs.autoRun` block). Add a `triggers.crons` entry
-   in `wrangler.jsonc` + a scheduled handler that runs the rotate logic.
+4. **Set `CRON_SECRET`** — `wrangler secret put CRON_SECRET` on `soyboy-payload`
+   (`openssl rand -hex 32`). The daily recipe rotation runs on a Cron Trigger
+   that authenticates itself against this; without it the route answers 503 and
+   the cron run goes red. See *Recipe of the day* in
+   `docs/cloudflare-payload-stack.md`.
 5. Once stable, decommission the Railway Payload service.
 
 ## Known limitations

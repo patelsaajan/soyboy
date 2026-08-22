@@ -187,7 +187,38 @@ Plus two runtime rules:
 - **`sharp` is never wired up** — and never as a conditional `await import()`,
   which the bundler turns into a hashed chunk esbuild cannot resolve.
 
-## Rule 10 — three repos, one stack
+## Rule 10 — the scheduled job runs on a Cron Trigger, not `jobs.autoRun`
+
+The recipe of the day rotates at 00:00 UTC. `jobs.autoRun` **cannot** do it —
+Payload's scheduler needs a process that stays alive between requests and
+Workers has none, which is what left the feature frozen on its seeded value.
+
+```
+triggers.crons (wrangler.jsonc) ─▶ scheduled() in apps/payload/worker.ts
+  ─▶ handler.fetch() POST /cron/rotate-recipe-of-the-day
+    ─▶ rotateRecipeOfTheDay() ─▶ updateGlobal ─▶ purge
+```
+
+- **`main` is `worker.ts`, not `.open-next/worker.js`.** A Cron Trigger needs a
+  `scheduled` export on the same default export as `fetch`, and OpenNext
+  regenerates its worker every build. The wrapper must keep `export *`-ing the
+  Durable Object classes — wrangler resolves DO bindings against the entry
+  module's exports. It is excluded from `tsc` (the import is build output, absent
+  on a fresh checkout, and CI type-checks one), so logic belongs in
+  `src/lib/scheduledRotation.ts`, which *is* checked.
+- **Never call `getPayload()` straight from `scheduled`.** Hyperdrive resolves via
+  `getCloudflareContext()`, which OpenNext establishes in its *request* wrapper.
+  Outside one it falls through to `DATABASE_URL` — unset on the Worker — and
+  throws, at midnight, unwatched. Go back in through `handler.fetch`.
+- **`CRON_SECRET` is required.** The route sits on the public CMS hostname, so it
+  takes a bearer token and answers 503 when the secret is unset, rather than
+  leaving an unauthenticated endpoint that rewrites site content.
+- The task's `schedule` and `triggers.crons` state the same cadence in two files
+  — **change them together.**
+- The rotation excludes the current pick, so the recipe visibly changes. The seed
+  fills the global too, or a fresh database renders the strip with no card.
+
+## Rule 11 — three repos, one stack
 
 `payload-cloudflare-starter`, `bryans-motorcycle-school` and `karagama-ent-1`
 run the same infrastructure with a React frontend. **An infrastructure fix
