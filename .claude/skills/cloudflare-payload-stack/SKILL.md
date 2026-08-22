@@ -59,7 +59,30 @@ Uploads are the one exception (`max-age=31536000, immutable`) because a collidin
 filename gets a new suffix rather than overwriting, so a URL's bytes never
 change.
 
-## Rule 3 — exactly one cache layer, and it is `caches.default`
+## Rule 3 — purging is on deploy as well as on publish
+
+A cached page names its CSS and JS by content hash. A **deploy** replaces the
+asset manifest, so day-old HTML asks the ASSETS binding for a `/_nuxt/*` file
+that no longer exists. The answer is a 404 with an empty body and **no
+`Content-Type`**; `nosniff` makes that a hard block, and the site is unstyled for
+the whole TTL. Nothing appears in the Worker logs, because the Worker is never
+reached — the assets binding runs in front of it.
+
+So `pnpm cf:ci:deploy` runs `scripts/purge-cache.ts` right after
+`wrangler deploy`. It needs `CF_ZONE_ID` and `CF_CACHE_PURGE_TOKEN` as **Workers
+Builds environment variables on `soyboy-frontend`** — the same pair the CMS holds
+at runtime. Missing them warns and exits 0; a real purge failure exits 1, because
+by then the deploy is live and this is the only thing that goes red.
+
+Having no database, it reads recipe slugs back from the site's own
+`/api/recipes/all`, purged first so the answer comes from the build that just
+shipped.
+
+**Diagnosing this from prod:** `curl` the page and compare the `/_nuxt/` hashes
+in the HTML against `.output/public/_nuxt/`. A non-zero `age` with hashes that
+are not in the build is this bug.
+
+## Rule 4 — exactly one cache layer, and it is `caches.default`
 
 `server/plugins/edge-cache.ts` wraps Nitro's `localFetch`. Do **not** reach for
 `defineCachedEventHandler` or `routeRules.swr` — Nitro's cache storage on
@@ -79,7 +102,7 @@ caching there means caching a guess.
 `CACHE_TAG` must be one string, imported. A rename that misses a copy kills the
 tag purge silently.
 
-## Rule 4 — purge by exact URL, never `purge_everything`
+## Rule 5 — purge by exact URL, never `purge_everything`
 
 The zone hosts other sites. A `Cache-Tag` purge goes alongside because
 Cloudflare documents URL purge as unreliable for Workers Cache API entries, and
@@ -92,7 +115,7 @@ the hook chunks.
 Purging must also name the document's *previous* URLs (`stalePathsFor`), or a
 renamed slug leaves its old page cached for a day.
 
-## Rule 5 — hooks are fail-soft and log both outcomes
+## Rule 6 — hooks are fail-soft and log both outcomes
 
 A failed purge must never fail an editor's save; the TTL backstops it.
 
@@ -110,14 +133,14 @@ site reads but nobody purges is a stale-content bug waiting to happen.
 baked at build time here. If a prerendered route is ever added, the rebuild hook
 has to arrive in the same commit.
 
-## Rule 6 — cache only what is safe to share
+## Rule 7 — cache only what is safe to share
 
 GET only (not HEAD — it would make `curl -I` misleading). Only status 200. Strip
 `Set-Cookie`. Key on the URL with no cookie in the key, which is valid **only**
 because no authenticated traffic crosses this hostname — the admin panel is on
 its own domain. If that stops being true, this rule changes.
 
-## Rule 7 — the service binding bypasses your hostname's defences
+## Rule 8 — the service binding bypasses your hostname's defences
 
 `backend.fetch()` reaches the Payload Worker directly, past anything protecting
 `cms.soyboy.saajanpatel.co.uk`. So every value interpolated into an upstream
@@ -131,7 +154,7 @@ The media proxy also refuses any content-type that is not `image|video|audio/*`
 404 rather than forwarding upstream status (403-vs-404 is an oracle for internal
 CMS state).
 
-## Rule 8 — the OpenNext bundling chain
+## Rule 9 — the OpenNext bundling chain
 
 If Postgres works locally but not deployed, suspect this chain first:
 
@@ -155,7 +178,7 @@ Plus two runtime rules:
   false during `next build`, or parallel page-data workers each boot their own
   workerd and fight over `.wrangler/state` (`SQLITE_BUSY`).
 
-## Rule 9 — Payload conventions
+## Rule 10 — Payload conventions
 
 - **Schema changes go through migrations only.** Dev-mode `getPayload()` pushes
   schema to whatever `DATABASE_URL` points at and leaves a sticky `batch = -1`
@@ -187,7 +210,7 @@ Plus two runtime rules:
 - **`sharp` is never wired up** — and never as a conditional `await import()`,
   which the bundler turns into a hashed chunk esbuild cannot resolve.
 
-## Rule 10 — three repos, one stack
+## Rule 11 — three repos, one stack
 
 `payload-cloudflare-starter`, `bryans-motorcycle-school` and `karagama-ent-1`
 run the same infrastructure with a React frontend. **An infrastructure fix

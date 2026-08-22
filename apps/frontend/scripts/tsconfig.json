@@ -1,0 +1,13 @@
+{
+  // `nuxt typecheck` only covers app/, server/ and shared/ — a deploy script
+  // living outside those would ship unchecked, which for something that only
+  // ever runs on a Workers Build is the worst place to find a type error. The
+  // server config is the right base: same bundler resolution that
+  // `@soyboy/shared`'s extensionless imports need.
+  "extends": "../.nuxt/tsconfig.server.json",
+  "compilerOptions": {
+    // Unlike server/, this runs in Node on the build machine, not in workerd.
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts"]
+}

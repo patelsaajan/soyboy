@@ -310,6 +310,32 @@ The hook:
 A `cache.delete()` from inside a Worker would clear only the colo that Worker
 happens to be in. Only the zone API clears them all.
 
+### Purge-on-deploy
+
+Publishing is not the only event that invalidates a cached page. A **deploy**
+does too, and for a reason that has nothing to do with content: the HTML names
+its CSS and JS by content hash (`/_nuxt/entry.<hash>.css`), and a deploy replaces
+the whole asset manifest. Every hash that changed stops existing the moment the
+new Worker goes live.
+
+So a page cached before the deploy is served after it against an asset set that
+no longer contains what it asks for. The assets binding answers 404 with an empty
+body and **no `Content-Type`**, `X-Content-Type-Options: nosniff` turns that into
+a hard block, and the site renders unstyled — for the full 24h TTL, with nothing
+in the Worker logs, because the Worker is never reached.
+
+`apps/frontend/scripts/purge-cache.ts` closes it, run by `pnpm cf:ci:deploy`
+immediately after `wrangler deploy`. It builds its URLs from the same
+`@soyboy/shared` contract, and — having no database — reads recipe slugs back
+from the site's own `/api/recipes/all`, which it purges first so the answer is a
+fresh render through the build that just shipped. Uploads are left alone: their
+bytes are immutable and a deploy does not touch them.
+
+Unlike the CMS hook it **fails the build red**, because the deploy has already
+succeeded by then and a stale-HTML site is precisely the failure that otherwise
+goes unnoticed for a day. The one exception is missing credentials, which warns
+and exits 0.
+
 ### The sync contract
 
 `packages/shared/src/cache-contract.ts` is the single definition of every
@@ -333,9 +359,17 @@ Two things live in the Cloudflare dashboard and cannot be inferred from the repo
    Purge*, scoped to this zone. Nothing else.
 2. **`CF_ZONE_ID`**, from the zone's dashboard overview.
 
-Without both, the purge hook no-ops — silently, by design, because that is the
-correct behaviour in local dev. Check the Worker logs for
-`frontend cache purged: N URLs` after an edit to confirm it is live.
+Both are needed in **two** places: as runtime values on `soyboy-payload` (for
+purge-on-publish) and as Workers Builds environment variables on
+`soyboy-frontend` (for purge-on-deploy) — see `docs/cloudflare-builds.md`. The
+same token serves both.
+
+Without them the purge no-ops — silently in the CMS hook, because that is the
+correct behaviour in local dev and in the seed; loudly in the deploy script,
+because a deploy that skips the purge ships a broken site. Check the Worker logs
+for `frontend cache purged: N URLs` after an edit, and the build log for
+`frontend cache purged on deploy: N URLs` after a push, to confirm both are
+live.
 
 ### Image transformations
 
@@ -428,3 +462,4 @@ should match them.
 | Uploads save but 404 on read | Partial `S3_*` config fell back to local disk | All five or none, enforced by zod |
 | Admin edits rejected as "not allowed" | `serverURL` missing from the CSRF list | Keep `csrf` = origins + `serverURL` |
 | Content changes not appearing | Cache in Nitro storage, unpurgeable | One cache layer, in `caches.default`, purged on publish |
+| Site renders unstyled, `/_nuxt/*.css` blocked for MIME type `""` | Day-old cached HTML naming asset hashes a deploy had replaced | Purge the edge cache on deploy as well as on publish |

@@ -41,12 +41,28 @@ Set per Worker under: **Workers & Pages → <worker> → Settings → Builds**.
 | Build branch | `main` |
 | Root directory | `apps/frontend` |
 | Build command | `pnpm build` |
-| Deploy command | `npx wrangler deploy` |
+| Deploy command | `pnpm cf:ci:deploy` |
 | Build cache | On |
 | Watch paths | **leave blank** (see note) |
 
-No build env vars required (the frontend fetches Payload at runtime; images
-resolve via `PAYLOAD_URL` in `runtimeConfig`).
+**Build environment variables** (Settings → Builds → Variables) — needed because
+`cf:ci:deploy` purges the edge cache after shipping:
+
+| Var | Value |
+|---|---|
+| `CF_ZONE_ID` | `4cd23c61040cbc255c1b88be7a81a985` (same zone as the CMS) |
+| `CF_CACHE_PURGE_TOKEN` | **encrypted** — same token as the runtime secret on `soyboy-payload` |
+
+Nothing else is required at build time (the frontend fetches Payload at runtime;
+images resolve via `PAYLOAD_URL` in `runtimeConfig`).
+
+- `cf:ci:deploy` = `wrangler deploy` → `purge:cache`
+  (`apps/frontend/scripts/purge-cache.ts`). The purge runs *after* the deploy,
+  because it has to invalidate HTML against the asset set that is now live.
+- **Without the two variables above the deploy still succeeds and prints a
+  warning** — and cached pages keep pointing at `/_nuxt/*` hashes this build
+  replaced, which the assets binding answers with a bare 404 and `nosniff` turns
+  into an unstyled site for the full 24h TTL. Set them.
 
 ## Note on watch paths
 
