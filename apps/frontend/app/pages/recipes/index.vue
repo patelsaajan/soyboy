@@ -237,7 +237,15 @@
     </div>
 
     <!-- Mobile Drawer -->
-    <UDrawer v-model:open="drawerOpen" class="lg:hidden">
+    <!-- title/description are what give the dialog its accessible name; with a
+         `content` slot UDrawer renders them visually hidden, so this labels the
+         drawer for screen readers without changing what is on screen. -->
+    <UDrawer
+        v-model:open="drawerOpen"
+        class="lg:hidden"
+        :title="selectedRecipe?.title ?? 'Recipe'"
+        :description="selectedRecipe?.description ?? ''"
+    >
         <template #content>
             <div v-if="selectedRecipe" class="flex flex-col max-h-[80vh]">
                 <div class="p-6 flex flex-col gap-4 overflow-y-auto flex-1">
@@ -455,14 +463,28 @@ onMounted(() => {
     mm = gsap.matchMedia();
     const ease = 'power2.out';
 
+    // Every card grid here is rendered from CMS data at one of two breakpoints,
+    // so a selector coming back empty is a normal state — no highlights marked
+    // yet, or the markup for the breakpoint that isn't active. gsap warns
+    // ("target not found") on a null or empty target and drops the tween, so
+    // build the timeline from the parts that actually matched. Sections 2 and 3
+    // below already did this by hand; this is the same rule, applied once.
+    const revealSection = (
+        section: HTMLElement,
+        cardSelector: string,
+        stagger: number,
+    ) => {
+        const heading = section.querySelector('h2');
+        const cards = section.querySelectorAll(cardSelector);
+        const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 82%', once: true } });
+        if (heading) tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
+        if (cards.length) tl.from(cards, { opacity: 0, y: 30, duration: 0.5, stagger, ease }, '-=0.2');
+    };
+
     mm.add('(min-width: 1024px)', () => {
         // 1. Highlights
         if (topRecipesSection.value) {
-            const heading = topRecipesSection.value.querySelector('h2');
-            const cards = topRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
-            gsap.timeline({ scrollTrigger: { trigger: topRecipesSection.value, start: 'top 82%', once: true } })
-                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
-                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.2');
+            revealSection(topRecipesSection.value, '.hidden.lg\\:grid > *', 0.1);
         }
 
         // 2. Sidebar
@@ -479,29 +501,21 @@ onMounted(() => {
             const featuredCard = recentRecipesSection.value.querySelector('.hidden.lg\\:flex > *:first-child');
             const gridCards = recentRecipesSection.value.querySelectorAll('.hidden.lg\\:flex .grid > *');
             const tl = gsap.timeline({ scrollTrigger: { trigger: recentRecipesSection.value, start: 'top 82%', once: true } });
-            tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
+            if (heading) tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
             if (featuredCard) tl.from(featuredCard, { opacity: 0, y: 30, duration: 0.5, ease }, '-=0.2');
             if (gridCards.length) tl.from(gridCards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.2');
         }
 
         // 4. More Recipes
         if (moreRecipesSection.value) {
-            const heading = moreRecipesSection.value.querySelector('h2');
-            const cards = moreRecipesSection.value.querySelectorAll('.hidden.lg\\:grid > *');
-            gsap.timeline({ scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 82%', once: true } })
-                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
-                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.05, ease }, '-=0.2');
+            revealSection(moreRecipesSection.value, '.hidden.lg\\:grid > *', 0.05);
         }
     });
 
     mm.add('(max-width: 1023px)', () => {
         // 1. Highlights
         if (topRecipesSection.value) {
-            const heading = topRecipesSection.value.querySelector('h2');
-            const cards = topRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
-            gsap.timeline({ scrollTrigger: { trigger: topRecipesSection.value, start: 'top 82%', once: true } })
-                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
-                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.1, ease }, '-=0.2');
+            revealSection(topRecipesSection.value, '.grid.grid-cols-2.gap-4.lg\\:hidden > *', 0.1);
         }
 
         // 2. Recent Recipes
@@ -509,7 +523,7 @@ onMounted(() => {
             const heading = recentRecipesSection.value.querySelector('h2');
             const mobileContent = recentRecipesSection.value.querySelector('.flex.flex-col.gap-4.lg\\:hidden');
             const tl = gsap.timeline({ scrollTrigger: { trigger: recentRecipesSection.value, start: 'top 82%', once: true } });
-            tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
+            if (heading) tl.from(heading, { opacity: 0, y: 20, duration: 0.5, ease });
             if (mobileContent) {
                 const featuredCard = mobileContent.children[0];
                 const gridCards = mobileContent.querySelectorAll('.grid > *');
@@ -520,11 +534,7 @@ onMounted(() => {
 
         // 3. More Recipes
         if (moreRecipesSection.value) {
-            const heading = moreRecipesSection.value.querySelector('h2');
-            const cards = moreRecipesSection.value.querySelectorAll('.grid.grid-cols-2.gap-4.lg\\:hidden > *');
-            gsap.timeline({ scrollTrigger: { trigger: moreRecipesSection.value, start: 'top 82%', once: true } })
-                .from(heading, { opacity: 0, y: 20, duration: 0.5, ease })
-                .from(cards, { opacity: 0, y: 30, duration: 0.5, stagger: 0.05, ease }, '-=0.2');
+            revealSection(moreRecipesSection.value, '.grid.grid-cols-2.gap-4.lg\\:hidden > *', 0.05);
         }
     });
 });

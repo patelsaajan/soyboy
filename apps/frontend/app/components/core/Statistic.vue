@@ -36,7 +36,6 @@ function animateNumber() {
         value: props.number,
         duration: 1.5,
         ease: 'power2.out',
-        roundModifier: true,
         snap: { value: 1 },
     });
 }

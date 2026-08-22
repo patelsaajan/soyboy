@@ -35,6 +35,19 @@ withDefaults(defineProps<{
      * request the 1536w candidate and silently negated the Cloudflare
      * Transformations resizing. Pass the real rendered box size at each call
      * site.
+     *
+     * NOTE: this is @nuxt/image's `screenKey:size` syntax, NOT the native HTML
+     * `sizes` syntax. A key is a breakpoint name (sm/md/lg/xl/2xl) or a raw
+     * pixel number; the value is the rendered box at that breakpoint. Native
+     * media-query syntax parses without error and produces nonsense — `(max-
+     * width: 640px) 100vw, ..., 33vw` collapsed to a single `33vw` entry keyed
+     * on a 1px screen, i.e. a candidate of `round(33/100 * 1) = 0`, which the
+     * browser rejects as an invalid `w` descriptor and discards the whole
+     * srcset. Every image then loaded at full size.
+     *
+     * The media boundary @nuxt/image emits for a key is the *next* key's
+     * screen width, so the first key sets the smallest candidate rather than
+     * the first breakpoint. Hence the leading raw-pixel key below.
      */
     sizes?: string
     /** Set on the LCP image only: eager + high fetchpriority + preload. */
@@ -42,7 +55,10 @@ withDefaults(defineProps<{
 }>(), {
     containerClass: '',
     alt: '',
-    sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+    // 100vw below 640, 50vw below 1024, 33vw above. The trailing 2xl key only
+    // widens the candidate ladder (33vw of 1536 = 507, so 1014 at 2x) — without
+    // it the largest candidate is 676w and retina desktops soften.
+    sizes: '320:100vw sm:50vw lg:33vw 2xl:33vw',
     priority: false,
 })
 

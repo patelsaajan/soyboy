@@ -49,7 +49,7 @@
                             format="auto"
                             :quality="70"
                             width="320"
-                            sizes="(max-width: 768px) 100vw, 320px"
+                            sizes="640:100vw md:320px"
                             :loading="index < 3 ? 'eager' : 'lazy'"
                             decoding="async"
                             class="absolute inset-0 w-full h-full object-cover"

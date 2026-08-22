@@ -24,7 +24,7 @@
                 format="auto"
                 width="400"
                 height="400"
-                sizes="(max-width: 768px) 100vw, 400px"
+                sizes="640:100vw md:400px"
                 loading="lazy"
                 decoding="async"
                 class="bg-white aspect-square w-full object-cover rounded-md md:col-span-3"

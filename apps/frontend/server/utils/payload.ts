@@ -16,8 +16,29 @@ export function payloadBase(): string {
   return (payloadUrl as string).replace(/\/$/, '')
 }
 
-/** The BACKEND service binding, if we're running on Cloudflare Workers. */
+// Runtime-detected, never env-driven — the same guard payload.config.ts uses.
+// `nuxt dev` runs the Nitro handler in Node while miniflare supplies the
+// bindings from the side, so the presence of `BACKEND` is NOT evidence that we
+// are on Workers. See backendBinding below.
+const inWorkerd = globalThis.navigator?.userAgent === 'Cloudflare-Workers'
+
+/**
+ * The BACKEND service binding, but only when we are genuinely inside workerd.
+ *
+ * Nuxt's cloudflare-dev emulation populates `event.context.cloudflare.env` in
+ * local dev too, so testing for the binding alone matches in `nuxt dev` — where
+ * it is a *proxied* stub rather than a real fetcher, and where the
+ * `soyboy-payload` Worker it names is not running at all. Two things break:
+ * the proxy cannot carry a `Request` instance across its boundary (undici
+ * rejects it with "Failed to parse URL from [object Request]"), and even a
+ * well-formed call has nothing to reach. Every /api/recipes/** route answered
+ * 500 locally as a result.
+ *
+ * Guarding on the runtime keeps production on the binding and sends local dev
+ * down the payloadUrl fallback, which is what that fallback exists for.
+ */
 function backendBinding(event: H3Event): ServiceBinding | undefined {
+  if (!inWorkerd) return undefined
   return (event.context as { cloudflare?: { env?: Record<string, unknown> } })
     .cloudflare?.env?.BACKEND as ServiceBinding | undefined
 }
